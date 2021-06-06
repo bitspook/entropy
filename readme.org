@@ -1,0 +1,110 @@
+#+title: Entropy
+
+Entropy is a [[https://hackerspaces.org/][hackerspace]] for technologists living in vicinity of Chandigarh.
+
+Entropy intends to shake things up in the tech scene of the city by providing an
+open space for hackers of Chandigarh to identify and solve the problems they
+deem fit.
+
+* Problems
+
+** Meager tech culture
+
+The first problem I can identify is lack of a tech culture in the city. Entropy
+will die down if there are no hackers to participate in it.
+
+Following are the reasons I can think of, solving which might help.
+
+*** Fragmentation
+:PROPERTIES:
+:ID:       b9c30d57-1d7d-4515-8907-fbc820faa5c7
+:END:
+
+Tech scene in Chandigarh is not completely devoid of activity. There are small
+groups which do occasional meetups. Multiple small groups operating in isolation
+could be a problem. I am not advocating clubbing all smaller groups into a
+guild, quite the contrary. We should celebrate diversity and individual freedom.
+If anyone want to start a tech group of their own, we should welcome it. But
+this causes problem of discovery for people who want to participate. That's the
+problem we should solve.
+
+One possible solution is to setup an aggregator, which can aggregate content
+from wherever the tech-group operates primarily.
+
+**** Action items
+- [ ] Prepare a list of all the tech groups that associate with Chandigarh
+- [ ] Build an aggregator which can scrap content from above list
+- [ ] Build a website to present these groups and their events
+- [ ] Allow Entropy members to subscribe to particular topics, groups, or
+  everything
+
+*** Discovery
+
+Many times I've found out that there were major tech events being organized in
+the city that I found out about only too late. e.g PEC organize hackathons,
+Google and Microsoft occasionally do conferences (marketing fests, but still
+good places to socialize with other techies).
+
+Automated aggregation suggested in Fragmentation problem can probably not solve
+this. We need to build some infra to allow vigilant members to add such events
+manually.
+
+**** Action Items
+- [ ] Prepare a list of common organizers of tech events in the city
+- [ ] Add a form on the website to manually create an event on Entropy's site
+
+
+*** Too few people
+
+A major problem perhaps is that there are simply not enough people in
+Chandigarh. That means even less people that do technical work, and only a part
+of that already small population can manage to participate in tech groups.
+
+We can tackle this problem from multiple fronts.
+
+- Broaden the area. Instead of limiting to people living in Chandigarh, we can
+  be a community of people who can visit, or want to visit, or just care about
+  Chandigarh. This means making the offline meetups a small part of the
+  community, and putting more emphasis on building an online space *around* the
+  city.
+- IMs and forums. These are how internet has historically organized communities.
+  We can start by creating a presence on multiple mediums, and bridging these
+  together and with existing chat groups.
+
+**** Action items
+- [ ] Create an Entropy matrix channel
+- [ ] Create an Entropy IRC channel
+- [ ] Create an Entropy discord group
+- [ ] Create an Entropy telegram group
+- [ ] Bridge all Entropy chat mediums via bots
+- [ ] Prepare a list of all the chat groups related to Chandigarh and technology
+- [ ] Bridge Entropy channels with all the chat groups. Give an option for the
+  groups to opt out of incoming and outgoing messages to Entropy bridge
+
+*** Few online activities to participate in
+
+Some wild ideas which can allow people to participate easily:
+1. Study groups
+
+   Pick a book, meet online weekly, discuss and chat about it.
+
+2. Group projects
+
+   Entropy itself can be the first such project. We can expand Entropy's open
+   participation. Build features to allow members to add problems they want
+   Entropy to help solve. This will then involve discussion with other members,
+   deciding a game-plan and executing it. We could perhaps use something like
+   [[https://www.loomio.org/][Loom]] for a democratic process for this.
+
+   Entropy site can also have other lists hackers find useful. e.g a list of
+   nearby places that can be used as work-from-X getaways.
+
+3. Showcase
+
+   Showcase your projects, achievements, blog posts on Entropy website
+
+4. Travel Hack events/workshops
+
+   We can organize travel-hack events and/or workshops where a group of people
+   sign up to travel to some nice place (e.g a nearby hill-station), and attend
+   a workshop on something they like.
