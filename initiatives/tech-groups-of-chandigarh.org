@@ -1,0 +1,106 @@
+Let's prepare an exhaustive list of all the tech groups which are operating in
+vicinity of Chandigarh.
+
+* Meetup.com
+
+Meetup.com is a platform where anyone can create a meetup group and start
+hosting events. There are a number of groups here, and it is likely that new
+groups keep popping up. Along with creating a list of meetup.com groups, we
+should also devise a way to periodically find out new groups.
+
+** Discovering new groups
+
+When searching for groups by city (~100M of Chandigarh), almost all groups that
+come up are technical. We should set up a scraper to scrap data from these
+groups. Discovering new groups can look like this:
+
+1. Scrap the meetup [[https://www.meetup.com/find/?allMeetups=true&radius=100&userFreeform=Chandigarh%2C%20India&mcId=z1018132&mcName=Chandigarh%2C%20IN&sort=recommended&eventFilter=mysugg&location=in--chandigarh&source=GROUPS&categoryId=562][search page]]
+2. For every group found from search page, create a =Draft= entry
+3. Create an approval page where a user manually approve the group
+   - This will need an authentication system. For starters, we can make this
+     process "local only", i.e this is supposed to be run locally. This will be
+     a mere convenience for creating a static page in =groups/group-name.md=
+4. Recursively scan users of the groups, and the groups they follow; and add
+   them to drafts as well. It is possible that we miss some ill-configured
+   groups which might be relevant to hackers of Chandigarh.
+
+* Others
+
+- Google Developers Group Chandigarh
+
+  - https://gdg.community.dev/gdg-chandigarh/
+  - https://twitter.com/ChandigarhGdg
+
+- Google Developers Group Jalandhar
+
+  - https://gdg.community.dev/gdg-jalandhar/
+  - https://twitter.com/GDGJalandhar
+  - Seem to be more active than GDG Chandigarh
+
+- Chandigarh Angels Network
+  - Not a meetup/tech group, but an interesting resource to find Chandigarh
+    based startups
+  - https://chandigarhangelsnetwork.com/portfolio/
+
+- TIE Chandigarh
+  - Looks like a bunch of capitalist uncles organizing it to get money out of
+    wannabe entrepreneurs
+  - They are more active on their twitter than their website
+  - Their primary events seem to be paid
+
+  - https://twitter.com/TiEChandigarhs
+  - https://chandigarh.tie.org/
+
+- Java Users Group
+  - Seems to be dead
+  - http://www.chdjug.com/
+
+- Flutter Chandigarh
+
+  - https://flutterchd.web.app/#/
+  - https://twitter.com/flutterchd
+
+- Chandigarh LegalHackers
+  - https://twitter.com/chdlegalhackers
+
+- IxDA Chandigarh
+  - https://twitter.com/IxDA_chd
+
+  - Seems to be dead
+
+- Microsoft Students Chapter
+  - https://mlsctiet.co.in/
+  - https://github.com/MicrosoftStudentChapter
+  - https://www.instagram.com/mlsc_tiet/
+  - https://discord.gg/SABjTp7Qgf
+  - https://www.linkedin.com/company/microsoft-learn-student-chapter/
+  - https://twitter.com/mlsc_tiet?s=09
+  - https://linktr.ee/MLSCTIET
+
+- DevC Chandigarh
+  - https://twitter.com/DevCChandigarh
+  - Seems like Facebook developers thing
+  - Very small, pretty inactive
+
+- Salesforce Chandigarh Women in Tech
+  - Very active with events
+  - https://trailblazercommunitygroups.com/salesforce-women-in-tech-group-chandigarh-india/
+  - https://twitter.com/SF_Chd_WIT
+
+- React Chandigarh
+
+  - https://twitter.com/ReactChandigarh
+    - Subscribed to some bs "unfollow tracker" which keep blasting this twitter
+      when someone unfollows this account
+  - Twitter maintainer: https://twitter.com/sarabs3
+  - https://reactchandigarh.dev/
+    - Dead
+
+- DevTalks India
+  - Same people behind it as "React Chandigarh"
+  - More active than "React Chandigarh"
+
+  - https://twitter.com/devtalksindia
+  - https://www.meetup.com/DevTalks-India/
+  - https://devtalks.in/
+  - https://github.com/Devtalks-India
