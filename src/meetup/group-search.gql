@@ -1,0 +1,116 @@
+query rankedGroups($lat: Float!, $lon: Float!, $categoryId: Int, $first: Int, $after: String, $radius: Int, $visibility: GroupVisibility) {
+  results: rankedGroups(
+    filter: {lat: $lat, lon: $lon, categoryId: $categoryId, radius: $radius, visibility: $visibility}
+    input: {first: $first, after: $after}
+  ) {
+    pageInfo {
+      hasNextPage
+      endCursor
+      __typename
+    }
+    count
+    edges {
+      node {
+        ...GroupCard
+        __typename
+      }
+      recommendationSource
+      recommendationId
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment GroupCard on Group {
+  ...BuildMeetupGroupSearch
+  upcomingEvents: unifiedUpcomingEvents(input: {first: 1}) {
+    count
+    edges {
+      cursor
+      node {
+        ...UpcomingEventDetails
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment BuildMeetupGroupSearch on Group {
+  id
+  name
+  link
+  description
+  link
+  city
+  state
+  country
+  isPrivate
+  groupPhoto {
+    ...PhotoDetails
+    __typename
+  }
+  stats {
+    memberCounts {
+      all
+      __typename
+    }
+    __typename
+  }
+  __typename
+}
+
+fragment PhotoDetails on Image {
+  id
+  baseUrl
+  preview
+  __typename
+}
+
+fragment UpcomingEventDetails on Event {
+  id
+  title
+  eventUrl
+  dateTime
+  isSaved
+  timezone
+  isAttending
+  venue {
+    address
+    city
+    state
+    country
+    __typename
+  }
+  isOnline
+  going
+  maxTickets
+  tickets(input: {first: 3}) {
+    ...TicketsConnection
+    __typename
+  }
+  __typename
+}
+
+fragment TicketsConnection on EventTicketsConnection {
+  count
+  edges {
+    node {
+      id
+      user {
+        id
+        memberPhoto {
+          ...PhotoDetails
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}

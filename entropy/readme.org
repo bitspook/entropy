@@ -1,1 +1,0 @@
-Here starts the source code written for Entropy's main web app.

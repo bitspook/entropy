@@ -19,17 +19,46 @@
         inherit (import "${crate2nix}/tools.nix" { inherit pkgs; })
           generatedCargoNix;
 
-        project = import (generatedCargoNix {
-          name = crateName;
-          src = ./entropy;
-        }) {
-          inherit pkgs;
-          defaultCrateOverrides = pkgs.defaultCrateOverrides // {
-            # Crate dependency overrides go here
+        project = import
+          (generatedCargoNix {
+            name = crateName;
+            src = ./entropy;
+          })
+          {
+            inherit pkgs;
+            defaultCrateOverrides = pkgs.defaultCrateOverrides // {
+              ${crateName} = oldAttrs: {
+                inherit buildInputs;
+              } // buildEnvVars;
+            };
           };
+
+        buildEnvVars = {
+          OPENSSL_STATIC = 1;
         };
+
+        buildInputs = with pkgs; [ openssl.dev ];
+
+        nativeBuildInputs = with pkgs; [
+          nixpkgs-fmt
+          pkgconfig
+          rust-analyzer
+          (rust-bin.stable.latest.default.override {
+            extensions = [
+              "rust-src"
+              "cargo"
+              "rustc"
+              "rust-analysis"
+              "rustfmt"
+              "clippy"
+            ];
+            targets = [ "x86_64-unknown-linux-musl" ];
+          })
+        ];
+
         entropy = project.rootCrate.build;
-      in {
+      in
+      {
         defaultPackage = entropy;
 
         defaultApp = flake-utils.lib.mkApp {
@@ -37,26 +66,10 @@
           name = crateName;
         };
 
-        devShell = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            nixfmt
-            (rust-bin.stable.latest.default.override {
-              extensions = [
-                "rust-src"
-                "cargo"
-                "rustc"
-                "rls"
-                "rust-analysis"
-                "rustfmt"
-                "clippy"
-              ];
-              targets = [ "x86_64-unknown-linux-musl" ];
-            })
-            rust-analyzer
-            clippy
-          ];
-
-          RUST_BACKTRACE = 1;
-        };
+        devShell = pkgs.mkShell
+          ({
+            inherit buildInputs nativeBuildInputs;
+            RUST_BACKTRACE = 1;
+          } // buildEnvVars);
       });
 }
