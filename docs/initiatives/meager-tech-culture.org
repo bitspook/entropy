@@ -25,8 +25,8 @@ One possible solution is to setup an aggregator, which can aggregate content
 from wherever the tech-group operates primarily.
 
 *** Action items
-- [ ] Prepare a list of all the tech groups that associate with Chandigarh [[https://github.com/channikhabra/entropy/issues/2][#2]]
-- [ ] Build an aggregator which can scrap content from above list [[https://github.com/channikhabra/entropy/issues/3][#3]]
+- [X] Prepare a list of all the tech groups that associate with Chandigarh [[https://github.com/channikhabra/entropy/issues/2][#2]]
+- [-] Build an aggregator which can scrap content from above list [[https://github.com/channikhabra/entropy/issues/3][#3]]
 - [ ] Build a website to present these groups and their events [[https://github.com/channikhabra/entropy/issues/1][#1]] [[https://github.com/channikhabra/entropy/issues/3][#4]]
 - [ ] Allow Entropy members to subscribe to particular topics, groups, or
   everything

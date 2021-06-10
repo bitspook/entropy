@@ -11,7 +11,7 @@ deem fit.
 Here is a list of initiatives identifying problems, laying out plan for fixing
 them, and status of what actions are being taken towards the solutions.
 
-- [[./initiatives/meager-tech-culture.org][Meager tech culture]]
+- [[./docs/initiatives/meager-tech-culture.org][Meager tech culture]]
 
   The first problem perhaps is lack of a tech culture in the city. Entropy will
   die down if there are no hackers to participate in it. This document documents
