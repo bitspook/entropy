@@ -1,0 +1,20 @@
+* Request For Comments
+
+This directory contains problems/initiatives/ideas proposed by members of
+Entropy, for which we are still figuring out a plan of action.
+
+Here's list of reasons for which the problem/initiative/idea is kept under this
+directory instead of [[../initiatives][initiatives]]:
+
+1. We are unsure if we want to solve this problem
+
+   A problem might be too personal to the member who added it, and other members
+   are simply not interested in solving it at this point.
+
+2. Problem or problem statement is too vague to be actionable
+
+3. There is no clear course of action for a solution
+
+   A course of action also needs an attainable goal. It is considered best to
+   have something that can be represented with concrete numbers. We can however
+   settle for a clear indicator of change for good.
