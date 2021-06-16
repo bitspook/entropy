@@ -11,6 +11,8 @@ target = "x86_64-unknown-linux-musl"
 tokio = { version = "*", features = ["full"] }
 reqwest = { version =  "*", features = ["cookies", "gzip", "multipart", "json"] }
 url = { version = "^2.2.2", features = ["serde"] }
+diesel = { version = "*", features = ["sqlite"] }
+diesel_migrations = "*"
 serde = "*"
 serde_json = "*"
 urlencoding = "*"

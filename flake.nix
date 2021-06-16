@@ -43,6 +43,9 @@
           nixpkgs-fmt
           pkgconfig
           rust-analyzer
+          sqlite
+          diesel-cli
+          sqlitebrowser
           (rust-bin.stable.latest.default.override {
             extensions = [
               "rust-src"
