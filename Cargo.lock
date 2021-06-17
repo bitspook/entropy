@@ -185,6 +185,7 @@ dependencies = [
  "byteorder",
  "diesel_derives",
  "libsqlite3-sys",
+ "serde_json",
 ]
 
 [[package]]

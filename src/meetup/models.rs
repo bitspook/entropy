@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+use crate::db;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MeetupGroup {
     id: String,
@@ -11,8 +13,26 @@ pub struct MeetupGroup {
     state: String,
     country: String,
     is_private: bool,
-    member_count: u32,
+    member_count: i32,
     photo: Url,
+}
+
+impl MeetupGroup {
+    // TODO Implement proper db serialization instead of this shit
+    pub fn to_db_insertable(self) -> db::models::NewMeetupGroup {
+        db::models::NewMeetupGroup {
+            id: self.id,
+            name: self.name,
+            link: self.link.to_string(),
+            description: self.description,
+            city: self.city,
+            state: self.state,
+            country: self.country,
+            is_private: self.is_private,
+            member_count: self.member_count,
+            photo: self.photo.to_string(),
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]

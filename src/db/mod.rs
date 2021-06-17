@@ -3,8 +3,8 @@ use diesel::sqlite::SqliteConnection;
 use std::env;
 use std::env::VarError;
 
-mod models;
-mod schema;
+pub mod models;
+pub mod schema;
 
 pub fn establish_connection() -> SqliteConnection {
     let default_db_url: Result<String, VarError> = Ok("entropy.sqlite3".to_owned());

@@ -1,8 +1,13 @@
+#[macro_use]
+extern crate diesel;
+
+
 use serde_json as json;
 
+pub mod db;
 mod meetup;
 
-pub use meetup::{Meetup, MeetupResult};
+pub use meetup::{Meetup, MeetupResult, MeetupGroup, MeetupEvent};
 
 // Ideally we should make these variants enforce valid values for lat and lng,
 // but since Coordinates aren't used for anything but passing to meetup API, I

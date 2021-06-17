@@ -4,7 +4,8 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
-use entropy::{Coordinates, Meetup, ScraperMessage, ScraperResult};
+use diesel::{debug_query, prelude::*, replace_into};
+use entropy::{Coordinates, Meetup, MeetupGroup, MeetupResult, ScraperMessage, ScraperResult};
 use reqwest;
 use std::sync::Arc;
 use tokio::{
@@ -43,9 +44,14 @@ async fn main() {
                 println!("Encountered error when searching groups: {:#?}", err)
             }
             ScraperMessage::ResultItem(item) => match item {
-                ScraperResult::Meetup(group) => {
-                    println!("Found group: {:#?}", group);
-                }
+                ScraperResult::Meetup(result) => match result {
+                    MeetupResult::Group(group) => {
+                        process_scraped_meetup_group(group, &db_con).await
+                    }
+                    _ => {
+                        println!("Don't know how to process scraped item: {:#?}", result);
+                    }
+                },
             },
             ScraperMessage::Warning(w) => {
                 println!("Encountered warning: {:#?}", w)
@@ -54,6 +60,23 @@ async fn main() {
     }
 
     handle.await.unwrap();
+}
+
+async fn process_scraped_meetup_group(group: MeetupGroup, conn: &SqliteConnection) {
+    use entropy::db::schema::meetup_groups::dsl::*;
+    let new_group = group.to_db_insertable();
+
+    let query = replace_into(meetup_groups).values(&new_group);
+
+    // let debug = debug_query::<diesel::sqlite::Sqlite, _>(&query);
+    // println!("Making query: {}", debug);
+
+    if let Err(err) = query.execute(conn) {
+        println!(
+            "Failed to insert group \"{}({})\" in db: {:#?}",
+            new_group.name, new_group.id, err
+        );
+    };
 }
 
 async fn search_groups_of_chandigarh(meetup: Arc<Meetup>, tx: Sender<ScraperMessage>) {
