@@ -1,15 +1,18 @@
-use crate::{Coordinates, ScraperError, ScraperMessage, ScraperResult, ScraperWarning};
+use crate::{
+    meetup::util::make_group_events_request, Coordinates, ScraperError, ScraperMessage,
+    ScraperResult, ScraperWarning,
+};
 use reqwest::{self, Client};
 use serde_json as json;
 use tokio::sync::mpsc::Sender;
 use url::Url;
 use urlencoding;
 
-mod gql;
 mod models;
+mod util;
 
-use gql::get_gql_headers;
 pub use models::*;
+use util::get_gql_headers;
 
 #[derive(Debug)]
 pub enum MeetupResult {
@@ -135,6 +138,49 @@ impl Meetup {
                     &self.tx.send(ScraperMessage::Error(err)).await.unwrap();
                 }
             }
+        }
+
+        Ok(())
+    }
+
+    pub async fn fetch_group_events(&self, group_id: String) -> Result<(), ScraperError> {
+        let group_slug = "Chandigarh-Programmers-Club";
+        println!("Fetching events for group: {}", group_slug);
+        let warning = ScraperWarning::FailedPresumption("Lola bro what a joke".to_owned());
+
+        let request = make_group_events_request(&self.client, group_slug.to_string());
+
+        let resp = request.send().await?.text().await?;
+        let resp: json::Value = json::from_str(&resp)?;
+        let resp = resp["responses"].as_array().ok_or_else(|| {
+            ScraperError::UnknownResponseError("Events response didn't return a list".to_owned())
+        })?;
+        let events = resp
+            .iter()
+            .find(|r| {
+                r["ref"]
+                    .as_str()
+                    .unwrap()
+                    .to_lowercase()
+                    .contains(&format!("events_{}", group_slug.to_lowercase()))
+            })
+            .ok_or_else(|| {
+                ScraperError::UnknownResponseError(
+                    "Events response provided no events for group".to_owned(),
+                )
+            })?;
+        let events = events["value"].as_array().ok_or_else(|| {
+            ScraperError::UnknownResponseError("events.<slug>.value is not a list".to_owned())
+        })?;
+
+        for event in events.iter() {
+            let event: MeetupEvent = json::from_value(event.to_owned()).map_err(|err| {
+                ScraperError::JsonParseError(err, Some("Converting JSON to Event".to_owned()))
+            })?;
+
+            let msg = ScraperMessage::ResultItem(ScraperResult::Meetup(MeetupResult::Event(event)));
+
+            self.tx.send(msg).await.unwrap();
         }
 
         Ok(())

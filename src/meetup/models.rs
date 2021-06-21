@@ -1,3 +1,4 @@
+use chrono::{DateTime, TimeZone};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -37,14 +38,33 @@ impl MeetupGroup {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct MeetupEvent {
+   pub created: i64,
+   pub updated: i64,
+   pub duration: Option<i32>,
+   pub id: String,
+   pub name: String,
+   pub status: String,
+   pub time: i64,
+   pub local_date: String,
+   pub local_time: String,
+   pub utc_offset: i32,
+   pub is_online_event: bool,
+   pub link: Url,
+   pub description: Option<String>,
+   pub how_to_find_us: Option<String>,
+   pub visibility: String,
+   pub member_pay_fee: bool,
+   pub venue_visibility: String
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct MeetupVenue {
     id: String,
-    title: String,
-    event_url: Url,
-    date_time: String,
-    is_saved: bool,
-    timezone: String,
-    venue: Option<String>,
-    is_online: bool,
-    going_count: u32,
-    max_tickets: u32,
+    name: String,
+    lat: f32,
+    lon: f32,
+    repinned: bool,
+    city: String,
+    country: String,
+    localized_country_name: String,
 }

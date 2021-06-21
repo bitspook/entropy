@@ -31,11 +31,13 @@ async fn main() {
 
     let (tx, mut rx): (Sender<ScraperMessage>, Receiver<ScraperMessage>) = mpsc::channel(1024);
 
-    let meetup = Meetup::new(client.clone(), tx.clone());
-    let meetup = Arc::new(meetup);
+    // let meetup = Meetup::new(client.clone(), tx.clone());
+    // let meetup = Arc::new(meetup);
 
-    let handle = tokio::spawn(async move {
-        search_groups_of_chandigarh(meetup, tx).await;
+    tokio::spawn(async move {
+        let meetup = Meetup::new(client.clone(), tx.clone());
+        // search_groups_of_chandigarh(meetup, tx).await;
+        meetup.fetch_group_events("1".to_owned()).await.unwrap();
     });
 
     while let Some(msg) = rx.recv().await {
@@ -48,6 +50,9 @@ async fn main() {
                     MeetupResult::Group(group) => {
                         process_scraped_meetup_group(group, &db_con).await
                     }
+                    MeetupResult::Event(event) => {
+                        println!("Found Event: {}", event.name);
+                    }
                     _ => {
                         println!("Don't know how to process scraped item: {:#?}", result);
                     }
@@ -58,8 +63,6 @@ async fn main() {
             }
         }
     }
-
-    handle.await.unwrap();
 }
 
 async fn process_scraped_meetup_group(group: MeetupGroup, conn: &SqliteConnection) {
