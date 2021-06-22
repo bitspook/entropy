@@ -7,7 +7,7 @@ extern crate diesel_migrations;
 use diesel::{prelude::*, replace_into};
 use entropy::{Coordinates, Meetup, MeetupGroup, MeetupResult, ScraperMessage, ScraperResult};
 use env_logger::Env;
-use log::{error, info, warn};
+use log::{debug, error, info, warn};
 use reqwest;
 use std::sync::Arc;
 use tokio::{
@@ -21,7 +21,7 @@ embed_migrations!();
 
 fn mk_logger() {
     let env = Env::default()
-        .filter_or("ENTROPY_LOG_LEVEL", "trace")
+        .filter_or("ENTROPY_LOG_LEVEL", "debug")
         .write_style_or("ENTROPY_LOG_STYLE", "always");
 
     env_logger::init_from_env(env);
@@ -43,15 +43,12 @@ async fn main() {
 
     let (tx, mut rx): (Sender<ScraperMessage>, Receiver<ScraperMessage>) = mpsc::channel(1024);
 
-    // let meetup = Meetup::new(client.clone(), tx.clone());
-    // let meetup = Arc::new(meetup);
+    let meetup = Meetup::new(client.clone(), tx.clone());
+    let meetup = Arc::new(meetup);
 
+    let meetup2 = meetup.clone();
     tokio::spawn(async move {
-        let meetup = Meetup::new(client.clone(), tx.clone());
-        // search_groups_of_chandigarh(meetup, tx).await;
-
-        let slug = "Chandigarh-Programmers-Club".to_owned();
-        meetup.fetch_group_events(slug).await.unwrap();
+        search_groups_of_chandigarh(meetup2, tx).await;
     });
 
     while let Some(msg) = rx.recv().await {
@@ -62,7 +59,13 @@ async fn main() {
             ScraperMessage::ResultItem(item) => match item {
                 ScraperResult::Meetup(result) => match result {
                     MeetupResult::Group(group) => {
-                        process_scraped_meetup_group(group, &db_con).await
+                        let slug = group.slug();
+                        process_scraped_meetup_group(group, &db_con).await;
+
+                        let meetup = meetup.clone();
+                        tokio::spawn(async move {
+                            meetup.fetch_group_events(slug).await.unwrap();
+                        });
                     }
                     MeetupResult::Event(event) => {
                         info!("Found Event: {}", event.name);
@@ -86,11 +89,15 @@ async fn process_scraped_meetup_group(group: MeetupGroup, conn: &SqliteConnectio
     // debug!("Making query: {}", debug);
 
     if let Err(err) = query.execute(conn) {
-        println!(
+        error!(
             "Failed to insert group \"{}({})\" in db: {:#?}",
             new_group.name, new_group.id, err
         );
-    };
+
+        return;
+    }
+
+    debug!("Saved group in database: {}", new_group.name);
 }
 
 async fn search_groups_of_chandigarh(meetup: Arc<Meetup>, tx: Sender<ScraperMessage>) {

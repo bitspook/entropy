@@ -34,6 +34,10 @@ impl MeetupGroup {
             photo: self.photo.to_string(),
         }
     }
+
+    pub fn slug(&self) -> String {
+        self.link.path().replace("/", "")
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
