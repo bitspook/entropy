@@ -4,8 +4,10 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
-use diesel::{debug_query, prelude::*, replace_into};
+use diesel::{prelude::*, replace_into};
 use entropy::{Coordinates, Meetup, MeetupGroup, MeetupResult, ScraperMessage, ScraperResult};
+use env_logger::Env;
+use log::{error, info, warn};
 use reqwest;
 use std::sync::Arc;
 use tokio::{
@@ -17,8 +19,18 @@ mod db;
 
 embed_migrations!();
 
+fn mk_logger() {
+    let env = Env::default()
+        .filter_or("ENTROPY_LOG_LEVEL", "trace")
+        .write_style_or("ENTROPY_LOG_STYLE", "always");
+
+    env_logger::init_from_env(env);
+}
+
 #[tokio::main]
 async fn main() {
+    mk_logger();
+
     let user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0";
 
     let db_con = db::establish_connection();
@@ -37,13 +49,15 @@ async fn main() {
     tokio::spawn(async move {
         let meetup = Meetup::new(client.clone(), tx.clone());
         // search_groups_of_chandigarh(meetup, tx).await;
-        meetup.fetch_group_events("1".to_owned()).await.unwrap();
+
+        let slug = "Chandigarh-Programmers-Club".to_owned();
+        meetup.fetch_group_events(slug).await.unwrap();
     });
 
     while let Some(msg) = rx.recv().await {
         match msg {
             ScraperMessage::Error(err) => {
-                println!("Encountered error when searching groups: {:#?}", err)
+                error!("Encountered error when searching groups: {:#?}", err)
             }
             ScraperMessage::ResultItem(item) => match item {
                 ScraperResult::Meetup(result) => match result {
@@ -51,15 +65,12 @@ async fn main() {
                         process_scraped_meetup_group(group, &db_con).await
                     }
                     MeetupResult::Event(event) => {
-                        println!("Found Event: {}", event.name);
-                    }
-                    _ => {
-                        println!("Don't know how to process scraped item: {:#?}", result);
+                        info!("Found Event: {}", event.name);
                     }
                 },
             },
             ScraperMessage::Warning(w) => {
-                println!("Encountered warning: {:#?}", w)
+                warn!("Encountered warning: {:#?}", w)
             }
         }
     }
@@ -72,7 +83,7 @@ async fn process_scraped_meetup_group(group: MeetupGroup, conn: &SqliteConnectio
     let query = replace_into(meetup_groups).values(&new_group);
 
     // let debug = debug_query::<diesel::sqlite::Sqlite, _>(&query);
-    // println!("Making query: {}", debug);
+    // debug!("Making query: {}", debug);
 
     if let Err(err) = query.execute(conn) {
         println!(

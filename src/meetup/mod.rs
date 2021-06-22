@@ -2,6 +2,7 @@ use crate::{
     meetup::util::make_group_events_request, Coordinates, ScraperError, ScraperMessage,
     ScraperResult, ScraperWarning,
 };
+use log::debug;
 use reqwest::{self, Client};
 use serde_json as json;
 use tokio::sync::mpsc::Sender;
@@ -53,6 +54,7 @@ impl Meetup {
            "query": include_str!("./group-search.gql")
         });
 
+        debug!("Searching groups with coordinates: {:?}, query: {}", coordinates, query);
         let resp = &self
             .client
             .post(gql_url)
@@ -143,11 +145,8 @@ impl Meetup {
         Ok(())
     }
 
-    pub async fn fetch_group_events(&self, group_id: String) -> Result<(), ScraperError> {
-        let group_slug = "Chandigarh-Programmers-Club";
-        println!("Fetching events for group: {}", group_slug);
-        let warning = ScraperWarning::FailedPresumption("Lola bro what a joke".to_owned());
-
+    pub async fn fetch_group_events(&self, group_slug: String) -> Result<(), ScraperError> {
+        debug!("Fetching events for group: {}", group_slug);
         let request = make_group_events_request(&self.client, group_slug.to_string());
 
         let resp = request.send().await?.text().await?;
@@ -172,6 +171,7 @@ impl Meetup {
         let events = events["value"].as_array().ok_or_else(|| {
             ScraperError::UnknownResponseError("events.<slug>.value is not a list".to_owned())
         })?;
+        debug!("Found {} events for {}", events.len(), group_slug);
 
         for event in events.iter() {
             let event: MeetupEvent = json::from_value(event.to_owned()).map_err(|err| {

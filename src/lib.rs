@@ -12,6 +12,7 @@ pub use meetup::{Meetup, MeetupResult, MeetupGroup, MeetupEvent};
 // Ideally we should make these variants enforce valid values for lat and lng,
 // but since Coordinates aren't used for anything but passing to meetup API, I
 // am keeping them as loose f32s
+#[derive(Debug)]
 pub struct Coordinates {
     lat: f32,
     lng: f32,
