@@ -1,5 +1,6 @@
 CREATE TABLE meetup_events (
   id VARCHAR PRIMARY KEY NOT NULL,
+  group_id VARCHAR NOT NULL,
   created DATETIME NOT NULL,
   updated DATETIME NOT null,
   duration INTEGER,
@@ -15,5 +16,6 @@ CREATE TABLE meetup_events (
   how_to_find_us VARCHAR,
   visibility VARCHAR,
   member_pay_fee BOOLEAN,
-  venue_visibility VARCHAR
+  venue_visibility VARCHAR,
+  FOREIGN KEY(group_id) REFERENCES meetup_groups(id)
 );

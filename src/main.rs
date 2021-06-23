@@ -59,11 +59,12 @@ async fn main() {
                 ScraperResult::Meetup(result) => match result {
                     MeetupResult::Group(group) => {
                         let slug = group.slug();
+                        let group_id = group.id.clone();
                         process_scraped_meetup_group(group, &db_con).await;
 
                         let meetup = meetup.clone();
                         tokio::spawn(async move {
-                            meetup.fetch_group_events(slug).await;
+                            meetup.fetch_group_events(slug, group_id).await;
                         });
                     }
                     MeetupResult::Event(event) => {

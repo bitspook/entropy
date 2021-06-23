@@ -1,6 +1,7 @@
 table! {
     meetup_events (id) {
         id -> Text,
+        group_id -> Text,
         created -> Timestamp,
         updated -> Timestamp,
         duration -> Nullable<Integer>,
@@ -34,6 +35,8 @@ table! {
         photo -> Nullable<Text>,
     }
 }
+
+joinable!(meetup_events -> meetup_groups (group_id));
 
 allow_tables_to_appear_in_same_query!(
     meetup_events,

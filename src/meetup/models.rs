@@ -6,7 +6,7 @@ use crate::db;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MeetupGroup {
-    id: String,
+    pub id: String,
     name: String,
     link: Url,
     description: String,
@@ -59,6 +59,7 @@ pub struct MeetupEvent {
     visibility: String,
     member_pay_fee: bool,
     venue_visibility: String,
+    group_id: String,
 }
 
 impl MeetupEvent {
@@ -81,6 +82,7 @@ impl MeetupEvent {
             visibility: self.visibility,
             member_pay_fee: self.member_pay_fee,
             venue_visibility: self.venue_visibility,
+            group_id: self.group_id
         }
     }
 }

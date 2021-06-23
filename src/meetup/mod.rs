@@ -1,4 +1,4 @@
-use crate::{Coordinates, ScraperError, ScraperMessage, ScraperResult, ScraperWarning, meetup::util::{fix_meetup_datetime, make_group_events_request}};
+use crate::{Coordinates, ScraperError, ScraperMessage, ScraperResult, ScraperWarning, meetup::util::{fix_meetup_datetime, make_group_events_request, make_meetup_image_url}};
 use chrono::{DateTime, NaiveDateTime, Offset, TimeZone, Utc};
 use log::debug;
 use reqwest::{self, Client};
@@ -146,7 +146,7 @@ impl Meetup {
         Ok(())
     }
 
-    async fn _fetch_group_events(&self, group_slug: String) -> Result<(), ScraperError> {
+    async fn _fetch_group_events(&self, group_slug: String, group_id: String) -> Result<(), ScraperError> {
         debug!("Fetching events for group: {}", group_slug);
         let request = make_group_events_request(&self.client, group_slug.to_string());
 
@@ -177,6 +177,7 @@ impl Meetup {
         for event in events.iter() {
             let mut event = event.clone();
             fix_meetup_datetime(&mut event, vec!["created", "updated", "time"])?;
+            event["group_id"] = json::Value::String(group_id.clone());
 
             let event: MeetupEvent = json::from_value(event).map_err(|err| {
                 ScraperError::JsonParseError(err, Some("Converting JSON to Event".to_owned()))
@@ -190,8 +191,8 @@ impl Meetup {
         Ok(())
     }
 
-    pub async fn fetch_group_events(&self, group_slug: String) {
-        if let Err(err) = self._fetch_group_events(group_slug).await {
+    pub async fn fetch_group_events(&self, group_slug: String, group_id: String) {
+        if let Err(err) = self._fetch_group_events(group_slug, group_id).await {
             self.tx.send(ScraperMessage::Error(err)).await.unwrap();
         }
     }

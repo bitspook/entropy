@@ -13,11 +13,11 @@ pub struct MeetupGroup {
     pub country: String,
     pub is_private: bool,
     pub member_count: i32,
-    pub photo: String
+    pub photo: String,
 }
 
 #[derive(Debug, Insertable)]
-#[table_name="meetup_groups"]
+#[table_name = "meetup_groups"]
 pub struct NewMeetupGroup {
     pub id: String,
     pub name: String,
@@ -28,11 +28,11 @@ pub struct NewMeetupGroup {
     pub country: String,
     pub is_private: bool,
     pub member_count: i32,
-    pub photo: String
+    pub photo: String,
 }
 
 #[derive(Queryable, Insertable, Debug)]
-#[table_name="meetup_events"]
+#[table_name = "meetup_events"]
 pub struct MeetupEvent {
     pub id: String,
     pub created: NaiveDateTime,
@@ -50,5 +50,6 @@ pub struct MeetupEvent {
     pub how_to_find_us: Option<String>,
     pub visibility: String,
     pub member_pay_fee: bool,
-    pub venue_visibility: String
+    pub venue_visibility: String,
+    pub group_id: String,
 }
