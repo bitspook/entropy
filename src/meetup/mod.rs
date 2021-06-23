@@ -1,7 +1,5 @@
-use crate::{
-    meetup::util::make_group_events_request, Coordinates, ScraperError, ScraperMessage,
-    ScraperResult, ScraperWarning,
-};
+use crate::{Coordinates, ScraperError, ScraperMessage, ScraperResult, ScraperWarning, meetup::util::{fix_meetup_datetime, make_group_events_request}};
+use chrono::{DateTime, NaiveDateTime, Offset, TimeZone, Utc};
 use log::debug;
 use reqwest::{self, Client};
 use serde_json as json;
@@ -54,7 +52,10 @@ impl Meetup {
            "query": include_str!("./group-search.gql")
         });
 
-        debug!("Searching groups with coordinates: {:?}, query: {}", coordinates, query);
+        debug!(
+            "Searching groups with coordinates: {:?}, query: {}",
+            coordinates, query
+        );
         let resp = &self
             .client
             .post(gql_url)
@@ -145,7 +146,7 @@ impl Meetup {
         Ok(())
     }
 
-    pub async fn fetch_group_events(&self, group_slug: String) -> Result<(), ScraperError> {
+    async fn _fetch_group_events(&self, group_slug: String) -> Result<(), ScraperError> {
         debug!("Fetching events for group: {}", group_slug);
         let request = make_group_events_request(&self.client, group_slug.to_string());
 
@@ -174,7 +175,10 @@ impl Meetup {
         debug!("Found {} events for {}", events.len(), group_slug);
 
         for event in events.iter() {
-            let event: MeetupEvent = json::from_value(event.to_owned()).map_err(|err| {
+            let mut event = event.clone();
+            fix_meetup_datetime(&mut event, vec!["created", "updated", "time"])?;
+
+            let event: MeetupEvent = json::from_value(event).map_err(|err| {
                 ScraperError::JsonParseError(err, Some("Converting JSON to Event".to_owned()))
             })?;
 
@@ -185,17 +189,12 @@ impl Meetup {
 
         Ok(())
     }
-}
 
-pub fn make_meetup_image_url(base_url: &Url, id: &str) -> Url {
-    let mut url = base_url.clone();
-    url.set_path(id);
-    url.query_pairs_mut()
-        .append_pair("url", &urlencoding::encode(base_url.as_str())[..])
-        .append_pair("w", "1920")
-        .append_pair("q", "100");
-
-    url
+    pub async fn fetch_group_events(&self, group_slug: String) {
+        if let Err(err) = self._fetch_group_events(group_slug).await {
+            self.tx.send(ScraperMessage::Error(err)).await.unwrap();
+        }
+    }
 }
 
 impl From<reqwest::Error> for ScraperError {

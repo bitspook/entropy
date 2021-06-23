@@ -1,4 +1,4 @@
-use chrono::{DateTime, TimeZone};
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -42,23 +42,47 @@ impl MeetupGroup {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct MeetupEvent {
-   pub created: i64,
-   pub updated: i64,
-   pub duration: Option<i32>,
-   pub id: String,
-   pub name: String,
-   pub status: String,
-   pub time: i64,
-   pub local_date: String,
-   pub local_time: String,
-   pub utc_offset: i32,
-   pub is_online_event: bool,
-   pub link: Url,
-   pub description: Option<String>,
-   pub how_to_find_us: Option<String>,
-   pub visibility: String,
-   pub member_pay_fee: bool,
-   pub venue_visibility: String
+    created: DateTime<Utc>,
+    updated: DateTime<Utc>,
+    duration: Option<i32>,
+    id: String,
+    name: String,
+    status: String,
+    time: DateTime<Utc>,
+    local_date: String,
+    local_time: String,
+    utc_offset: i32,
+    is_online_event: bool,
+    link: Url,
+    description: Option<String>,
+    how_to_find_us: Option<String>,
+    visibility: String,
+    member_pay_fee: bool,
+    venue_visibility: String,
+}
+
+impl MeetupEvent {
+    pub fn to_db_insertable(self) -> db::models::MeetupEvent {
+        db::models::MeetupEvent {
+            created: self.created.naive_utc(),
+            updated: self.updated.naive_utc(),
+            duration: self.duration.into(),
+            id: self.id,
+            name: self.name,
+            status: self.status,
+            time: self.time.naive_utc(),
+            local_date: self.local_date,
+            local_time: self.local_time,
+            utc_offset: self.utc_offset,
+            is_online_event: self.is_online_event,
+            link: self.link.to_string(),
+            description: self.description,
+            how_to_find_us: self.how_to_find_us,
+            visibility: self.visibility,
+            member_pay_fee: self.member_pay_fee,
+            venue_visibility: self.venue_visibility,
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]

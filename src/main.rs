@@ -5,9 +5,9 @@ extern crate diesel;
 extern crate diesel_migrations;
 
 use diesel::{prelude::*, replace_into};
-use entropy::{Coordinates, Meetup, MeetupGroup, MeetupResult, ScraperMessage, ScraperResult};
+use entropy::{Coordinates, Meetup, MeetupEvent, MeetupGroup, MeetupResult, ScraperMessage, ScraperResult};
 use env_logger::Env;
-use log::{debug, error, info, warn};
+use log::{debug, error, warn};
 use reqwest;
 use std::sync::Arc;
 use tokio::{
@@ -43,8 +43,7 @@ async fn main() {
 
     let (tx, mut rx): (Sender<ScraperMessage>, Receiver<ScraperMessage>) = mpsc::channel(1024);
 
-    let meetup = Meetup::new(client.clone(), tx.clone());
-    let meetup = Arc::new(meetup);
+    let meetup = Arc::new(Meetup::new(client.clone(), tx.clone()));
 
     let meetup2 = meetup.clone();
     tokio::spawn(async move {
@@ -64,11 +63,11 @@ async fn main() {
 
                         let meetup = meetup.clone();
                         tokio::spawn(async move {
-                            meetup.fetch_group_events(slug).await.unwrap();
+                            meetup.fetch_group_events(slug).await;
                         });
                     }
                     MeetupResult::Event(event) => {
-                        info!("Found Event: {}", event.name);
+                        process_scraped_meetup_event(event, &db_con).await;
                     }
                 },
             },
@@ -98,6 +97,27 @@ async fn process_scraped_meetup_group(group: MeetupGroup, conn: &SqliteConnectio
     }
 
     debug!("Saved group in database: {}", new_group.name);
+}
+
+async fn process_scraped_meetup_event(event: MeetupEvent, conn: &SqliteConnection) {
+    use entropy::db::schema::meetup_events::dsl::*;
+    let new_event = event.to_db_insertable();
+
+    let query = replace_into(meetup_events).values(&new_event);
+
+    // let debug = debug_query::<diesel::sqlite::Sqlite, _>(&query);
+    // debug!("Making query: {}", debug);
+
+    if let Err(err) = query.execute(conn) {
+        error!(
+            "Failed to insert event \"{}({})\" in db: {:#?}",
+            new_event.name, new_event.id, err
+        );
+
+        return;
+    }
+
+    debug!("Saved event in database: {}", new_event.name);
 }
 
 async fn search_groups_of_chandigarh(meetup: Arc<Meetup>, tx: Sender<ScraperMessage>) {
