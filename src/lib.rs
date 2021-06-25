@@ -25,13 +25,13 @@ impl Coordinates {
 }
 
 #[derive(Debug)]
-pub enum ScraperResult {
+pub enum PoachedResult {
     Meetup(MeetupResult)
 }
 
 #[derive(Debug)]
-pub enum ScraperMessage {
-    ResultItem(ScraperResult),
+pub enum PoacherMessage {
+    ResultItem(PoachedResult),
     Error(ScraperError),
     Warning(ScraperWarning)
 }

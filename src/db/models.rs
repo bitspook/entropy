@@ -1,4 +1,4 @@
-use chrono::{DateTime, Duration, NaiveDateTime, Utc};
+use chrono::NaiveDateTime;
 
 use super::schema::*;
 

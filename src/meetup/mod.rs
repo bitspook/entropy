@@ -1,4 +1,4 @@
-use crate::{Coordinates, ScraperError, ScraperMessage, ScraperResult, ScraperWarning, meetup::util::{fix_meetup_datetime, make_group_events_request, make_meetup_image_url}};
+use crate::{Coordinates, ScraperError, PoacherMessage, PoachedResult, ScraperWarning, meetup::util::{fix_meetup_datetime, make_group_events_request, make_meetup_image_url}};
 use chrono::{DateTime, NaiveDateTime, Offset, TimeZone, Utc};
 use log::debug;
 use reqwest::{self, Client};
@@ -21,11 +21,11 @@ pub enum MeetupResult {
 
 pub struct Meetup {
     client: Client,
-    tx: Sender<ScraperMessage>,
+    tx: Sender<PoacherMessage>,
 }
 
 impl Meetup {
-    pub fn new(client: Client, tx: Sender<ScraperMessage>) -> Self {
+    pub fn new(client: Client, tx: Sender<PoacherMessage>) -> Self {
         Meetup { client, tx }
     }
 
@@ -33,6 +33,7 @@ impl Meetup {
         &self,
         coordinates: &Coordinates,
         query: &str,
+        radius: u32
     ) -> Result<(), ScraperError> {
         let gql_url = "https://www.meetup.com/gql";
         let gql_headers = get_gql_headers();
@@ -46,7 +47,7 @@ impl Meetup {
                 "categoryId": null,
                 "lat": coordinates.lat,
                 "lon": coordinates.lng,
-                "radius": 100,
+                "radius": radius,
                 "query": query
             },
            "query": include_str!("./group-search.gql")
@@ -80,7 +81,7 @@ impl Meetup {
             let warning = ScraperWarning::FailedPresumption(
                 "Groups search has next page to fetch".to_string(),
             );
-            &self.tx.send(ScraperMessage::Warning(warning));
+            &self.tx.send(PoacherMessage::Warning(warning));
         }
 
         let groups = results["edges"]
@@ -129,16 +130,16 @@ impl Meetup {
             match group {
                 Ok(group) => {
                     let item = MeetupResult::Group(group);
-                    let item = ScraperResult::Meetup(item);
+                    let item = PoachedResult::Meetup(item);
                     &self
                         .tx
-                        .send(ScraperMessage::ResultItem(item))
+                        .send(PoacherMessage::ResultItem(item))
                         .await
                         // if receiver is closed, let's panic
                         .unwrap();
                 }
                 Err(err) => {
-                    &self.tx.send(ScraperMessage::Error(err)).await.unwrap();
+                    &self.tx.send(PoacherMessage::Error(err)).await.unwrap();
                 }
             }
         }
@@ -183,7 +184,7 @@ impl Meetup {
                 ScraperError::JsonParseError(err, Some("Converting JSON to Event".to_owned()))
             })?;
 
-            let msg = ScraperMessage::ResultItem(ScraperResult::Meetup(MeetupResult::Event(event)));
+            let msg = PoacherMessage::ResultItem(PoachedResult::Meetup(MeetupResult::Event(event)));
 
             self.tx.send(msg).await.unwrap();
         }
@@ -193,7 +194,7 @@ impl Meetup {
 
     pub async fn fetch_group_events(&self, group_slug: String, group_id: String) {
         if let Err(err) = self._fetch_group_events(group_slug, group_id).await {
-            self.tx.send(ScraperMessage::Error(err)).await.unwrap();
+            self.tx.send(PoacherMessage::Error(err)).await.unwrap();
         }
     }
 }
