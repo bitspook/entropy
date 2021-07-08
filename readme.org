@@ -26,3 +26,8 @@ to build an action plan for. Such thoughts should go through an RFC process,
 where these problems are discussed, refined (ideally an action plan is drafted),
 and if we can reach a consensus that we as a group want to associate with the
 idea/problem-and-its-solution, then it is moved to [[./docs/initiatives][initiatives]].
+
+* Chat 
+
+- Matrix Space: https://matrix.to/#/!EJjSPytjXwjJyODGWC:matrix.org?via=matrix.org
+- Telegram Group: https://t.me/joinchat/QiQGasCqA205OWM9
