@@ -11,7 +11,7 @@ use entropy::{
 use env_logger::Env;
 use log::{debug, error, warn};
 use reqwest;
-use std::{io::Error, process::{exit}, sync::Arc};
+use std::{io::Error, process::exit, sync::Arc};
 use structopt::StructOpt;
 use tokio::{
     self,
@@ -180,7 +180,14 @@ async fn search_groups_of_chandigarh(meetup: Arc<Meetup>, tx: Sender<PoacherMess
     // Meetup's search is trash. A lot of meetup groups get left out when searching by location because
     // Searching for following queries give better results for meetup groups of city
     // apparently all the search terms can be given in a single query, seperated by ", "
-    let search_terms = vec!["chandigarh", "tricity", "mohali", "punjab"];
+    let search_terms = vec![
+        "chandigarh",
+        "tricity",
+        "mohali",
+        "punjab",
+        "hack",
+        "security"
+    ];
     let chd_coords = Arc::new(Coordinates::new(30.75, 76.78));
     let radius = 100;
 
@@ -190,7 +197,11 @@ async fn search_groups_of_chandigarh(meetup: Arc<Meetup>, tx: Sender<PoacherMess
         let tx = tx.clone();
 
         tokio::spawn(async move {
-            if let Err(err) = meetup.as_ref().search_groups(&chd_coords, term, radius).await {
+            if let Err(err) = meetup
+                .as_ref()
+                .search_groups(&chd_coords, term, radius)
+                .await
+            {
                 tx.send(PoacherMessage::Error(err)).await.unwrap();
             };
         });

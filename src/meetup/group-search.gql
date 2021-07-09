@@ -1,7 +1,7 @@
-query rankedGroups($lat: Float!, $lon: Float!, $categoryId: Int, $first: Int, $after: String, $radius: Int, $visibility: GroupVisibility) {
-  results: rankedGroups(
-    filter: {lat: $lat, lon: $lon, categoryId: $categoryId, radius: $radius, visibility: $visibility}
+query groupSearch($first: Int, $after: String, $query: String!, $lat: Float!, $lon: Float!, $radius: Int, $source: [SearchSources!]!, $categoryId: Int) {
+  results: keywordSearch(
     input: {first: $first, after: $after}
+    filter: {query: $query, lat: $lat, lon: $lon, source: $source, radius: $radius, categoryId: $categoryId}
   ) {
     pageInfo {
       hasNextPage
@@ -11,7 +11,14 @@ query rankedGroups($lat: Float!, $lon: Float!, $categoryId: Int, $first: Int, $a
     count
     edges {
       node {
-        ...GroupCard
+        id
+        result {
+          ... on Group {
+            ...BuildMeetupGroupSearch
+            __typename
+          }
+          __typename
+        }
         __typename
       }
       recommendationSource
@@ -20,23 +27,6 @@ query rankedGroups($lat: Float!, $lon: Float!, $categoryId: Int, $first: Int, $a
     }
     __typename
   }
-}
-
-fragment GroupCard on Group {
-  ...BuildMeetupGroupSearch
-  upcomingEvents: unifiedUpcomingEvents(input: {first: 1}) {
-    count
-    edges {
-      cursor
-      node {
-        ...UpcomingEventDetails
-        __typename
-      }
-      __typename
-    }
-    __typename
-  }
-  __typename
 }
 
 fragment BuildMeetupGroupSearch on Group {
@@ -67,50 +57,5 @@ fragment PhotoDetails on Image {
   id
   baseUrl
   preview
-  __typename
-}
-
-fragment UpcomingEventDetails on Event {
-  id
-  title
-  eventUrl
-  dateTime
-  isSaved
-  timezone
-  isAttending
-  venue {
-    address
-    city
-    state
-    country
-    __typename
-  }
-  isOnline
-  going
-  maxTickets
-  tickets(input: {first: 3}) {
-    ...TicketsConnection
-    __typename
-  }
-  __typename
-}
-
-fragment TicketsConnection on EventTicketsConnection {
-  count
-  edges {
-    node {
-      id
-      user {
-        id
-        memberPhoto {
-          ...PhotoDetails
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    __typename
-  }
   __typename
 }

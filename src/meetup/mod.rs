@@ -41,14 +41,15 @@ impl Meetup {
         // This API don't have a pagination limit, but ~2000 records make the server give internal-server-error
         // Chandigarh has ~50 groups in total, so 1000 is a safe number to ask for
         let req_body: json::Value = json::json!({
-            "operationName": "rankedGroups",
+            "operationName": "groupSearch",
             "variables": {
                 "first": 1000,
                 "categoryId": null,
                 "lat": coordinates.lat,
                 "lon": coordinates.lng,
                 "radius": radius,
-                "query": query
+                "query": query,
+                "source": "GROUPS"
             },
            "query": include_str!("./group-search.gql")
         });
@@ -91,7 +92,7 @@ impl Meetup {
             ))?;
 
         let results = groups.iter().map(|g| {
-            let node = &g["node"];
+            let node = &g["node"]["result"];
             let photo_base_url: Url = json::from_value(node["groupPhoto"]["baseUrl"].clone())
                 .map_err(|e| {
                     ScraperError::JsonParseError(
