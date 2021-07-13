@@ -31,3 +31,7 @@ idea/problem-and-its-solution, then it is moved to [[./docs/initiatives][initiat
 
 - Matrix Space: https://matrix.to/#/!EJjSPytjXwjJyODGWC:matrix.org?via=matrix.org
 - Telegram Group: https://t.me/joinchat/QiQGasCqA205OWM9
+- Discord: https://discord.gg/y74NHawxTA
+
+All the chat mediums are bridged, so you can connect to any one of them and communicate 
+with the same group of people.
