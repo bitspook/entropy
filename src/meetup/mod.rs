@@ -1,11 +1,12 @@
-use crate::{Coordinates, ScraperError, PoacherMessage, PoachedResult, ScraperWarning, meetup::util::{fix_meetup_datetime, make_group_events_request, make_meetup_image_url}};
-use chrono::{DateTime, NaiveDateTime, Offset, TimeZone, Utc};
+use crate::{
+    meetup::util::{fix_meetup_datetime, make_group_events_request, make_meetup_image_url},
+    Coordinates, PoachedResult, PoacherMessage, ScraperError, ScraperWarning,
+};
 use log::debug;
 use reqwest::{self, Client};
 use serde_json as json;
 use tokio::sync::mpsc::Sender;
 use url::Url;
-use urlencoding;
 
 mod models;
 mod util;
@@ -33,7 +34,7 @@ impl Meetup {
         &self,
         coordinates: &Coordinates,
         query: &str,
-        radius: u32
+        radius: u32,
     ) -> Result<(), ScraperError> {
         let gql_url = "https://www.meetup.com/gql";
         let gql_headers = get_gql_headers();
@@ -148,7 +149,11 @@ impl Meetup {
         Ok(())
     }
 
-    async fn _fetch_group_events(&self, group_slug: String, group_id: String) -> Result<(), ScraperError> {
+    async fn _fetch_group_events(
+        &self,
+        group_slug: String,
+        group_id: String,
+    ) -> Result<(), ScraperError> {
         debug!("Fetching events for group: {}", group_slug);
         let request = make_group_events_request(&self.client, group_slug.to_string());
 

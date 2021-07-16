@@ -46,6 +46,9 @@
           sqlite
           diesel-cli
           sqlitebrowser
+          cargo-edit
+          cargo-audit
+          cargo-outdated
           (rust-bin.stable.latest.default.override {
             extensions = [
               "rust-src"

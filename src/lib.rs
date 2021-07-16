@@ -1,13 +1,16 @@
 #[macro_use]
 extern crate diesel;
 
-
 use serde_json as json;
 
 pub mod db;
 mod meetup;
+pub mod web;
 
-pub use meetup::{Meetup, MeetupResult, MeetupGroup, MeetupEvent};
+pub use meetup::{Meetup, MeetupEvent, MeetupGroup, MeetupResult};
+
+#[macro_use]
+extern crate rocket;
 
 // Ideally we should make these variants enforce valid values for lat and lng,
 // but since Coordinates aren't used for anything but passing to meetup API, I
@@ -26,14 +29,14 @@ impl Coordinates {
 
 #[derive(Debug)]
 pub enum PoachedResult {
-    Meetup(MeetupResult)
+    Meetup(MeetupResult),
 }
 
 #[derive(Debug)]
 pub enum PoacherMessage {
     ResultItem(PoachedResult),
     Error(ScraperError),
-    Warning(ScraperWarning)
+    Warning(ScraperWarning),
 }
 
 #[derive(Debug)]
@@ -45,5 +48,5 @@ pub enum ScraperError {
 
 #[derive(Debug)]
 pub enum ScraperWarning {
-    FailedPresumption(String)
+    FailedPresumption(String),
 }

@@ -82,7 +82,7 @@ impl MeetupEvent {
             visibility: self.visibility,
             member_pay_fee: self.member_pay_fee,
             venue_visibility: self.venue_visibility,
-            group_id: self.group_id
+            group_id: self.group_id,
         }
     }
 }

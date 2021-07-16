@@ -4,9 +4,6 @@ edition = "2018"
 name = "entropy"
 version = "0.1.0"
 
-[release]
-target = "x86_64-unknown-linux-musl"
-
 [dependencies]
 tokio = { version = "*", features = ["full"] }
 reqwest = { version =  "*", features = ["cookies", "gzip", "multipart", "json"] }
@@ -21,3 +18,4 @@ scraper = "*"
 log = "*"
 env_logger = "*"
 structopt = "*"
+rocket = "0.5.0-dev"

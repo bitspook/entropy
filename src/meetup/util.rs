@@ -45,10 +45,7 @@ pub fn make_group_events_request(client: &Client, slug: String) -> RequestBuilde
 
 /// Fixes DateTime big-int meetup.com provides in its response to a format that
 /// chrono can serialize and deserialize properly
-pub fn fix_meetup_datetime<'a>(
-    obj: &'a mut json::Value,
-    fields: Vec<&str>,
-) -> json::Result<()> {
+pub fn fix_meetup_datetime<'a>(obj: &'a mut json::Value, fields: Vec<&str>) -> json::Result<()> {
     for field in fields {
         let val: i64 = json::from_value(obj[field].clone())?;
 
