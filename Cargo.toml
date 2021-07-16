@@ -19,3 +19,4 @@ log = "*"
 env_logger = "*"
 structopt = "*"
 rocket = "0.5.0-dev"
+rocket_dyn_templates = { version = "0.1.0-rc.1", features = ["tera"] }
