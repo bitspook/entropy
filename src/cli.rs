@@ -161,7 +161,7 @@ pub async fn run(conn: &SqliteConnection, cmd: CliCmd) -> Result<(), &'static st
                 }
             };
         }
-        CliCmd::Web => web::app().launch().await.unwrap(),
+        CliCmd::Web => web::run().await,
     };
 
     Ok(())
