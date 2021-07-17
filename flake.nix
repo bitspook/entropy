@@ -45,7 +45,6 @@
           rust-analyzer
           sqlite
           diesel-cli
-          sqlitebrowser
           cargo-edit
           cargo-audit
           cargo-outdated

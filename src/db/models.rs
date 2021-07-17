@@ -1,6 +1,7 @@
 use chrono::NaiveDateTime;
 
 use super::schema::*;
+use rocket::serde::{Serialize, Deserialize};
 
 #[derive(Queryable)]
 pub struct MeetupGroup {
@@ -31,10 +32,11 @@ pub struct NewMeetupGroup {
     pub photo: String,
 }
 
-#[derive(Queryable, Insertable, Debug)]
+#[derive(Queryable, Insertable, Debug, Clone, Serialize, Deserialize)]
 #[table_name = "meetup_events"]
 pub struct MeetupEvent {
     pub id: String,
+    pub group_id: String,
     pub created: NaiveDateTime,
     pub updated: NaiveDateTime,
     pub duration: Option<i32>,
@@ -51,5 +53,4 @@ pub struct MeetupEvent {
     pub visibility: String,
     pub member_pay_fee: bool,
     pub venue_visibility: String,
-    pub group_id: String,
 }

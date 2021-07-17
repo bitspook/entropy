@@ -15,9 +15,9 @@ table! {
         link -> Text,
         description -> Nullable<Text>,
         how_to_find_us -> Nullable<Text>,
-        visibility -> Nullable<Text>,
-        member_pay_fee -> Nullable<Bool>,
-        venue_visibility -> Nullable<Text>,
+        visibility -> Text,
+        member_pay_fee -> Bool,
+        venue_visibility -> Text,
     }
 }
 

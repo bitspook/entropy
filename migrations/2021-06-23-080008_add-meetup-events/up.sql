@@ -14,8 +14,8 @@ CREATE TABLE meetup_events (
   link VARCHAR NOT NULL,
   description VARCHAR,
   how_to_find_us VARCHAR,
-  visibility VARCHAR,
-  member_pay_fee BOOLEAN,
-  venue_visibility VARCHAR,
+  visibility VARCHAR NOT NULL,
+  member_pay_fee BOOLEAN NOT NULL,
+  venue_visibility VARCHAR NOT NULL,
   FOREIGN KEY(group_id) REFERENCES meetup_groups(id)
 );

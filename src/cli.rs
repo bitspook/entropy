@@ -72,7 +72,7 @@ pub struct CliOpts {
     pub cmd: CliCmd,
 }
 
-pub async fn run(conn: &SqliteConnection, cmd: CliCmd) -> Result<(), &'static str> {
+pub async fn run(conn: SqliteConnection, cmd: CliCmd) -> Result<(), &'static str> {
     let user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0";
 
     match cmd {
@@ -161,7 +161,7 @@ pub async fn run(conn: &SqliteConnection, cmd: CliCmd) -> Result<(), &'static st
                 }
             };
         }
-        CliCmd::Web => web::run().await,
+        CliCmd::Web => web::run(conn).await,
     };
 
     Ok(())
