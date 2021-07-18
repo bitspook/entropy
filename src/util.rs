@@ -7,38 +7,36 @@ use tokio::{self, sync::mpsc::Sender};
 
 pub async fn process_scraped_meetup_group(group: MeetupGroup, conn: &SqliteConnection) {
     use entropy::db::schema::meetup_groups::dsl::*;
-    let new_group = group.to_db_insertable();
 
-    let query = replace_into(meetup_groups).values(&new_group);
+    let query = replace_into(meetup_groups).values(&group);
 
     if let Err(err) = query.execute(conn) {
         error!(
             "Failed to insert group \"{}({})\" in db: {:#?}",
-            new_group.name, new_group.id, err
+            group.name, group.id, err
         );
 
         return;
     }
 
-    debug!("Saved group in database: {}", new_group.name);
+    debug!("Saved group in database: {}", group.name);
 }
 
 pub async fn process_scraped_meetup_event(event: MeetupEvent, conn: &SqliteConnection) {
     use entropy::db::schema::meetup_events::dsl::*;
-    let new_event = event.to_db_insertable();
 
-    let query = replace_into(meetup_events).values(&new_event);
+    let query = replace_into(meetup_events).values(&event);
 
     if let Err(err) = query.execute(conn) {
         error!(
             "Failed to insert event \"{}({})\" in db: {:#?}",
-            new_event.name, new_event.id, err
+            event.title, event.id, err
         );
 
         return;
     }
 
-    debug!("Saved event in database: {}", new_event.name);
+    debug!("Saved event in database: {}", event.title);
 }
 
 pub async fn search_groups_of_chandigarh(meetup: Arc<Meetup>, tx: Sender<PoacherMessage>) {
@@ -71,4 +69,22 @@ pub async fn search_groups_of_chandigarh(meetup: Arc<Meetup>, tx: Sender<Poacher
             };
         });
     }
+}
+
+pub async fn search_events_of_chandigarh(meetup: Arc<Meetup>, tx: Sender<PoacherMessage>) {
+    let chd_coords = Arc::new(Coordinates::new(30.75, 76.78));
+    let radius = 100;
+
+    let chd_coords = chd_coords.clone();
+    let tx = tx.clone();
+
+    tokio::spawn(async move {
+        if let Err(err) = meetup
+            .as_ref()
+            .search_events(&chd_coords, radius)
+            .await
+        {
+            tx.send(PoacherMessage::Error(err)).await.unwrap();
+        };
+    });
 }

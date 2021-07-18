@@ -2,3 +2,4 @@
 /result
 /result-lib
 /result-doc
+*.sqlite3*

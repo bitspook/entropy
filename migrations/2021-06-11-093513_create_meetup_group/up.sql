@@ -1,5 +1,6 @@
 CREATE TABLE meetup_groups (
   id VARCHAR PRIMARY KEY NOT NULL,
+  slug VARCHAR NOT NULL UNIQUE,
   name VARCHAR NOT NULL,
   link VARCHAR NOT NULL,
   description VARCHAR NOT NULL,
@@ -7,6 +8,5 @@ CREATE TABLE meetup_groups (
   state VARCHAR NOT NULL,
   country VARCHAR NOT NULL,
   is_private BOOLEAN NOT NULL,
-  member_count INTEGER NOT NULL,
   photo VARCHAR
 )

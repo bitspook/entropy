@@ -35,12 +35,12 @@ pub enum PoachedResult {
 #[derive(Debug)]
 pub enum PoacherMessage {
     ResultItem(PoachedResult),
-    Error(ScraperError),
+    Error(PoacherError),
     Warning(ScraperWarning),
 }
 
 #[derive(Debug)]
-pub enum ScraperError {
+pub enum PoacherError {
     HttpError(reqwest::Error),
     JsonParseError(json::Error, Option<String>),
     UnknownResponseError(String),

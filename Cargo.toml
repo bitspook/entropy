@@ -8,7 +8,7 @@ version = "0.1.0"
 tokio = { version = "*", features = ["full"] }
 reqwest = { version =  "*", features = ["cookies", "gzip", "multipart", "json"] }
 url = { version = "^2.2.2", features = ["serde"] }
-diesel = { version = "*", features = ["sqlite", "serde_json", "chrono", "r2d2"] }
+diesel = { version = "*", features = ["sqlite", "serde_json", "chrono", "numeric"] }
 chrono = { version = "*", features = ["serde"] }
 diesel_migrations = "*"
 serde = "*"

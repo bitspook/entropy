@@ -8,9 +8,7 @@ use tokio::{
 };
 
 use crate::db;
-use crate::util::{
-    process_scraped_meetup_event, process_scraped_meetup_group, search_groups_of_chandigarh,
-};
+use crate::util::{process_scraped_meetup_event, process_scraped_meetup_group, search_events_of_chandigarh, search_groups_of_chandigarh};
 
 #[derive(StructOpt, Debug)]
 pub enum MeetupCmd {
@@ -35,17 +33,10 @@ pub enum MeetupCmd {
         query: Option<Vec<String>>,
     },
     Events {
-        #[structopt(long = "group-slug")]
-        group_slug: String,
-        #[structopt(long = "group-id")]
-        // Group-id requirement is silly and only exists because I needed
-        // group-id to maintain a foreign key against every meetup-event. We can
-        // get rid of this by making group-slug the key for every group, and use
-        // that as a FK. I am leaving this here for now since this command will
-        // probably not be used much, and I need to keep my momentum. Creating a
-        // task (#7) to make group-slug the FK instead of group id and make this
-        // option simpler.
-        group_id: String,
+        #[structopt(long)]
+        /// One of the supported cities. lat, lng, radius and query for supported
+        /// cities are already known to entropy and don't need to be provided
+        city: Option<String>,
     },
 }
 
@@ -91,7 +82,7 @@ pub async fn run(cmd: CliCmd) -> Result<(), &'static str> {
                                 if city.to_lowercase() == "chandigarh" {
                                     search_groups_of_chandigarh(meetup, tx).await;
                                 } else {
-                                    error!("Unsupported city: '{}'.\nPlease use --lat, --lng, --query, --radius to target unsupported cities", city);
+                                    error!("Unsupported city: '{}'", city);
 
                                     return Err("Unsupported city");
                                 }
@@ -105,11 +96,24 @@ pub async fn run(cmd: CliCmd) -> Result<(), &'static str> {
                                 return Err("Not Implemented");
                             }
                         }
-                        MeetupCmd::Events {
-                            group_slug,
-                            group_id,
-                        } => {
-                            meetup.fetch_group_events(group_slug, group_id).await;
+                        MeetupCmd::Events { city, .. } => {
+                            if let Some(city) = city {
+                                if city.to_lowercase() == "chandigarh" {
+                                    search_events_of_chandigarh(meetup, tx).await;
+                                } else {
+                                    error!("Unsupported city: '{}'", city);
+
+                                    return Err("Unsupported city");
+                                }
+                            } else {
+                                // TODO: Implement this part. Right now I am not
+                                // sure if this will ever be used. I created
+                                // these options because I wanted to play with
+                                // how CLIs are created in Rust. Created #8 to
+                                // add these options if they're ever needed. Or
+                                // remove this code.
+                                return Err("Not Implemented");
+                            }
                         }
                     }
                 }

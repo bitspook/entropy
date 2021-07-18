@@ -1,0 +1,152 @@
+query categorySearch($lat: Float!, $lon: Float!, $categoryId: Int, $topicCategoryId: Int, $startDateRange: ZonedDateTime, $endDateRange: ZonedDateTime, $first: Int, $after: String, $eventType: EventType, $radius: Int, $isHappeningNow: Boolean, $isStartingSoon: Boolean, $sortField: RankedEventsSortField) {
+  rankedEvents(
+    filter: {lat: $lat, lon: $lon, categoryId: $categoryId, topicCategoryId: $topicCategoryId, startDateRange: $startDateRange, endDateRange: $endDateRange, eventType: $eventType, radius: $radius, isHappeningNow: $isHappeningNow, isStartingSoon: $isStartingSoon}
+    input: {first: $first, after: $after}
+    sort: {sortField: $sortField}
+  ) {
+    pageInfo {
+      ...PageInfoDetails
+      __typename
+    }
+    count
+    edges {
+      node {
+        ...BuildMeetupEvent
+        __typename
+      }
+      recommendationId
+      recommendationSource
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment PageInfoDetails on PageInfo {
+  hasNextPage
+  endCursor
+  __typename
+}
+
+fragment BuildMeetupEvent on Event {
+  id
+  slug
+  slugId
+  title
+  dateTime
+  endTime
+  description
+  duration
+  timezone
+  eventType
+  currency
+  fees {
+    processingFee {
+      type
+      amount
+      __typename
+    }
+    serviceFee {
+      type
+      amount
+      __typename
+    }
+    tax {
+      type
+      amount
+      __typename
+    }
+    __typename
+  }
+  images {
+    ...PhotoDetails
+    __typename
+  }
+  venue {
+    id
+    address
+    neighborhood
+    city
+    state
+    country
+    lat
+    lng
+    zoom
+    name
+    radius
+    __typename
+  }
+  onlineVenue {
+    type
+    url
+    __typename
+  }
+  isSaved
+  eventUrl
+  group {
+    ...BuildMeetupGroup
+    __typename
+  }
+  going
+  maxTickets
+  tickets(input: {first: 3}) {
+    ...TicketsConnection
+    __typename
+  }
+  isAttending
+  rsvpState
+  __typename
+}
+
+fragment PhotoDetails on Image {
+  id
+  baseUrl
+  preview
+  __typename
+}
+
+fragment BuildMeetupGroup on Group {
+  id
+  slug
+  isPrivate
+  isOrganizer
+  ...GroupDetails
+  __typename
+}
+
+fragment GroupDetails on Group {
+  id
+  name
+  description
+  urlname
+  timezone
+  link
+  city
+  state
+  country
+  groupPhoto {
+    ...PhotoDetails
+    __typename
+  }
+  __typename
+}
+
+fragment TicketsConnection on EventTicketsConnection {
+  count
+  edges {
+    node {
+      id
+      user {
+        id
+        memberPhoto {
+          ...PhotoDetails
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+  __typename
+}

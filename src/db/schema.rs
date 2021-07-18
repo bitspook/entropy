@@ -1,29 +1,23 @@
 table! {
     meetup_events (id) {
         id -> Text,
-        group_id -> Text,
-        created -> Timestamp,
-        updated -> Timestamp,
-        duration -> Nullable<Integer>,
-        name -> Text,
-        status -> Text,
-        time -> Timestamp,
-        local_date -> Text,
-        local_time -> Text,
-        utc_offset -> Integer,
-        is_online_event -> Bool,
-        link -> Text,
+        group_slug -> Text,
+        title -> Text,
         description -> Nullable<Text>,
-        how_to_find_us -> Nullable<Text>,
-        visibility -> Text,
-        member_pay_fee -> Bool,
-        venue_visibility -> Text,
+        start_time -> Timestamp,
+        end_time -> Timestamp,
+        is_online -> Bool,
+        charges -> Nullable<Double>,
+        currency -> Nullable<Text>,
+        link -> Text,
+        venue -> Nullable<Text>,
     }
 }
 
 table! {
     meetup_groups (id) {
         id -> Text,
+        slug -> Text,
         name -> Text,
         link -> Text,
         description -> Text,
@@ -31,11 +25,11 @@ table! {
         state -> Text,
         country -> Text,
         is_private -> Bool,
-        member_count -> Integer,
         photo -> Nullable<Text>,
     }
 }
 
-joinable!(meetup_events -> meetup_groups (group_id));
-
-allow_tables_to_appear_in_same_query!(meetup_events, meetup_groups,);
+allow_tables_to_appear_in_same_query!(
+    meetup_events,
+    meetup_groups,
+);

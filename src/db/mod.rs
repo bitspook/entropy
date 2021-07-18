@@ -3,7 +3,6 @@ use diesel::sqlite::SqliteConnection;
 use std::env;
 use std::env::VarError;
 
-pub mod models;
 pub mod schema;
 
 pub fn establish_connection() -> SqliteConnection {
