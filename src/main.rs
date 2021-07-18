@@ -40,5 +40,5 @@ async fn main() -> Result<(), &'static str> {
     let conn = db::establish_connection();
     embedded_migrations::run(&conn).expect("Failed to run db migrations");
 
-    cli::run(conn, cli_opts.cmd).await
+    cli::run(cli_opts.cmd).await
 }

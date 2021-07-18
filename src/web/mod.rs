@@ -1,4 +1,3 @@
-use diesel::prelude::*;
 use rocket::response::Debug;
 use rocket::{
     figment::{providers::Env, Figment, Profile},
@@ -29,8 +28,6 @@ fn app() -> Rocket<Build> {
         .attach(EntropyDbConn::fairing())
 }
 
-pub async fn run(conn: SqliteConnection) -> () {
-    drop(conn);
-
+pub async fn run() -> () {
     app().launch().await.unwrap();
 }
