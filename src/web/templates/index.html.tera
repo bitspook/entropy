@@ -63,38 +63,41 @@
       <div class="peeky-content">
         <div class="header">Upcoming Events</div>
         <div class="list">
+
+          {% for event in events %}
+
           <div class="list-item">
             <div class="icon">
 
             </div>
             <div class="content">
-              <div class="title">Casual Catchup</div>
+              <div class="title">{{ event.name }}</div>
               <div class="meta">
                 <div class="meta-item">
                   <div class="icon"></div>
-                  <div class="content">July 17, 2021</div>
+                  <div class="content">{{ event.local_date }} {{ event.local_time}}</div>
                 </div>
                 <div class="meta-item">
                   <div class="icon"></div>
-                  <div class="content">Free</div>
+                  <div class="content">{{ event.member_pay_fee }}</div>
                 </div>
                 <div class="meta-item">
                   <div class="icon"></div>
-                  <div class="content">60 min</div>
+                  <div class="content">{{ event.duration }}</div>
                 </div>
+                {% if event.is_online_event %}
                 <div class="meta-item">
                   <div class="icon"></div>
                   <div class="content">Online</div>
                 </div>
+                {% endif %}
               </div>
-              <div class="description">
-                Agenda free weekly catchup of the Entropy group. Feel free to
-                drop in showcase anything cool you've built, ask any questions,
-                offer suggestions, or just say hi!
-              </div>
+              <div class="description">{{ event.description | truncate(length=400) | safe }}</div>
             </div>
-
           </div>
+
+          {% endfor %}
+
         </div>
       </div>
     </div>
