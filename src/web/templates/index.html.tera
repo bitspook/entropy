@@ -71,28 +71,24 @@
 
             </div>
             <div class="content">
-              <div class="title">{{ event.name }}</div>
+              <div class="title">{{ event.title }}</div>
               <div class="meta">
                 <div class="meta-item">
                   <div class="icon"></div>
-                  <div class="content">{{ event.local_date }} {{ event.local_time}}</div>
+                  <div class="content">{{ event.start_date }} from {{event.start_time}} to {{event.end_time}}</div>
                 </div>
                 <div class="meta-item">
                   <div class="icon"></div>
-                  <div class="content">{{ event.member_pay_fee }}</div>
+                  <div class="content">{{ event.charges }}</div>
                 </div>
-                <div class="meta-item">
-                  <div class="icon"></div>
-                  <div class="content">{{ event.duration }}</div>
-                </div>
-                {% if event.is_online_event %}
+                {% if event.is_online %}
                 <div class="meta-item">
                   <div class="icon"></div>
                   <div class="content">Online</div>
                 </div>
                 {% endif %}
               </div>
-              <div class="description">{{ event.description | truncate(length=400) | safe }}</div>
+              <div class="description">{{ event.description | safe | truncate(length=400) }}</div>
             </div>
           </div>
 

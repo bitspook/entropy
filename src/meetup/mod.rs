@@ -315,7 +315,7 @@ impl Meetup {
                 "description": node["description"],
                 "start_time": start_time,
                 "end_time": end_time,
-                "is_online": node["eventType"].to_string() == "online",
+                "is_online": node["eventType"].as_str().unwrap() == "online",
                 "charges": node["fees"],
                 "curency": node["currency"],
                 "link": node["eventUrl"]
