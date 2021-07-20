@@ -13,7 +13,8 @@ html {
 :root {
   --main-bg-color: #221e1d;
   --main-text-color: #cccccc;
-  --link-text-color: #a8d500;
+  --link-text-color: #98a898;
+  --highlighted-text-color: #a8d500;
   --dim-text-color: #888;
 }
 
@@ -28,9 +29,15 @@ body {
   background: var(--main-bg-color);
   color: var(--main-text-color);
   font-family: 'Roboto Mono';
+  font-size: 1.4rem;
 }
 
 a {
+  color: var(--link-text-color);
+  text-underline-offset: 0.7rem;
+}
+
+a .highlighted {
   color: var(--link-text-color);
 }
 
@@ -81,8 +88,8 @@ p {
 }
 
 .peeky-menu .menu-item.active .title {
-  color: var(--link-text-color);
-  border-bottom: 1px solid var(--link-text-color);
+  color: var(--highlighted-text-color);
+  border-bottom: 1px solid var(--highlighted-text-color);
 }
 
 .peeky-menu .menu-item.active .title:hover {
@@ -115,7 +122,7 @@ p {
 }
 
 .peeky-menu .menu-item .title:hover {
-  border-bottom: 1px solid var(--link-text-color);
+  border-bottom: 1px solid var(--highlighted-text-color);
   padding-bottom: 0.2rem;
 }
 
@@ -133,6 +140,10 @@ p {
   font-size: 2.2rem;
   margin-bottom: 4rem;
   color: var(--dim-text-color);
+}
+
+.peeky-content .list {
+  margin-bottom: 2rem;
 }
 
 .peeky-content .list-item {
@@ -181,4 +192,12 @@ p {
   margin-top: 1rem;
   font-size: 1.4rem;
   width: 60%;
+}
+
+.peeky-content .list-item:last-child {
+  margin-bottom: 0;
+}
+
+.more {
+  color: var(--highlighted-text-color);
 }

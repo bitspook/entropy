@@ -61,15 +61,11 @@
       </div>
 
       <div class="peeky-content">
-        <div class="header">Upcoming Events</div>
+        <div class="header">Upcoming Tech Events in Chandigarh</div>
         <div class="list">
-
           {% for event in events %}
-
           <div class="list-item">
-            <div class="icon">
-
-            </div>
+            <div class="icon"></div>
             <div class="content">
               <div class="title">{{ event.title }}</div>
               <div class="meta">
@@ -88,13 +84,11 @@
                 </div>
                 {% endif %}
               </div>
-              <div class="description">{{ event.description | safe | truncate(length=400) }}</div>
             </div>
           </div>
-
           {% endfor %}
-
         </div>
+        <a class="more" href='/tech-events'>View All</a>
       </div>
     </div>
   </body>
