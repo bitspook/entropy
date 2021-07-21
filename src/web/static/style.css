@@ -58,6 +58,17 @@ p {
   font-size: 6rem;
   margin-bottom: 4rem;
   font-weight: 300;
+  display: flex;
+  justify-content: center;
+}
+
+.brand .logo {
+  height: 10rem;
+  margin-right: 1rem;
+}
+
+.brand .text {
+  padding-top: 1rem;
 }
 
 .tagline {

@@ -8,7 +8,10 @@
   </head>
   <body>
     <div class="hero">
-      <h1 class="brand">Entropy</h1>
+      <h1 class="brand">
+        <img class='logo' src="/logo.svg" alt="Entropy Logo" />
+        <span class='text'>ntropy</span>
+      </h1>
       <div class="tagline">
         <p>
           Entropy is a <a href='https://hackerspaces.org/'>hackerspace</a> for
