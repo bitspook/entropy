@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <title>Entropy Chandigarh Hackerspace</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="style.css" rel="stylesheet"/>
+    <link href="index.css" rel="stylesheet"/>
   </head>
   <body>
     <div class="hero">
@@ -92,6 +92,17 @@
           {% endfor %}
         </div>
         <a class="more" href='/tech-events'>View All</a>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="copyright">
+        <div class="images">
+          <img src='cc_icon_white_x2.png' alt='Creative-commons icon' />
+          <img src='attribution_icon_white_x2.png' alt='Attribution icon' />
+        </div>
+
+        Except where otherwise noted, content on this site is licensed under a <a href='https://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International license</a>.
       </div>
     </div>
   </body>
