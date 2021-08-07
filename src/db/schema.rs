@@ -1,6 +1,7 @@
 table! {
     meetup_events (id) {
         id -> Text,
+        slug -> Text,
         group_slug -> Text,
         title -> Text,
         description -> Nullable<Text>,
@@ -29,7 +30,4 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(
-    meetup_events,
-    meetup_groups,
-);
+allow_tables_to_appear_in_same_query!(meetup_events, meetup_groups,);

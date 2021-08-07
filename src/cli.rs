@@ -133,7 +133,7 @@ async fn poacher_meditation(mut rx: Receiver<PoacherMessage>) {
     while let Some(msg) = rx.recv().await {
         match msg {
             PoacherMessage::Error(err) => {
-                error!("Encountered error when searching groups: {:#?}", err)
+                error!("Encountered error when poaching: {:#?}", err)
             }
             PoacherMessage::ResultItem(item) => match item {
                 PoachedResult::Meetup(result) => match result {

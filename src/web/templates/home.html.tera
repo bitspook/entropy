@@ -4,11 +4,14 @@
     <meta charset="UTF-8"/>
     <title>Entropy Chandigarh Hackerspace</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="style.css" rel="stylesheet"/>
+    <link href="/css/home" rel="stylesheet"/>
   </head>
   <body>
     <div class="hero">
-      <h1 class="brand">Entropy</h1>
+      <h1 class="brand">
+        <img class='logo' src="/logo.svg" alt="Entropy Logo" />
+        <span class='text'>ntropy</span>
+      </h1>
       <div class="tagline">
         <p>
           Entropy is a <a href='https://hackerspaces.org/'>hackerspace</a> for
@@ -61,17 +64,17 @@
       </div>
 
       <div class="peeky-content">
-        <div class="header">Upcoming Events</div>
+        <div class="header">Upcoming Tech Events in Chandigarh</div>
+
+        {% if not events %}
+        {% include "partials/no-data" %}
+        {% else %}
         <div class="list">
-
           {% for event in events %}
-
           <div class="list-item">
-            <div class="icon">
-
-            </div>
+            <div class="icon"></div>
             <div class="content">
-              <div class="title">{{ event.title }}</div>
+              <a href="/events/{{ event.slug }}" class="title sneaky-link">{{ event.title }}</a>
               <div class="meta">
                 <div class="meta-item">
                   <div class="icon"></div>
@@ -88,14 +91,15 @@
                 </div>
                 {% endif %}
               </div>
-              <div class="description">{{ event.description | safe | truncate(length=400) }}</div>
             </div>
           </div>
-
           {% endfor %}
-
         </div>
+        {% endif %}
+        <a class="more" href='/events'>View All</a>
       </div>
     </div>
+
+    {%include "partials/footer" %}
   </body>
 </html>

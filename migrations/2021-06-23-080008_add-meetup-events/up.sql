@@ -1,5 +1,6 @@
 CREATE TABLE meetup_events (
   id VARCHAR PRIMARY KEY NOT NULL,
+  slug VARCHAR UNIQUE NOT NULL,
   group_slug VARCHAR NOT NULL,
   title VARCHAR NOT NULL,
   description VARCHAR,

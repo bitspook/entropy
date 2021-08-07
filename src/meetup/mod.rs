@@ -311,6 +311,7 @@ impl Meetup {
             let event = json::json!({
                 "id": node["id"],
                 "group_slug": node["group"]["slug"],
+                "slug": node["slug"],
                 "title": node["title"],
                 "description": node["description"],
                 "start_time": start_time,

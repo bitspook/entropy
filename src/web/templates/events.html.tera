@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Tech events in Chandigarh (Entropy Hackerspace)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/css/events" rel="stylesheet"/>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <a class="brand" href="/">
+        <img class='logo' src="/logo.svg" alt="Entropy Logo" />
+        <span class='text'>ntropy</span>
+      </a>
+    </nav>
+
+    <div class="content">
+      <h1 class="header">Upcoming Tech Events in Chandigarh</h1>
+
+      {% if not events %}
+      {% include "partials/no-data" %}
+      {% else %}
+      <div class="list">
+        {% for event in events %}
+        <div class="list-item">
+          <div class="icon"></div>
+          <div class="li-content">
+            <a href="/events/{{ event.slug }}" class="title sneaky-link">{{ event.title }}</a>
+            <div class="meta">
+              <div class="meta-item">
+                <div class="icon"></div>
+                <div>{{ event.start_date }} from {{event.start_time}} to {{event.end_time}}</div>
+              </div>
+              <div class="meta-item">
+                <div class="icon"></div>
+                <div>{{ event.charges }}</div>
+              </div>
+              {% if event.is_online %}
+              <div class="meta-item">
+                <div class="icon"></div>
+                <div>Online</div>
+              </div>
+              {% endif %}
+            </div>
+            <div class="description">{{ event.description | safe | truncate(length=240) }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    {%include "partials/footer" %}
+  </body>
+</html>
