@@ -11,7 +11,7 @@ use rocket_dyn_templates::Template;
 use rocket_sync_db_pools::{database, diesel};
 use rsass::{compile_scss_path, output};
 
-mod index;
+mod home;
 mod events;
 
 #[database("entropy_db")]
@@ -51,7 +51,7 @@ fn app() -> Rocket<Build> {
         .select(Profile::from_env_or("ENTROPY_PROFILE", "default"));
 
     rocket::custom(figment)
-        .mount("/", index::routes())
+        .mount("/", home::routes())
         .mount("/events", events::routes())
         .mount("/css", routes![css])
         .mount("/", FileServer::from("src/web/static"))

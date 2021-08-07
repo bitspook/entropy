@@ -25,7 +25,7 @@
         <div class="list-item">
           <div class="icon"></div>
           <div class="li-content">
-            <a href="/events/{{ event.slug }}" class="title">{{ event.title }}</a>
+            <a href="/events/{{ event.slug }}" class="title sneaky-link">{{ event.title }}</a>
             <div class="meta">
               <div class="meta-item">
                 <div class="icon"></div>

@@ -13,6 +13,7 @@ use super::{EntropyWebResult, EntropyDbConn};
 #[derive(Serialize)]
 struct Event {
     title: String,
+    slug: String,
     description: Option<String>,
     start_date: String,
     start_time: String,
@@ -31,6 +32,7 @@ impl From<MeetupEvent> for Event {
             title: event.title,
             description: event.description,
             start_date,
+            slug: event.slug,
             start_time,
             end_time,
             charges: event
@@ -44,7 +46,7 @@ impl From<MeetupEvent> for Event {
 }
 
 #[get("/")]
-async fn index(db: EntropyDbConn) -> EntropyWebResult<Template> {
+async fn home(db: EntropyDbConn) -> EntropyWebResult<Template> {
     use crate::db::schema::meetup_events::dsl::*;
 
     let events: Vec<MeetupEvent> = db
@@ -64,9 +66,9 @@ async fn index(db: EntropyDbConn) -> EntropyWebResult<Template> {
 
     let context = json!({ "events": events });
 
-    Ok(Template::render("index", context))
+    Ok(Template::render("home", context))
 }
 
 pub fn routes() -> Vec<Route> {
-    routes![index]
+    routes![home]
 }
