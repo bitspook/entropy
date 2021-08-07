@@ -1,0 +1,8 @@
+.alert {
+  display: flex;
+  align-items: center;
+  padding: 4rem;
+  background: var(--alert-bg-color);
+  border-radius: 4px;
+  color: var(--alert-text-color);
+}

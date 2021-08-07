@@ -19,6 +19,7 @@ struct Event {
     end_time: String,
     charges: String,
     is_online: bool,
+    slug: String
 }
 
 impl From<MeetupEvent> for Event {
@@ -39,6 +40,7 @@ impl From<MeetupEvent> for Event {
                 .or(Some("Free".to_string()))
                 .unwrap(),
             is_online: event.is_online,
+            slug: event.slug
         }
     }
 }

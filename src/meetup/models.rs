@@ -21,6 +21,7 @@ pub struct MeetupGroup {
 #[table_name = "meetup_events"]
 pub struct MeetupEvent {
     pub id: String,
+    pub slug: String,
     pub group_slug: String,
     pub title: String,
     pub description: Option<String>,
