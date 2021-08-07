@@ -8,10 +8,10 @@
   </head>
   <body>
     <nav class="top-nav">
-      <div class="brand">
+      <a class="brand" href="/">
         <img class='logo' src="/logo.svg" alt="Entropy Logo" />
         <span class='text'>ntropy</span>
-      </div>
+      </a>
     </nav>
 
     <div class="content">
@@ -20,21 +20,21 @@
         {% for event in events %}
         <div class="list-item">
           <div class="icon"></div>
-          <div class="content">
+          <div class="li-content">
             <div class="title">{{ event.title }}</div>
             <div class="meta">
               <div class="meta-item">
                 <div class="icon"></div>
-                <div class="content">{{ event.start_date }} from {{event.start_time}} to {{event.end_time}}</div>
+                <div>{{ event.start_date }} from {{event.start_time}} to {{event.end_time}}</div>
               </div>
               <div class="meta-item">
                 <div class="icon"></div>
-                <div class="content">{{ event.charges }}</div>
+                <div>{{ event.charges }}</div>
               </div>
               {% if event.is_online %}
               <div class="meta-item">
                 <div class="icon"></div>
-                <div class="content">Online</div>
+                <div>Online</div>
               </div>
               {% endif %}
             </div>
