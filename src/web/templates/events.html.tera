@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Tech events in Chandigarh (Entropy Hackerspace)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/css/events" rel="stylesheet"/>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <div class="brand">
+        <img class='logo' src="/logo.svg" alt="Entropy Logo" />
+        <span class='text'>ntropy</span>
+      </div>
+    </nav>
+
+    <div class="content">
+      <h1 class="header">Upcoming Tech Events in Chandigarh</h1>
+      <div class="list">
+        {% for event in events %}
+        <div class="list-item">
+          <div class="icon"></div>
+          <div class="content">
+            <div class="title">{{ event.title }}</div>
+            <div class="meta">
+              <div class="meta-item">
+                <div class="icon"></div>
+                <div class="content">{{ event.start_date }} from {{event.start_time}} to {{event.end_time}}</div>
+              </div>
+              <div class="meta-item">
+                <div class="icon"></div>
+                <div class="content">{{ event.charges }}</div>
+              </div>
+              {% if event.is_online %}
+              <div class="meta-item">
+                <div class="icon"></div>
+                <div class="content">Online</div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="copyright">
+        <div class="images">
+          <img src='cc_icon_white_x2.png' alt='Creative-commons icon' />
+          <img src='attribution_icon_white_x2.png' alt='Attribution icon' />
+        </div>
+
+        Except where otherwise noted, content on this site is licensed under a <a href='https://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International license</a>.
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+.footer {
+  margin: 8rem auto;
+  margin-bottom: 4rem;
+  max-width: 128rem;
+  display: flex;
+  flex-direction: row-reverse;
+  font-size: 1.1rem;
+  color: var(--dim-text-color);
+}
+
+.footer a {
+  text-underline-offset: 0.2rem;
+}
+
+.footer .copyright {
+  max-width: 40rem;
+}
+
+.footer .copyright .images img {
+  height: 2rem;
+}

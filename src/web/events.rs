@@ -8,7 +8,7 @@ use serde_json::json;
 
 use crate::{MeetupEvent, web::EntropyWebError};
 
-use super::{EntropyWebResult, EntropyDbConn};
+use super::{EntropyDbConn, EntropyWebResult};
 
 #[derive(Serialize)]
 struct Event {
@@ -44,7 +44,7 @@ impl From<MeetupEvent> for Event {
 }
 
 #[get("/")]
-async fn index(db: EntropyDbConn) -> EntropyWebResult<Template> {
+async fn events(db: EntropyDbConn) -> EntropyWebResult<Template> {
     use crate::db::schema::meetup_events::dsl::*;
 
     let events: Vec<MeetupEvent> = db
@@ -54,7 +54,7 @@ async fn index(db: EntropyDbConn) -> EntropyWebResult<Template> {
             meetup_events
                 .filter(start_time.gt(today))
                 .order(start_time.asc())
-                .limit(5)
+                .limit(50)
                 .load::<MeetupEvent>(conn)
         })
         .await
@@ -64,9 +64,9 @@ async fn index(db: EntropyDbConn) -> EntropyWebResult<Template> {
 
     let context = json!({ "events": events });
 
-    Ok(Template::render("index", context))
+    Ok(Template::render("events", context))
 }
 
 pub fn routes() -> Vec<Route> {
-    routes![index]
+    routes![events]
 }
