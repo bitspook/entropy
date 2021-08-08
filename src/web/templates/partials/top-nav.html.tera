@@ -1,0 +1,6 @@
+<nav class="top-nav">
+  <a class="brand" href="/">
+    <img class='logo' src="/logo.svg" alt="Entropy Logo" />
+    <span class='text'>ntropy</span>
+  </a>
+</nav>

@@ -13,6 +13,7 @@ use rsass::{compile_scss_path, output};
 
 mod home;
 mod events;
+mod event_details;
 
 #[database("entropy_db")]
 pub struct EntropyDbConn(diesel::SqliteConnection);
@@ -53,6 +54,7 @@ fn app() -> Rocket<Build> {
     rocket::custom(figment)
         .mount("/", home::routes())
         .mount("/events", events::routes())
+        .mount("/events", event_details::routes())
         .mount("/css", routes![css])
         .mount("/", FileServer::from("src/web/static"))
         .attach(Template::fairing())

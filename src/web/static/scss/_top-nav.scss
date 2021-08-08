@@ -1,0 +1,25 @@
+.top-nav {
+  width: 80%;
+  display: flex;
+  margin: 0 auto;
+  padding: 2rem 0;
+  min-height: 5rem;
+}
+
+.brand {
+  display: flex;
+  text-decoration: none;
+  color: var(--main-text-color);
+
+  .logo {
+    height: 4rem;
+    margin-right: 0;
+  }
+
+  .text {
+    font-size: 2rem;
+    padding-bottom: 1.2rem;
+    padding-left: 0.6rem;
+    align-self: flex-end;
+  }
+}
