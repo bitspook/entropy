@@ -13,6 +13,7 @@ use super::{EntropyWebResult, EntropyDbConn};
 struct Event {
     title: String,
     slug: String,
+    link: String,
     description: Option<String>,
     start_date: String,
     start_time: String,
@@ -32,6 +33,7 @@ impl From<MeetupEvent> for Event {
             description: event.description,
             start_date,
             slug: event.slug,
+            link: event.link,
             start_time,
             end_time,
             charges: event
@@ -44,14 +46,14 @@ impl From<MeetupEvent> for Event {
     }
 }
 
-#[get("/<slug>")]
-async fn event_details(slug: String, db: EntropyDbConn) -> EntropyWebResult<Template> {
+#[get("/<event_slug>")]
+async fn event_details(event_slug: String, db: EntropyDbConn) -> EntropyWebResult<Template> {
     use crate::db::schema::meetup_events::dsl::*;
 
     let event: MeetupEvent = db
         .run(|conn| {
             meetup_events
-                .filter(slug.eq(slug))
+                .filter(slug.eq(event_slug))
                 .first::<MeetupEvent>(conn)
         })
         .await

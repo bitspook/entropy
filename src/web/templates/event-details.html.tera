@@ -8,18 +8,51 @@
     <link rel="stylesheet" href="/css/event-details">
   </head>
   <body>
-    <div class="events">
-      {% include "partials/top-nav" %}
+    {% include "partials/top-nav" %}
 
+    <div class="container">
       <div class="main">
-        <div class="title">{{ event.title }}</div>
-        <div class="event-meta-data">
-          <span>organised by: <strong class="org-name">happy</strong></span>
-          <span> on {{ event.start_date }}</span>
+        <div class="header">
+          {{ event.title }}
+          <div class="meta">
+            <div class="key">via</div>
+            <a href="{{ event.link }}" class="value">Meetup.com</a>
+          </div>
         </div>
-        <div class="event-image">5</div>
-        <div class="description"> {{ event.description }}</div>
+        <div class="description"> {{ event.description | linebreaksbr | safe }}</div>
       </div>
+
+      <div class="meta-sidebar">
+        <div class="meta-item">
+          <div class="meta-key">Date</div>
+          <div class="meta-value">{{ event.start_date }}</div>
+        </div>
+
+        <div class="meta-item">
+          <div class="meta-key">Start Time</div>
+          <div class="meta-value">{{ event.start_time }}</div>
+        </div>
+
+        <div class="meta-item">
+          <div class="meta-key">End Time</div>
+          <div class="meta-value">{{ event.end_time }}</div>
+        </div>
+
+        <div class="meta-item">
+          <div class="meta-key">Cost</div>
+          <div class="meta-value">{{ event.charges }}</div>
+        </div>
+
+        {% if event.is_online %}
+        <div class="meta-item">
+          <div class="meta-key">Venue</div>
+          <div class="meta-value">Online</div>
+        </div>
+        {% endif %}
+      </div>
+
     </div>
+
+    {% include "partials/footer" %}
   </body>
 </html>
