@@ -46,11 +46,19 @@ pub enum PoachCmd {
 }
 
 #[derive(StructOpt, Debug)]
+pub enum WebCmd {
+    /// Run development server
+    Dev,
+    /// Build the public static site
+    Build
+}
+
+#[derive(StructOpt, Debug)]
 pub enum CliCmd {
     /// Manage scrappers for aggregating content from web
     Poach(PoachCmd),
     /// Manage entropy web apps
-    Web,
+    Web(WebCmd)
 }
 
 #[derive(StructOpt, Debug)]
@@ -121,7 +129,12 @@ pub async fn run(cmd: CliCmd) -> Result<(), &'static str> {
 
             poacher_meditation(rx).await;
         }
-        CliCmd::Web => web::run().await,
+        CliCmd::Web(web_cmd) => {
+            match web_cmd {
+                WebCmd::Dev => web::run().await,
+                WebCmd::Build => web::build().await
+            }
+        } ,
     };
 
     Ok(())
