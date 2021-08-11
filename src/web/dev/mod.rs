@@ -24,7 +24,8 @@ pub type EntropyWebResult<T> = Result<T, Debug<anyhow::Error>>;
 #[get("/<file>")]
 async fn css(file: String) -> EntropyWebResult<(ContentType, String)> {
     let scss_dir = Path::new("src/web/scss");
-    let path = scss_dir.join(Path::new(&format!("{}.scss", file)));
+    let path = scss_dir.join(Path::new(&file));
+    let path = path.with_extension("scss");
     let path = path.as_path();
     let format = output::Format {
         style: output::Style::Introspection,

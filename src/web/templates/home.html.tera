@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <title>Entropy Chandigarh Hackerspace</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="/css/home" rel="stylesheet"/>
+    <link href="/css/home.css" rel="stylesheet"/>
   </head>
   <body>
     <div class="hero">

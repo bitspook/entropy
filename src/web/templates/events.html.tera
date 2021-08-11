@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <title>Tech events in Chandigarh (Entropy Hackerspace)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="/css/events" rel="stylesheet"/>
+    <link href="/css/events.css" rel="stylesheet"/>
   </head>
   <body>
     {% include "partials/top-nav" %}

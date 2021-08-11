@@ -76,6 +76,7 @@ async fn build_scss() -> Result<()> {
             let css = String::from_utf8(css)?;
 
             let css_file = Path::new(css_dir).join(filename);
+            let css_file = css_file.with_extension("css");
             let css_file = css_file.as_path();
             debug!("Writing SCSS to CSS file: {}", css_file.display());
             fs::write(css_file, css)
