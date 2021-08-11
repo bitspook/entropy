@@ -6,7 +6,7 @@ use rocket_sync_db_pools::diesel;
 use serde::Serialize;
 use serde_json::json;
 
-use crate::{MeetupEvent, web::EntropyWebError};
+use crate::MeetupEvent;
 
 use super::{EntropyDbConn, EntropyWebResult};
 
@@ -19,7 +19,7 @@ struct Event {
     end_time: String,
     charges: String,
     is_online: bool,
-    slug: String
+    slug: String,
 }
 
 impl From<MeetupEvent> for Event {
@@ -40,7 +40,7 @@ impl From<MeetupEvent> for Event {
                 .or(Some("Free".to_string()))
                 .unwrap(),
             is_online: event.is_online,
-            slug: event.slug
+            slug: event.slug,
         }
     }
 }
@@ -60,7 +60,7 @@ async fn events(db: EntropyDbConn) -> EntropyWebResult<Template> {
                 .load::<MeetupEvent>(conn)
         })
         .await
-        .map_err(|e| EntropyWebError::DbError(e))?;
+        .map_err(anyhow::Error::from)?;
 
     let events: Vec<Event> = events.into_iter().map(|e| e.into()).collect();
 

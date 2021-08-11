@@ -4,10 +4,10 @@ use rocket_dyn_templates::Template;
 use rocket_sync_db_pools::diesel;
 use serde::Serialize;
 use serde_json::json;
+use anyhow::Error;
 
-use crate::{MeetupEvent, web::EntropyWebError};
-
-use super::{EntropyWebResult, EntropyDbConn};
+use super::{EntropyDbConn, EntropyWebResult};
+use crate::MeetupEvent;
 
 #[derive(Serialize)]
 struct Event {
@@ -57,7 +57,7 @@ async fn event_details(event_slug: String, db: EntropyDbConn) -> EntropyWebResul
                 .first::<MeetupEvent>(conn)
         })
         .await
-        .map_err(|e| EntropyWebError::DbError(e))?;
+        .map_err(Error::from)?;
 
     let event: Event = event.into();
     let context = json!({ "event": event });

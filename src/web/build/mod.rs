@@ -1,5 +1,11 @@
-use fs_extra::dir::{copy, CopyOptions};
-use std::{fs::DirBuilder, io};
+use anyhow::{Context, Error, Result, bail};
+use fs_extra::dir::{copy, get_dir_content, CopyOptions};
+use rsass::{compile_scss_path, output};
+use std::{
+    fs::{self, DirBuilder},
+    io,
+    path::Path,
+};
 
 pub async fn build() {
     info!("Building public static website");
@@ -18,8 +24,6 @@ pub async fn build() {
                 return;
             }
         }
-    } else {
-        debug!("Successfully created dist dir");
     };
 
     debug!("Copying content of static dir to dist");
@@ -31,7 +35,53 @@ pub async fn build() {
     if let Err(err) = copy(static_dir, dist_dir, &copy_opts) {
         error!("Error while copying static dir to dist: {:#}", err);
         return;
-    } else {
-        debug!("Successfully copied static dir to dist");
     }
+
+    debug!("Building SCSS");
+    if let Err(err) = build_scss().await {
+        error!("Failed to build SCSS: {:#}", err);
+    }
+}
+
+async fn build_scss() -> Result<()> {
+    let scss_dir = "src/web/scss";
+    let css_dir = "dist/css";
+    let scss_dir_contents = get_dir_content(scss_dir)?;
+
+    debug!("Creating dist/css directory");
+    if let Err(err) = fs::create_dir(css_dir) {
+        match err.kind() {
+            io::ErrorKind::AlreadyExists => {
+                debug!("CSS dir already exists");
+            },
+            _ => bail!("Failed to create CSS dir")
+        }
+    };
+
+    for scss_file in scss_dir_contents.files {
+        let scss_path = Path::new(&scss_file);
+        let filename = scss_path
+            .file_name()
+            .ok_or(Error::msg("Failed to get SCSS File name"))?;
+
+        if filename.to_string_lossy().starts_with("_") {
+            debug!("Ignoring SCSS partial file: {}", scss_file);
+        } else {
+            debug!("Compiling SCSS file: {}", scss_file);
+            let format = output::Format {
+                style: output::Style::Compressed,
+                ..Default::default()
+            };
+            let css = compile_scss_path(scss_path, format)?;
+            let css = String::from_utf8(css)?;
+
+            let css_file = Path::new(css_dir).join(filename);
+            let css_file = css_file.as_path();
+            debug!("Writing SCSS to CSS file: {}", css_file.display());
+            fs::write(css_file, css)
+                .with_context(|| format!("Writing CSS File: {}", css_file.display()))?;
+        }
+    }
+
+    Ok(())
 }

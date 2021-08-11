@@ -6,7 +6,7 @@ use rocket_sync_db_pools::diesel;
 use serde::Serialize;
 use serde_json::json;
 
-use crate::{MeetupEvent, web::EntropyWebError};
+use crate::{MeetupEvent};
 
 use super::{EntropyWebResult, EntropyDbConn};
 
@@ -60,7 +60,7 @@ async fn home(db: EntropyDbConn) -> EntropyWebResult<Template> {
                 .load::<MeetupEvent>(conn)
         })
         .await
-        .map_err(|e| EntropyWebError::DbError(e))?;
+        .map_err(anyhow::Error::from)?;
 
     let events: Vec<Event> = events.into_iter().map(|e| e.into()).collect();
 

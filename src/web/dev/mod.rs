@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use anyhow::Error;
 use rocket::http::ContentType;
 use rocket::response::Debug;
 use rocket::{
@@ -11,38 +12,30 @@ use rocket_dyn_templates::Template;
 use rocket_sync_db_pools::{database, diesel};
 use rsass::{compile_scss_path, output};
 
-mod home;
-mod events;
 mod event_details;
+mod events;
+mod home;
 
 #[database("entropy_db")]
 pub struct EntropyDbConn(diesel::SqliteConnection);
 
-#[derive(Debug)]
-pub enum EntropyWebError {
-    DbError(diesel::result::Error),
-    ScssError(rsass::Error),
-    UnexpectedError(String)
-}
-
-pub type EntropyWebResult<T> = Result<T, Debug<EntropyWebError>>;
+pub type EntropyWebResult<T> = Result<T, Debug<anyhow::Error>>;
 
 #[get("/<file>")]
 async fn css(file: String) -> EntropyWebResult<(ContentType, String)> {
-    let css_base_path = Path::new("src/web/static/scss");
-    let path = css_base_path.join(Path::new(&format!("{}.scss", file)));
+    let scss_dir = Path::new("src/web/scss");
+    let path = scss_dir.join(Path::new(&format!("{}.scss", file)));
     let path = path.as_path();
-
     let format = output::Format {
         style: output::Style::Introspection,
         ..Default::default()
     };
-    let css = compile_scss_path(path, format).map_err(|e| EntropyWebError::ScssError(e))?;
-    let css = String::from_utf8(css).map_err(|e| EntropyWebError::UnexpectedError(format!("Failed to convert css to string: {}", e)))?;
+
+    let css = compile_scss_path(path, format).map_err(Error::from)?;
+    let css = String::from_utf8(css).map_err(Error::from)?;
 
     Ok((ContentType::CSS, css))
 }
-
 
 fn app() -> Rocket<Build> {
     let figment = Figment::from(rocket::Config::default())
