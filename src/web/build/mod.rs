@@ -1,4 +1,5 @@
-use anyhow::{Context, Error, Result, bail};
+use super::dev::home::build as build_home;
+use anyhow::{bail, Context, Error, Result};
 use fs_extra::dir::{copy, get_dir_content, CopyOptions};
 use rsass::{compile_scss_path, output};
 use std::{
@@ -41,6 +42,11 @@ pub async fn build() {
     if let Err(err) = build_scss().await {
         error!("Failed to build SCSS: {:#}", err);
     }
+
+    debug!("Building HTML");
+    if let Err(err) = build_html().await {
+        error!("Failed to build HTML: {:#}", err);
+    }
 }
 
 async fn build_scss() -> Result<()> {
@@ -53,8 +59,8 @@ async fn build_scss() -> Result<()> {
         match err.kind() {
             io::ErrorKind::AlreadyExists => {
                 debug!("CSS dir already exists");
-            },
-            _ => bail!("Failed to create CSS dir")
+            }
+            _ => bail!("Failed to create CSS dir"),
         }
     };
 
@@ -83,6 +89,17 @@ async fn build_scss() -> Result<()> {
                 .with_context(|| format!("Writing CSS File: {}", css_file.display()))?;
         }
     }
+
+    Ok(())
+}
+
+async fn build_html() -> Result<()> {
+    let rocket = crate::web::dev::app();
+    let client = rocket::local::asynchronous::Client::untracked(rocket).await?;
+    let dist_path = Path::new("dist");
+
+    debug!("Building home page");
+    build_home(client, dist_path).await?;
 
     Ok(())
 }

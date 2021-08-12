@@ -1,14 +1,14 @@
 use chrono::Utc;
 use diesel::prelude::*;
-use rocket::Route;
+use rocket::{local::asynchronous::Client, Route};
 use rocket_dyn_templates::Template;
 use rocket_sync_db_pools::diesel;
 use serde::Serialize;
 use serde_json::json;
 
-use crate::{MeetupEvent};
+use crate::MeetupEvent;
 
-use super::{EntropyWebResult, EntropyDbConn};
+use super::{EntropyDbConn, EntropyWebResult};
 
 #[derive(Serialize)]
 struct Event {
@@ -71,4 +71,19 @@ async fn home(db: EntropyDbConn) -> EntropyWebResult<Template> {
 
 pub fn routes() -> Vec<Route> {
     routes![home]
+}
+
+pub async fn build(client: Client, dist: &std::path::Path) -> anyhow::Result<()> {
+    let path = dist.join("index.html");
+
+    let html = client.get("/").dispatch().await;
+    let html = html
+        .into_string()
+        .await
+        .expect("Failed to render home template");
+
+    debug!("Writing home page to dist");
+    std::fs::write(path, html)?;
+
+    Ok(())
 }

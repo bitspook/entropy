@@ -12,9 +12,9 @@ use rocket_dyn_templates::Template;
 use rocket_sync_db_pools::{database, diesel};
 use rsass::{compile_scss_path, output};
 
-mod event_details;
-mod events;
-mod home;
+pub mod event_details;
+pub mod events;
+pub mod home;
 
 #[database("entropy_db")]
 pub struct EntropyDbConn(diesel::SqliteConnection);
@@ -38,7 +38,7 @@ async fn css(file: String) -> EntropyWebResult<(ContentType, String)> {
     Ok((ContentType::CSS, css))
 }
 
-fn app() -> Rocket<Build> {
+pub fn app() -> Rocket<Build> {
     let figment = Figment::from(rocket::Config::default())
         .merge(("template_dir", "src/web/templates"))
         .merge(("databases.entropy_db.url", "entropy.sqlite3"))
