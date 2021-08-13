@@ -1,6 +1,6 @@
 use crate::{
     meetup::util::{fix_meetup_datetime, make_group_events_request, make_meetup_image_url},
-    Coordinates, PoachedResult, PoacherMessage, PoacherError, ScraperWarning,
+    Coordinates, PoachedResult, PoacherError, PoacherMessage, ScraperWarning,
 };
 use chrono::DateTime;
 use log::debug;

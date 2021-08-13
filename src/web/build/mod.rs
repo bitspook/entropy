@@ -1,3 +1,4 @@
+use super::dev::events::build as build_events_list;
 use super::dev::home::build as build_home;
 use anyhow::{bail, Context, Error, Result};
 use fs_extra::dir::{copy, get_dir_content, CopyOptions};
@@ -99,7 +100,10 @@ async fn build_html() -> Result<()> {
     let dist_path = Path::new("dist");
 
     debug!("Building home page");
-    build_home(client, dist_path).await?;
+    build_home(&client, dist_path).await?;
+
+    debug!("Building events list page");
+    build_events_list(&client, dist_path).await?;
 
     Ok(())
 }

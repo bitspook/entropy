@@ -1,6 +1,9 @@
+use std::{fs, path::Path};
+
+use anyhow::{bail, Error, Result};
 use chrono::Utc;
 use diesel::prelude::*;
-use rocket::Route;
+use rocket::{local::asynchronous::Client, Route};
 use rocket_dyn_templates::Template;
 use rocket_sync_db_pools::diesel;
 use serde::Serialize;
@@ -71,4 +74,40 @@ async fn events(db: EntropyDbConn) -> EntropyWebResult<Template> {
 
 pub fn routes() -> Vec<Route> {
     routes![events]
+}
+
+pub async fn build(client: &Client, dist: &Path) -> Result<()> {
+    let url = "/events";
+    let dist_dir = dist.join(Path::new(url).strip_prefix("/")?);
+    let dist_dir = dist_dir.as_path();
+    let dist_filepath = dist_dir.join("index.html");
+    let dist_filepath = dist_filepath.as_path();
+
+    debug!("Creating directory: {}", dist_dir.display());
+    if let Err(err) = fs::create_dir_all(dist_dir) {
+        match err.kind() {
+            std::io::ErrorKind::AlreadyExists => {
+                debug!("'{}' already exists. Ignoring.", dist_dir.display());
+            }
+            _ => {
+                bail!(
+                    "Failed to create directory ({}): {:#}",
+                    dist_dir.display(),
+                    err
+                );
+            }
+        }
+    }
+
+    debug!("Building HTML for '{}'", url);
+    let html = client
+        .get(url)
+        .dispatch()
+        .await
+        .into_string()
+        .await
+        .ok_or(Error::msg(format!("Failed to get HTML for {}", url)))?;
+
+    debug!("Writing HTML for {} to {}", url, dist_filepath.display());
+    fs::write(dist_filepath, html).map_err(Error::from)
 }

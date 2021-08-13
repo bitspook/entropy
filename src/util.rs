@@ -79,11 +79,7 @@ pub async fn search_events_of_chandigarh(meetup: Arc<Meetup>, tx: Sender<Poacher
     let tx = tx.clone();
 
     tokio::spawn(async move {
-        if let Err(err) = meetup
-            .as_ref()
-            .search_events(&chd_coords, radius)
-            .await
-        {
+        if let Err(err) = meetup.as_ref().search_events(&chd_coords, radius).await {
             tx.send(PoacherMessage::Error(err)).await.unwrap();
         };
     });

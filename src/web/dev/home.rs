@@ -73,7 +73,7 @@ pub fn routes() -> Vec<Route> {
     routes![home]
 }
 
-pub async fn build(client: Client, dist: &std::path::Path) -> anyhow::Result<()> {
+pub async fn build(client: &Client, dist: &std::path::Path) -> anyhow::Result<()> {
     let path = dist.join("index.html");
 
     let html = client.get("/").dispatch().await;

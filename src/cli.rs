@@ -8,7 +8,10 @@ use tokio::{
 };
 
 use crate::db;
-use crate::util::{process_scraped_meetup_event, process_scraped_meetup_group, search_events_of_chandigarh, search_groups_of_chandigarh};
+use crate::util::{
+    process_scraped_meetup_event, process_scraped_meetup_group, search_events_of_chandigarh,
+    search_groups_of_chandigarh,
+};
 
 #[derive(StructOpt, Debug)]
 pub enum MeetupCmd {
@@ -50,7 +53,7 @@ pub enum WebCmd {
     /// Run development server
     Dev,
     /// Build the public static site
-    Build
+    Build,
 }
 
 #[derive(StructOpt, Debug)]
@@ -58,7 +61,7 @@ pub enum CliCmd {
     /// Manage scrappers for aggregating content from web
     Poach(PoachCmd),
     /// Manage entropy web apps
-    Web(WebCmd)
+    Web(WebCmd),
 }
 
 #[derive(StructOpt, Debug)]
@@ -129,12 +132,10 @@ pub async fn run(cmd: CliCmd) -> Result<(), &'static str> {
 
             poacher_meditation(rx).await;
         }
-        CliCmd::Web(web_cmd) => {
-            match web_cmd {
-                WebCmd::Dev => web::run().await,
-                WebCmd::Build => web::build().await
-            }
-        } ,
+        CliCmd::Web(web_cmd) => match web_cmd {
+            WebCmd::Dev => web::run().await,
+            WebCmd::Build => web::build().await,
+        },
     };
 
     Ok(())
