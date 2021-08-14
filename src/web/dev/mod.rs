@@ -17,7 +17,7 @@ pub mod events;
 pub mod home;
 
 #[database("entropy_db")]
-pub struct EntropyDbConn(diesel::SqliteConnection);
+pub struct EntropyDb(diesel::SqliteConnection);
 
 pub type EntropyWebResult<T> = Result<T, Debug<anyhow::Error>>;
 
@@ -52,7 +52,7 @@ pub fn app() -> Rocket<Build> {
         .mount("/css", routes![css])
         .mount("/", FileServer::from("src/web/static"))
         .attach(Template::fairing())
-        .attach(EntropyDbConn::fairing())
+        .attach(EntropyDb::fairing())
 }
 
 pub async fn run() -> () {

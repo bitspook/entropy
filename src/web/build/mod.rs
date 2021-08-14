@@ -1,4 +1,5 @@
 use super::dev::events::build as build_events_list;
+use super::dev::event_details::build as build_event_details;
 use super::dev::home::build as build_home;
 use anyhow::{bail, Context, Error, Result};
 use fs_extra::dir::{copy, get_dir_content, CopyOptions};
@@ -104,6 +105,10 @@ async fn build_html() -> Result<()> {
 
     debug!("Building events list page");
     build_events_list(&client, dist_path).await?;
+
+    debug!("Building event details pages");
+    let a_client = std::sync::Arc::new(client);
+    build_event_details(a_client, dist_path).await?;
 
     Ok(())
 }

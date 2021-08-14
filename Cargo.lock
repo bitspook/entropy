@@ -530,6 +530,7 @@ dependencies = [
  "diesel_migrations",
  "env_logger",
  "fs_extra",
+ "futures",
  "log",
  "reqwest",
  "rocket",

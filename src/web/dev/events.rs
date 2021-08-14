@@ -11,7 +11,7 @@ use serde_json::json;
 
 use crate::MeetupEvent;
 
-use super::{EntropyDbConn, EntropyWebResult};
+use super::{EntropyDb, EntropyWebResult};
 
 #[derive(Serialize)]
 struct Event {
@@ -49,7 +49,7 @@ impl From<MeetupEvent> for Event {
 }
 
 #[get("/")]
-async fn events(db: EntropyDbConn) -> EntropyWebResult<Template> {
+async fn events(db: EntropyDb) -> EntropyWebResult<Template> {
     use crate::db::schema::meetup_events::dsl::*;
 
     let events: Vec<MeetupEvent> = db
