@@ -1,6 +1,6 @@
-use super::dev::events::build as build_events_list;
-use super::dev::event_details::build as build_event_details;
-use super::dev::home::build as build_home;
+use super::routes::event_details::build as build_event_details;
+use super::routes::events::build as build_events_list;
+use super::routes::home::build as build_home;
 use anyhow::{bail, Context, Error, Result};
 use fs_extra::dir::{copy, get_dir_content, CopyOptions};
 use rsass::{compile_scss_path, output};
@@ -49,6 +49,8 @@ pub async fn build() {
     if let Err(err) = build_html().await {
         error!("Failed to build HTML: {:#}", err);
     }
+
+    info!("Build Successful!!");
 }
 
 async fn build_scss() -> Result<()> {
@@ -96,7 +98,7 @@ async fn build_scss() -> Result<()> {
 }
 
 async fn build_html() -> Result<()> {
-    let rocket = crate::web::dev::app();
+    let rocket = crate::web::server::app();
     let client = rocket::local::asynchronous::Client::untracked(rocket).await?;
     let dist_path = Path::new("dist");
 

@@ -1,6 +1,3 @@
-use std::{fs, path::Path};
-
-use anyhow::{bail, Error, Result};
 use chrono::Utc;
 use diesel::prelude::*;
 use rocket::{local::asynchronous::Client, Route};
@@ -11,18 +8,18 @@ use serde_json::json;
 
 use crate::MeetupEvent;
 
-use super::{EntropyDb, EntropyWebResult};
+use crate::web::{Db, WebResult};
 
 #[derive(Serialize)]
 struct Event {
     title: String,
+    slug: String,
     description: Option<String>,
     start_date: String,
     start_time: String,
     end_time: String,
     charges: String,
     is_online: bool,
-    slug: String,
 }
 
 impl From<MeetupEvent> for Event {
@@ -35,6 +32,7 @@ impl From<MeetupEvent> for Event {
             title: event.title,
             description: event.description,
             start_date,
+            slug: event.slug,
             start_time,
             end_time,
             charges: event
@@ -43,13 +41,12 @@ impl From<MeetupEvent> for Event {
                 .or(Some("Free".to_string()))
                 .unwrap(),
             is_online: event.is_online,
-            slug: event.slug,
         }
     }
 }
 
 #[get("/")]
-async fn events(db: EntropyDb) -> EntropyWebResult<Template> {
+async fn home(db: Db) -> WebResult<Template> {
     use crate::db::schema::meetup_events::dsl::*;
 
     let events: Vec<MeetupEvent> = db
@@ -59,7 +56,7 @@ async fn events(db: EntropyDb) -> EntropyWebResult<Template> {
             meetup_events
                 .filter(start_time.gt(today))
                 .order(start_time.asc())
-                .limit(50)
+                .limit(5)
                 .load::<MeetupEvent>(conn)
         })
         .await
@@ -69,45 +66,24 @@ async fn events(db: EntropyDb) -> EntropyWebResult<Template> {
 
     let context = json!({ "events": events });
 
-    Ok(Template::render("events", context))
+    Ok(Template::render("home", context))
 }
 
 pub fn routes() -> Vec<Route> {
-    routes![events]
+    routes![home]
 }
 
-pub async fn build(client: &Client, dist: &Path) -> Result<()> {
-    let url = "/events";
-    let dist_dir = dist.join(Path::new(url).strip_prefix("/")?);
-    let dist_dir = dist_dir.as_path();
-    let dist_filepath = dist_dir.join("index.html");
-    let dist_filepath = dist_filepath.as_path();
+pub async fn build(client: &Client, dist: &std::path::Path) -> anyhow::Result<()> {
+    let path = dist.join("index.html");
 
-    debug!("Creating directory: {}", dist_dir.display());
-    if let Err(err) = fs::create_dir_all(dist_dir) {
-        match err.kind() {
-            std::io::ErrorKind::AlreadyExists => {
-                debug!("'{}' already exists. Ignoring.", dist_dir.display());
-            }
-            _ => {
-                bail!(
-                    "Failed to create directory ({}): {:#}",
-                    dist_dir.display(),
-                    err
-                );
-            }
-        }
-    }
-
-    debug!("Building HTML for '{}'", url);
-    let html = client
-        .get(url)
-        .dispatch()
-        .await
+    let html = client.get("/").dispatch().await;
+    let html = html
         .into_string()
         .await
-        .ok_or(Error::msg(format!("Failed to get HTML for {}", url)))?;
+        .expect("Failed to render home template");
 
-    debug!("Writing HTML for {} to {}", url, dist_filepath.display());
-    fs::write(dist_filepath, html).map_err(Error::from)
+    debug!("Writing home page to dist");
+    std::fs::write(path, html)?;
+
+    Ok(())
 }

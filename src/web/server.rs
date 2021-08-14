@@ -2,27 +2,18 @@ use std::path::Path;
 
 use anyhow::Error;
 use rocket::http::ContentType;
-use rocket::response::Debug;
 use rocket::{
     figment::{providers::Env, Figment, Profile},
     fs::FileServer,
     Build, Rocket,
 };
 use rocket_dyn_templates::Template;
-use rocket_sync_db_pools::{database, diesel};
 use rsass::{compile_scss_path, output};
 
-pub mod event_details;
-pub mod events;
-pub mod home;
-
-#[database("entropy_db")]
-pub struct EntropyDb(diesel::SqliteConnection);
-
-pub type EntropyWebResult<T> = Result<T, Debug<anyhow::Error>>;
+use crate::web::{routes, Db, WebResult};
 
 #[get("/<file>")]
-async fn css(file: String) -> EntropyWebResult<(ContentType, String)> {
+async fn css(file: String) -> WebResult<(ContentType, String)> {
     let scss_dir = Path::new("src/web/scss");
     let path = scss_dir.join(Path::new(&file));
     let path = path.with_extension("scss");
@@ -46,13 +37,13 @@ pub fn app() -> Rocket<Build> {
         .select(Profile::from_env_or("ENTROPY_PROFILE", "default"));
 
     rocket::custom(figment)
-        .mount("/", home::routes())
-        .mount("/events", events::routes())
-        .mount("/events", event_details::routes())
+        .mount("/", routes::home::routes())
+        .mount("/", routes::events::routes())
+        .mount("/", routes::event_details::routes())
         .mount("/css", routes![css])
         .mount("/", FileServer::from("src/web/static"))
         .attach(Template::fairing())
-        .attach(EntropyDb::fairing())
+        .attach(Db::fairing())
 }
 
 pub async fn run() -> () {

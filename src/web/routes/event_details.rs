@@ -8,7 +8,7 @@ use rocket_sync_db_pools::diesel;
 use serde::Serialize;
 use serde_json::json;
 
-use super::{EntropyDb, EntropyWebResult};
+use crate::web::{Db, WebResult};
 use crate::MeetupEvent;
 
 #[derive(Serialize)]
@@ -48,8 +48,8 @@ impl From<MeetupEvent> for Event {
     }
 }
 
-#[get("/<event_slug>")]
-async fn event_details(event_slug: String, db: EntropyDb) -> EntropyWebResult<Template> {
+#[get("/events/<event_slug>")]
+async fn event_details(event_slug: String, db: Db) -> WebResult<Template> {
     use crate::db::schema::meetup_events::dsl::*;
 
     let event: MeetupEvent = db
@@ -102,7 +102,9 @@ async fn build_one(client: std::sync::Arc<Client>, url: String, dist_dir: PathBu
     let dist_filepath = dist_dir.join("index.html");
     let dist_filepath = dist_filepath.as_path();
     debug!("Writing HTML for {} to {}", url, dist_filepath.display());
-    tokio::fs::write(dist_filepath, html).await.map_err(Error::from)
+    tokio::fs::write(dist_filepath, html)
+        .await
+        .map_err(Error::from)
 }
 
 pub async fn build(client: std::sync::Arc<Client>, dist: &Path) -> Result<()> {
