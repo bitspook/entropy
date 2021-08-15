@@ -11,6 +11,19 @@ use serde_json::json;
 use crate::web::{Db, WebResult};
 use crate::MeetupEvent;
 
+#[derive(Queryable)]
+struct EventData {
+    title: String,
+    slug: String,
+    link: String,
+    description: Option<String>,
+    start_time: chrono::NaiveDateTime,
+    end_time: chrono::NaiveDateTime,
+    charges: Option<f64>,
+    is_online: bool,
+    group_name: Option<String>,
+}
+
 #[derive(Serialize)]
 struct Event {
     title: String,
@@ -22,10 +35,11 @@ struct Event {
     end_time: String,
     charges: String,
     is_online: bool,
+    group_name: String,
 }
 
-impl From<MeetupEvent> for Event {
-    fn from(event: MeetupEvent) -> Event {
+impl From<EventData> for Event {
+    fn from(event: EventData) -> Event {
         let start_date = event.start_time.format("%A, %B %e").to_string();
         let start_time = event.start_time.format("%l:%M%P").to_string();
         let end_time = event.end_time.format("%l:%M%P").to_string();
@@ -44,6 +58,7 @@ impl From<MeetupEvent> for Event {
                 .or(Some("Free".to_string()))
                 .unwrap(),
             is_online: event.is_online,
+            group_name: event.group_name.unwrap_or("".to_string())
         }
     }
 }
@@ -51,17 +66,31 @@ impl From<MeetupEvent> for Event {
 #[get("/events/<event_slug>")]
 async fn event_details(event_slug: String, db: Db) -> WebResult<Template> {
     use crate::db::schema::meetup_events::dsl::*;
+    use crate::db::schema::meetup_groups as groups;
 
-    let event: MeetupEvent = db
-        .run(|conn| {
+    let event = db
+        .run(|conn| -> Result<EventData, diesel::result::Error> {
             meetup_events
                 .filter(slug.eq(event_slug))
-                .first::<MeetupEvent>(conn)
+                .left_join(groups::table.on(group_slug.eq(groups::columns::slug)))
+                .select((
+                    title,
+                    slug,
+                    link,
+                    description,
+                    start_time,
+                    end_time,
+                    charges,
+                    is_online,
+                    groups::dsl::name.nullable()
+                ))
+                .first(conn)
         })
         .await
         .map_err(Error::from)?;
 
     let event: Event = event.into();
+    let event: Event = Event { ..event };
     let context = json!({ "event": event });
 
     Ok(Template::render("event-details", context))

@@ -16,7 +16,7 @@
           {{ event.title }}
           <div class="meta">
             <div class="key">via</div>
-            <a href="{{ event.link }}" class="value">Meetup.com</a>
+            <a href="{{ event.link }}" class="value">{{ event.group_name }} </a>
           </div>
         </div>
         <div class="description"> {{ event.description | linebreaksbr | safe }}</div>
