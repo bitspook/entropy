@@ -30,7 +30,7 @@
     <div class='peeky-binder'>
       <div class="peeky-menu">
         <div class="menu-item active">
-          <div class="counter-chart">4</div>
+          <div class="counter-chart">{{ upcoming_events_count }}</div>
           <div class="content">
             <div class="title">Events</div>
             <div class="description">

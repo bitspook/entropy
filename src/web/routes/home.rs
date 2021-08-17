@@ -1,4 +1,6 @@
+use anyhow::{Error, Result};
 use chrono::Utc;
+use diesel::dsl::count_star;
 use diesel::prelude::*;
 use rocket::{local::asynchronous::Client, Route};
 use rocket_dyn_templates::Template;
@@ -49,22 +51,29 @@ impl From<MeetupEvent> for Event {
 async fn home(db: Db) -> WebResult<Template> {
     use crate::db::schema::meetup_events::dsl::*;
 
-    let events: Vec<MeetupEvent> = db
+    let (events, count) = db
         .run(|conn| {
             let today = Utc::now().naive_utc();
 
-            meetup_events
+            let query = meetup_events
                 .filter(start_time.gt(today))
-                .order(start_time.asc())
+                .order(start_time.asc());
+
+            let events = query
                 .limit(5)
                 .load::<MeetupEvent>(conn)
+                .map_err(Error::from)?;
+            let count: i64 = query.count().get_result(conn).map_err(Error::from)?;
+
+            let res: Result<(Vec<MeetupEvent>, i64)> = Ok((events, count));
+
+            res
         })
-        .await
-        .map_err(anyhow::Error::from)?;
+        .await?;
 
     let events: Vec<Event> = events.into_iter().map(|e| e.into()).collect();
 
-    let context = json!({ "events": events });
+    let context = json!({ "events": events, "upcoming_events_count": count });
 
     Ok(Template::render("home", context))
 }
