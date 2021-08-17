@@ -3,3 +3,4 @@
 /result-lib
 /result-doc
 *.sqlite3*
+/dist/

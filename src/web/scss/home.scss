@@ -86,11 +86,14 @@
   font-size: 2rem;
   font-weight: 300;
   margin-bottom: 1rem;
-}
+  display: block;
+  text-decoration: none;
+  color: var(--main-text-color);
 
-.peeky-menu .menu-item .title:hover {
-  border-bottom: 1px solid var(--highlighted-text-color);
-  padding-bottom: 0.2rem;
+  &:hover {
+    border-bottom: 1px solid var(--highlighted-text-color);
+    padding-bottom: 0.2rem;
+  }
 }
 
 .peeky-menu .menu-item .description {

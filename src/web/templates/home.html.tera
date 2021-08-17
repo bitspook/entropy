@@ -43,7 +43,7 @@
         <div class="menu-item">
           <div class="counter-chart">1</div>
           <div class="content">
-            <div class="title">Initiatives</div>
+            <a href="https://github.com/channikhabra/entropy/tree/master/docs/initiatives" class="title">Initiatives</a>
             <div class="description">
               Problems we, as a group, have picked and are working towards
               solving.
@@ -54,7 +54,7 @@
         <div class="menu-item">
           <div class="counter-chart">1</div>
           <div class="content">
-            <div class="title">RFCs</div>
+            <a href="https://github.com/channikhabra/entropy/tree/master/docs/rfcs" class="title">RFCs</a>
             <div class="description">
               Problems members have proposed, which are under
               planning/consideration to be picked by the group as intiatives.
