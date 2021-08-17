@@ -1,0 +1,31 @@
+name: Build the entropy site
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_n_run:
+    name: Build and run entropy app
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --all-features
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: entropy
+          path: target/release/entropy
+
+      - run: target/release/entropy poach meetup events --city Chandigarh -v && target/release/entropy web build -v
+
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist

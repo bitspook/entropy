@@ -1,0 +1,29 @@
+name: Re-build the entropy site
+
+on:
+  schedule:
+    - cron: "0 */2 * * *"
+
+jobs:
+  refresh:
+    name: Re-poach events and rebuild entropy site
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          name: entropy
+          path: ./
+
+      - run: |
+          chmod +x ./entropy
+          ./entropy poach meetup events --city Chandigarh -v
+          ./entropy web build -v
+
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
