@@ -2,9 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8"/>
+    {% if base_url %}<base href="{{ base_url | safe }}" />{% endif %}
     <title>Tech events in Chandigarh (Entropy Hackerspace)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="/css/events.css" rel="stylesheet"/>
+    <link href="css/events.css" rel="stylesheet"/>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
   </head>
   <body>
     {% include "partials/top-nav" %}
@@ -20,7 +22,7 @@
         <div class="list-item">
           <div class="icon"></div>
           <div class="li-content">
-            <a href="/events/{{ event.slug }}" class="title sneaky-link">{{ event.title }}</a>
+            <a href="events/{{ event.slug }}" class="title sneaky-link">{{ event.title }}</a>
             <div class="meta">
               <div class="meta-item">
                 <div class="icon"></div>

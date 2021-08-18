@@ -23,7 +23,11 @@ jobs:
           name: entropy
           path: target/release/entropy
 
-      - run: target/release/entropy poach meetup events --city Chandigarh -v && target/release/entropy web build -v
+      - run: |
+          target/release/entropy poach meetup events --city Chandigarh -v
+          target/release/entropy web build -v
+        env:
+          ENTROPY_STATIC_SITE: '{base_url="/entropy/"}'
 
       - uses: peaceiris/actions-gh-pages@v3
         with:

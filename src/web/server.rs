@@ -1,6 +1,7 @@
 use std::path::Path;
 
 use anyhow::Error;
+use figment::providers::Serialized;
 use rocket::http::ContentType;
 use rocket::{figment::Figment, fs::FileServer, Build, Rocket};
 use rocket_dyn_templates::Template;
@@ -30,6 +31,8 @@ pub fn app() -> Rocket<Build> {
     let config = EntropyConfig::load().expect("Invlaid Configuration");
 
     let figment = Figment::from(rocket::Config::default())
+        .merge(("port", config.server.port))
+        .merge(("address", config.server.host))
         .merge(("template_dir", config.server.template_dir))
         .merge(("databases.entropy_db.url", config.database_path));
 

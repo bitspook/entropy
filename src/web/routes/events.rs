@@ -9,7 +9,7 @@ use rocket_sync_db_pools::diesel;
 use serde::Serialize;
 use serde_json::json;
 
-use crate::MeetupEvent;
+use crate::{EntropyConfig, MeetupEvent};
 
 use crate::web::{Db, WebResult};
 
@@ -51,6 +51,8 @@ impl From<MeetupEvent> for Event {
 #[get("/events")]
 async fn events(db: Db) -> WebResult<Template> {
     use crate::db::schema::meetup_events::dsl::*;
+    let config = EntropyConfig::load()?;
+    let base_url = config.static_site.base_url;
 
     let events: Vec<MeetupEvent> = db
         .run(|conn| {
@@ -67,7 +69,7 @@ async fn events(db: Db) -> WebResult<Template> {
 
     let events: Vec<Event> = events.into_iter().map(|e| e.into()).collect();
 
-    let context = json!({ "events": events });
+    let context = json!({ "events": events, "base_url": base_url });
 
     Ok(Template::render("events", context))
 }

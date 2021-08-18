@@ -8,7 +8,10 @@ use rocket_sync_db_pools::diesel;
 use serde::Serialize;
 use serde_json::json;
 
-use crate::web::{Db, WebResult};
+use crate::{
+    web::{Db, WebResult},
+    EntropyConfig,
+};
 
 #[derive(Queryable)]
 struct EventData {
@@ -57,7 +60,7 @@ impl From<EventData> for Event {
                 .or(Some("Free".to_string()))
                 .unwrap(),
             is_online: event.is_online,
-            group_name: event.group_name.unwrap_or("".to_string())
+            group_name: event.group_name.unwrap_or("".to_string()),
         }
     }
 }
@@ -66,6 +69,9 @@ impl From<EventData> for Event {
 async fn event_details(event_slug: String, db: Db) -> WebResult<Template> {
     use crate::db::schema::meetup_events::dsl::*;
     use crate::db::schema::meetup_groups as groups;
+
+    let config = EntropyConfig::load()?;
+    let base_url = config.static_site.base_url;
 
     let event = db
         .run(|conn| -> Result<EventData, diesel::result::Error> {
@@ -81,7 +87,7 @@ async fn event_details(event_slug: String, db: Db) -> WebResult<Template> {
                     end_time,
                     charges,
                     is_online,
-                    groups::dsl::name.nullable()
+                    groups::dsl::name.nullable(),
                 ))
                 .first(conn)
         })
@@ -90,7 +96,7 @@ async fn event_details(event_slug: String, db: Db) -> WebResult<Template> {
 
     let event: Event = event.into();
     let event: Event = Event { ..event };
-    let context = json!({ "event": event });
+    let context = json!({ "event": event, "base_url": base_url });
 
     Ok(Template::render("event-details", context))
 }

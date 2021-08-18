@@ -5,7 +5,7 @@ use figment::{
 };
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct StaticSiteConfig {
     pub dist_path: String,
     pub base_url: String,
@@ -20,7 +20,7 @@ impl Default for StaticSiteConfig {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ServerConfig {
     pub port: i32,
     pub host: String,
@@ -41,7 +41,7 @@ impl Default for ServerConfig {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct EntropyConfig {
     pub database_path: String,
     pub static_site: StaticSiteConfig,
@@ -63,7 +63,7 @@ impl EntropyConfig {
         let config: EntropyConfig = Figment::new()
             .merge(Serialized::defaults(EntropyConfig::default()))
             .merge(Toml::file("Entropy.toml"))
-            .merge(Env::prefixed("ENTROPY_"))
+            .merge(Env::prefixed("ENTROPY_").global())
             .extract()
             .with_context(|| "Invalid Entropy Configuration.")?;
 
