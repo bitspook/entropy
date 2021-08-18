@@ -1,6 +1,5 @@
 use anyhow::{Error, Result};
 use chrono::Utc;
-use diesel::dsl::count_star;
 use diesel::prelude::*;
 use rocket::{local::asynchronous::Client, Route};
 use rocket_dyn_templates::Template;

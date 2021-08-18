@@ -3,6 +3,9 @@ extern crate diesel;
 
 use serde_json as json;
 
+mod config;
+pub use config::EntropyConfig;
+
 pub mod db;
 mod meetup;
 pub mod web;

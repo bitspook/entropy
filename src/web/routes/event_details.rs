@@ -9,7 +9,6 @@ use serde::Serialize;
 use serde_json::json;
 
 use crate::web::{Db, WebResult};
-use crate::MeetupEvent;
 
 #[derive(Queryable)]
 struct EventData {
@@ -141,7 +140,7 @@ pub async fn build(client: std::sync::Arc<Client>, dist: &Path) -> Result<()> {
         use crate::db::schema::meetup_events::dsl::*;
 
         debug!("Retrieving upcoming event slugs");
-        let conn = crate::db::establish_connection();
+        let conn = crate::db::establish_connection()?;
         let today = chrono::Utc::now().naive_utc();
 
         meetup_events

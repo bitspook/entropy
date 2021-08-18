@@ -1,9 +1,9 @@
+use anyhow::Result;
 use env_logger::Env;
 use structopt::StructOpt;
 use tokio;
 
-#[macro_use]
-extern crate diesel;
+use entropy::db;
 
 #[macro_use]
 extern crate diesel_migrations;
@@ -12,7 +12,6 @@ extern crate diesel_migrations;
 extern crate rocket;
 
 mod cli;
-mod db;
 mod util;
 
 fn mk_logger(verbosity: i32) {
@@ -32,13 +31,15 @@ fn mk_logger(verbosity: i32) {
 embed_migrations!();
 
 #[tokio::main]
-async fn main() -> Result<(), &'static str> {
+async fn main() -> Result<()> {
     let cli_opts = cli::CliOpts::from_args();
 
     mk_logger(cli_opts.verbosity);
 
-    let conn = db::establish_connection();
-    embedded_migrations::run(&conn).expect("Failed to run db migrations");
+    let conn = db::establish_connection()?;
+    embedded_migrations::run(&conn)?;
 
-    cli::run(cli_opts.cmd).await
+    cli::run(cli_opts.cmd).await?;
+
+    Ok(())
 }

@@ -2,15 +2,12 @@ use std::path::Path;
 
 use anyhow::Error;
 use rocket::http::ContentType;
-use rocket::{
-    figment::{providers::Env, Figment, Profile},
-    fs::FileServer,
-    Build, Rocket,
-};
+use rocket::{figment::Figment, fs::FileServer, Build, Rocket};
 use rocket_dyn_templates::Template;
 use rsass::{compile_scss_path, output};
 
 use crate::web::{routes, Db, WebResult};
+use crate::EntropyConfig;
 
 #[get("/<file>")]
 async fn css(file: String) -> WebResult<(ContentType, String)> {
@@ -30,18 +27,18 @@ async fn css(file: String) -> WebResult<(ContentType, String)> {
 }
 
 pub fn app() -> Rocket<Build> {
+    let config = EntropyConfig::load().expect("Invlaid Configuration");
+
     let figment = Figment::from(rocket::Config::default())
-        .merge(("template_dir", "src/web/templates"))
-        .merge(("databases.entropy_db.url", "entropy.sqlite3"))
-        .merge(Env::prefixed("ENTROPY_").global())
-        .select(Profile::from_env_or("ENTROPY_PROFILE", "default"));
+        .merge(("template_dir", config.server.template_dir))
+        .merge(("databases.entropy_db.url", config.database_path));
 
     rocket::custom(figment)
         .mount("/", routes::home::routes())
         .mount("/", routes::events::routes())
         .mount("/", routes::event_details::routes())
         .mount("/css", routes![css])
-        .mount("/", FileServer::from("src/web/static"))
+        .mount("/", FileServer::from(config.server.static_dir))
         .attach(Template::fairing())
         .attach(Db::fairing())
 }

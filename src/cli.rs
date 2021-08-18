@@ -1,11 +1,13 @@
-use entropy::web;
-use entropy::{Meetup, MeetupResult, PoachedResult, PoacherMessage};
 use std::sync::Arc;
+use anyhow::{Result, bail};
 use structopt::StructOpt;
 use tokio::{
     self,
     sync::mpsc::{self, Receiver, Sender},
 };
+
+use entropy::web;
+use entropy::{Meetup, MeetupResult, PoachedResult, PoacherMessage};
 
 use crate::db;
 use crate::util::{
@@ -74,7 +76,7 @@ pub struct CliOpts {
     pub cmd: CliCmd,
 }
 
-pub async fn run(cmd: CliCmd) -> Result<(), &'static str> {
+pub async fn run(cmd: CliCmd) -> anyhow::Result<()> {
     match cmd {
         CliCmd::Poach(poach_opts) => {
             let (tx, rx): (Sender<PoacherMessage>, Receiver<PoacherMessage>) = mpsc::channel(1024);
@@ -95,7 +97,7 @@ pub async fn run(cmd: CliCmd) -> Result<(), &'static str> {
                                 } else {
                                     error!("Unsupported city: '{}'", city);
 
-                                    return Err("Unsupported city");
+                                    bail!("Unsupported city");
                                 }
                             } else {
                                 // TODO: Implement this part. Right now I am not
@@ -104,7 +106,7 @@ pub async fn run(cmd: CliCmd) -> Result<(), &'static str> {
                                 // how CLIs are created in Rust. Created #8 to
                                 // add these options if they're ever needed. Or
                                 // remove this code.
-                                return Err("Not Implemented");
+                                bail!("Not Implemented");
                             }
                         }
                         MeetupCmd::Events { city, .. } => {
@@ -114,7 +116,7 @@ pub async fn run(cmd: CliCmd) -> Result<(), &'static str> {
                                 } else {
                                     error!("Unsupported city: '{}'", city);
 
-                                    return Err("Unsupported city");
+                                    bail!("Unsupported city");
                                 }
                             } else {
                                 // TODO: Implement this part. Right now I am not
@@ -123,18 +125,18 @@ pub async fn run(cmd: CliCmd) -> Result<(), &'static str> {
                                 // how CLIs are created in Rust. Created #8 to
                                 // add these options if they're ever needed. Or
                                 // remove this code.
-                                return Err("Not Implemented");
+                                bail!("Not Implemented");
                             }
                         }
                     }
                 }
             };
 
-            poacher_meditation(rx).await;
+            poacher_meditation(rx).await?;
         }
         CliCmd::Web(web_cmd) => match web_cmd {
             WebCmd::Dev => web::run().await,
-            WebCmd::Build => web::build().await,
+            WebCmd::Build => web::build().await?,
         },
     };
 
@@ -142,8 +144,8 @@ pub async fn run(cmd: CliCmd) -> Result<(), &'static str> {
 }
 
 /// Absorb all the poacher messages from `rx` and spawn tasks to process them.
-async fn poacher_meditation(mut rx: Receiver<PoacherMessage>) {
-    let conn = db::establish_connection();
+async fn poacher_meditation(mut rx: Receiver<PoacherMessage>) -> Result<()>{
+    let conn = db::establish_connection()?;
     while let Some(msg) = rx.recv().await {
         match msg {
             PoacherMessage::Error(err) => {
@@ -163,5 +165,7 @@ async fn poacher_meditation(mut rx: Receiver<PoacherMessage>) {
                 warn!("Encountered warning: {:#?}", w)
             }
         }
-    }
+    };
+
+    Ok(())
 }

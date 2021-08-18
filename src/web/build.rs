@@ -1,3 +1,5 @@
+use crate::EntropyConfig;
+
 use super::routes::event_details::build as build_event_details;
 use super::routes::events::build as build_events_list;
 use super::routes::home::build as build_home;
@@ -10,21 +12,24 @@ use std::{
     path::Path,
 };
 
-pub async fn build() {
+pub async fn build() -> anyhow::Result<()> {
     info!("Building public static website");
 
-    let dist_dir = "dist";
-    let static_dir = "src/web/static";
+    let config = EntropyConfig::load()?;
+    let dist_dir = config.static_site.dist_path;
+    let static_dir = config.server.static_dir;
+    let scss_dir = config.server.scss_dir;
+    let css_dir = Path::new(&dist_dir).join("css");
+    let css_dir = css_dir.as_path().to_str().unwrap();
 
     debug!("Creating dist directory");
-    if let Err(err) = DirBuilder::new().create(dist_dir) {
+    if let Err(err) = DirBuilder::new().create(dist_dir.clone()) {
         match err.kind() {
             io::ErrorKind::AlreadyExists => {
                 warn!("dist already exists. Will overwrite colliding files.")
             }
             _ => {
-                error!("Failed to create dist dir: {:#}", err);
-                return;
+                bail!("Failed to create dist dir: {:#}", err);
             }
         }
     };
@@ -35,13 +40,12 @@ pub async fn build() {
     copy_opts.content_only = true;
     copy_opts.overwrite = true;
 
-    if let Err(err) = copy(static_dir, dist_dir, &copy_opts) {
-        error!("Error while copying static dir to dist: {:#}", err);
-        return;
+    if let Err(err) = copy(static_dir, dist_dir.clone(), &copy_opts) {
+        bail!("Error while copying static dir to dist: {:#}", err);
     }
 
     debug!("Building SCSS");
-    if let Err(err) = build_scss().await {
+    if let Err(err) = build_scss(&scss_dir, css_dir).await {
         error!("Failed to build SCSS: {:#}", err);
     }
 
@@ -51,11 +55,11 @@ pub async fn build() {
     }
 
     info!("Build Successful!!");
+
+    Ok(())
 }
 
-async fn build_scss() -> Result<()> {
-    let scss_dir = "src/web/scss";
-    let css_dir = "dist/css";
+async fn build_scss(scss_dir: &str, css_dir: &str) -> Result<()> {
     let scss_dir_contents = get_dir_content(scss_dir)?;
 
     debug!("Creating dist/css directory");
