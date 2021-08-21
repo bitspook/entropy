@@ -1,7 +1,6 @@
 use std::path::Path;
 
 use anyhow::Error;
-use figment::providers::Serialized;
 use rocket::http::ContentType;
 use rocket::{figment::Figment, fs::FileServer, Build, Rocket};
 use rocket_dyn_templates::Template;

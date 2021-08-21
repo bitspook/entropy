@@ -1,17 +1,19 @@
 * Request For Comments
 
-This directory contains problems/initiatives/ideas proposed by members of
-Entropy, for which we are still figuring out a plan of action.
+Problems/ideas proposed by members of Entropy, for which we are still figuring
+out a plan of action.
 
-Here's list of reasons for which the problem/initiative/idea is kept under this
-directory instead of [[../initiatives][initiatives]]:
+Here's list of reasons for which the problem/idea is kept under this directory
+instead of [[../initiatives][initiatives]]:
 
-1. We are unsure if we want to solve this problem
+1. No one wants to work on it
 
-   A problem might be too personal to the member who added it, and other members
-   are simply not interested in solving it at this point.
+   A member has added a problem they'd like solved, but no-one, including the OP
+   want to work on it right now. There need to be at least one person willing to
+   own the problem and work for its solution.
 
-2. Problem or problem statement is too vague to be actionable
+2. Problem or problem statement does not meet prerequisites for being an
+   initiative
 
 3. There is no clear course of action for a solution
 
