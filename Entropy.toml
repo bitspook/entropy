@@ -1,0 +1,11 @@
+[[poacher.meetup_com]]
+coordinates = { lng = 30.75, lat= 76.78 }
+search_terms = [
+  "chandigarh",
+  "tricity",
+  "mohali",
+  "punjab",
+  "hack",
+  "security"
+]
+radius = 100

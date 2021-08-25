@@ -5,6 +5,8 @@ use figment::{
 };
 use serde::{Deserialize, Serialize};
 
+use crate::Coordinates;
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct StaticSiteConfig {
     pub dist_path: String,
@@ -42,10 +44,32 @@ impl Default for ServerConfig {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+pub struct MeetupPoacherConfig {
+    /// Meetup's search is trash. A lot of meetup groups get left out when searching by location because
+    /// Searching for following queries give better results for meetup groups of city
+    /// apparently all the search terms can be given in a single query, seperated by ", "
+    pub search_terms: Vec<String>,
+    pub coordinates: Coordinates,
+    pub radius: u32,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct PoacherConfig {
+    pub meetup_com: Vec<MeetupPoacherConfig>,
+}
+
+impl Default for PoacherConfig {
+    fn default() -> Self {
+        Self { meetup_com: vec![] }
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 pub struct EntropyConfig {
     pub database_path: String,
     pub static_site: StaticSiteConfig,
     pub server: ServerConfig,
+    pub poacher: PoacherConfig,
 }
 
 impl Default for EntropyConfig {
@@ -54,6 +78,7 @@ impl Default for EntropyConfig {
             database_path: "entropy.sqlite3".to_string(),
             static_site: StaticSiteConfig::default(),
             server: ServerConfig::default(),
+            poacher: PoacherConfig::default(),
         }
     }
 }
