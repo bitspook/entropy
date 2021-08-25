@@ -1,6 +1,6 @@
 /// Top level utility functions I don't know where to put yet
 use diesel::{replace_into, RunQueryDsl, SqliteConnection};
-use entropy::{Coordinates, Meetup, MeetupEvent, MeetupGroup, PoacherMessage};
+use entropy::{EntropyConfig, Meetup, MeetupEvent, MeetupGroup, PoacherMessage};
 use log::{debug, error};
 use std::sync::Arc;
 use tokio::{self, sync::mpsc::Sender};
@@ -39,48 +39,49 @@ pub async fn process_scraped_meetup_event(event: MeetupEvent, conn: &SqliteConne
     debug!("Saved event in database: {}", event.title);
 }
 
-pub async fn search_groups_of_chandigarh(meetup: Arc<Meetup>, tx: Sender<PoacherMessage>) {
-    // Meetup's search is trash. A lot of meetup groups get left out when searching by location because
-    // Searching for following queries give better results for meetup groups of city
-    // apparently all the search terms can be given in a single query, seperated by ", "
-    let search_terms = vec![
-        "chandigarh",
-        "tricity",
-        "mohali",
-        "punjab",
-        "hack",
-        "security",
-    ];
-    let chd_coords = Arc::new(Coordinates::new(30.75, 76.78));
-    let radius = 100;
+pub async fn search_groups(meetup: Arc<Meetup>, tx: Sender<PoacherMessage>) {
+    let config = EntropyConfig::load().unwrap();
+    let config = config.poacher.meetup_com;
 
-    for term in search_terms.iter().map(|s| s.to_owned()) {
-        let meetup = meetup.clone();
-        let chd_coords = chd_coords.clone();
+    for config in config.into_iter() {
+        let search_terms = config.search_terms;
+        let chd_coords = Arc::new(config.coordinates);
+        let radius = config.radius;
+
+        for term in search_terms.iter().map(|s| s.to_owned()) {
+            let meetup = meetup.clone();
+            let chd_coords = chd_coords.clone();
+            let tx = tx.clone();
+
+            tokio::spawn(async move {
+                if let Err(err) = meetup
+                    .as_ref()
+                    .search_groups(&chd_coords, &term, radius)
+                    .await
+                {
+                    tx.send(PoacherMessage::Error(err)).await.unwrap();
+                };
+            });
+        }
+    }
+}
+
+pub async fn search_events(meetup: Arc<Meetup>, tx: Sender<PoacherMessage>) {
+    let config = EntropyConfig::load().unwrap();
+    let config = config.poacher.meetup_com;
+
+    for config in config.into_iter() {
+        let coords = Arc::new(config.coordinates);
+        let radius = config.radius;
+
+        let coords = coords.clone();
         let tx = tx.clone();
+        let meetup = meetup.clone();
 
         tokio::spawn(async move {
-            if let Err(err) = meetup
-                .as_ref()
-                .search_groups(&chd_coords, term, radius)
-                .await
-            {
+            if let Err(err) = meetup.search_events(&coords, radius).await {
                 tx.send(PoacherMessage::Error(err)).await.unwrap();
             };
         });
     }
-}
-
-pub async fn search_events_of_chandigarh(meetup: Arc<Meetup>, tx: Sender<PoacherMessage>) {
-    let chd_coords = Arc::new(Coordinates::new(30.75, 76.78));
-    let radius = 100;
-
-    let chd_coords = chd_coords.clone();
-    let tx = tx.clone();
-
-    tokio::spawn(async move {
-        if let Err(err) = meetup.as_ref().search_events(&chd_coords, radius).await {
-            tx.send(PoacherMessage::Error(err)).await.unwrap();
-        };
-    });
 }

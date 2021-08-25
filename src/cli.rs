@@ -1,5 +1,5 @@
+use anyhow::Result;
 use std::sync::Arc;
-use anyhow::{Result, bail};
 use structopt::StructOpt;
 use tokio::{
     self,
@@ -11,38 +11,13 @@ use entropy::{Meetup, MeetupResult, PoachedResult, PoacherMessage};
 
 use crate::db;
 use crate::util::{
-    process_scraped_meetup_event, process_scraped_meetup_group, search_events_of_chandigarh,
-    search_groups_of_chandigarh,
+    process_scraped_meetup_event, process_scraped_meetup_group, search_events, search_groups,
 };
 
 #[derive(StructOpt, Debug)]
 pub enum MeetupCmd {
-    Groups {
-        #[structopt(long = "with-events")]
-        with_events: bool,
-        #[structopt(long, conflicts_with_all(&["lng", "lat"]))]
-        /// One of the supported cities. lat, lng, radius and query for supported
-        /// cities are already known to entropy and don't need to be provided
-        city: Option<String>,
-        #[structopt(long, required_unless("city"), requires("lng"))]
-        /// Latitude of place around which groups/events should be found
-        lat: Option<f32>,
-        #[structopt(long, required_unless("city"), requires("lat"))]
-        /// Longitude of place around which groups/events should be found
-        lng: Option<f32>,
-        #[structopt(long, conflicts_with("city"))]
-        /// Radius in miles
-        radius: Option<u32>,
-        #[structopt(short, long, conflicts_with("city"))]
-        /// Space separated list of queries you want to search the groups by
-        query: Option<Vec<String>>,
-    },
-    Events {
-        #[structopt(long)]
-        /// One of the supported cities. lat, lng, radius and query for supported
-        /// cities are already known to entropy and don't need to be provided
-        city: Option<String>,
-    },
+    Groups,
+    Events,
 }
 
 #[derive(StructOpt, Debug)]
@@ -88,48 +63,14 @@ pub async fn run(cmd: CliCmd) -> anyhow::Result<()> {
             let meetup = Arc::new(Meetup::new(client, tx.clone()));
 
             match poach_opts {
-                PoachCmd::Meetup(poach_meetup_opts) => {
-                    match poach_meetup_opts {
-                        MeetupCmd::Groups { city, .. } => {
-                            if let Some(city) = city {
-                                if city.to_lowercase() == "chandigarh" {
-                                    search_groups_of_chandigarh(meetup, tx).await;
-                                } else {
-                                    error!("Unsupported city: '{}'", city);
-
-                                    bail!("Unsupported city");
-                                }
-                            } else {
-                                // TODO: Implement this part. Right now I am not
-                                // sure if this will ever be used. I created
-                                // these options because I wanted to play with
-                                // how CLIs are created in Rust. Created #8 to
-                                // add these options if they're ever needed. Or
-                                // remove this code.
-                                bail!("Not Implemented");
-                            }
-                        }
-                        MeetupCmd::Events { city, .. } => {
-                            if let Some(city) = city {
-                                if city.to_lowercase() == "chandigarh" {
-                                    search_events_of_chandigarh(meetup, tx).await;
-                                } else {
-                                    error!("Unsupported city: '{}'", city);
-
-                                    bail!("Unsupported city");
-                                }
-                            } else {
-                                // TODO: Implement this part. Right now I am not
-                                // sure if this will ever be used. I created
-                                // these options because I wanted to play with
-                                // how CLIs are created in Rust. Created #8 to
-                                // add these options if they're ever needed. Or
-                                // remove this code.
-                                bail!("Not Implemented");
-                            }
-                        }
+                PoachCmd::Meetup(poach_meetup_opts) => match poach_meetup_opts {
+                    MeetupCmd::Groups => {
+                        search_groups(meetup, tx).await;
                     }
-                }
+                    MeetupCmd::Events => {
+                        search_events(meetup, tx).await;
+                    }
+                },
             };
 
             poacher_meditation(rx).await?;
@@ -144,7 +85,7 @@ pub async fn run(cmd: CliCmd) -> anyhow::Result<()> {
 }
 
 /// Absorb all the poacher messages from `rx` and spawn tasks to process them.
-async fn poacher_meditation(mut rx: Receiver<PoacherMessage>) -> Result<()>{
+async fn poacher_meditation(mut rx: Receiver<PoacherMessage>) -> Result<()> {
     let conn = db::establish_connection()?;
     while let Some(msg) = rx.recv().await {
         match msg {
@@ -165,7 +106,7 @@ async fn poacher_meditation(mut rx: Receiver<PoacherMessage>) -> Result<()>{
                 warn!("Encountered warning: {:#?}", w)
             }
         }
-    };
+    }
 
     Ok(())
 }

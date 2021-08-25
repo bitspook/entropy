@@ -132,6 +132,7 @@ impl Meetup {
         for group in results {
             match group {
                 Ok(group) => {
+                    debug!("Found Group: {}", group.name);
                     let item = MeetupResult::Group(group);
                     let item = PoachedResult::Meetup(item);
                     &self
