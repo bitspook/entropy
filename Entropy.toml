@@ -8,4 +8,13 @@ search_terms = [
   "hack",
   "security"
 ]
-radius = 100
+radius = 70
+blacklist.groups.slugs = [
+  "Wander-Tribe",
+  "Great-Himalayan-National-Park-Trekking-Meetup",
+  "tgetravels-bangalore",
+  "Chandigarh-Travel-Club",
+  "GoAdventureOfficial",
+  "tgetravels-bangalore",
+  "Sudden-Plans-Bangalore-and-beyond"
+]
