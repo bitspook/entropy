@@ -44,6 +44,16 @@ impl Default for ServerConfig {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
+pub struct GroupsBlacklist {
+    pub slugs: Vec<String>
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct MeetupPoacherBlacklist {
+    pub groups: GroupsBlacklist
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 pub struct MeetupPoacherConfig {
     /// Meetup's search is trash. A lot of meetup groups get left out when searching by location because
     /// Searching for following queries give better results for meetup groups of city
@@ -51,6 +61,7 @@ pub struct MeetupPoacherConfig {
     pub search_terms: Vec<String>,
     pub coordinates: Coordinates,
     pub radius: u32,
+    pub blacklist: MeetupPoacherBlacklist
 }
 
 #[derive(Debug, Deserialize, Serialize)]

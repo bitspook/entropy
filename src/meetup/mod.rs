@@ -1,7 +1,4 @@
-use crate::{
-    meetup::util::{fix_meetup_datetime, make_group_events_request, make_meetup_image_url},
-    Coordinates, PoachedResult, PoacherError, PoacherMessage, ScraperWarning,
-};
+use crate::{Coordinates, PoachedResult, PoacherError, PoacherMessage, ScraperWarning, meetup::util::{fix_meetup_datetime, make_group_events_request, make_meetup_image_url}};
 use chrono::DateTime;
 use log::debug;
 use reqwest::{self, Client};
@@ -151,61 +148,6 @@ impl Meetup {
         Ok(())
     }
 
-    async fn _fetch_group_events(
-        &self,
-        group_slug: String,
-        group_id: String,
-    ) -> Result<(), PoacherError> {
-        debug!("Fetching events for group: {}", group_slug);
-        let request = make_group_events_request(&self.client, group_slug.to_string());
-
-        let resp = request.send().await?.text().await?;
-        let resp: json::Value = json::from_str(&resp)?;
-        let resp = resp["responses"].as_array().ok_or_else(|| {
-            PoacherError::UnknownResponseError("Events response didn't return a list".to_owned())
-        })?;
-        let events = resp
-            .iter()
-            .find(|r| {
-                r["ref"]
-                    .as_str()
-                    .unwrap()
-                    .to_lowercase()
-                    .contains(&format!("events_{}", group_slug.to_lowercase()))
-            })
-            .ok_or_else(|| {
-                PoacherError::UnknownResponseError(
-                    "Events response provided no events for group".to_owned(),
-                )
-            })?;
-        let events = events["value"].as_array().ok_or_else(|| {
-            PoacherError::UnknownResponseError("events.<slug>.value is not a list".to_owned())
-        })?;
-        debug!("Found {} events for {}", events.len(), group_slug);
-
-        for event in events.iter() {
-            let mut event = event.clone();
-            fix_meetup_datetime(&mut event, vec!["created", "updated", "time"])?;
-            event["group_id"] = json::Value::String(group_id.clone());
-
-            let event: MeetupEvent = json::from_value(event).map_err(|err| {
-                PoacherError::JsonParseError(err, Some("Converting JSON to Event".to_owned()))
-            })?;
-
-            let msg = PoacherMessage::ResultItem(PoachedResult::Meetup(MeetupResult::Event(event)));
-
-            self.tx.send(msg).await.unwrap();
-        }
-
-        Ok(())
-    }
-
-    pub async fn fetch_group_events(&self, group_slug: String, group_id: String) {
-        if let Err(err) = self._fetch_group_events(group_slug, group_id).await {
-            self.tx.send(PoacherMessage::Error(err)).await.unwrap();
-        }
-    }
-
     pub async fn search_events(
         &self,
         coordinates: &Coordinates,
@@ -334,6 +276,7 @@ impl Meetup {
                 "is_private": node["group"]["isPrivate"],
                 "photo": group_photo,
             });
+
             let group: Result<MeetupGroup, PoacherError> = json::from_value(group).map_err(|e| {
                 PoacherError::JsonParseError(e, Some("Parsing Event->Group node".to_string()))
             });

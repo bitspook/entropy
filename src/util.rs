@@ -7,6 +7,18 @@ use tokio::{self, sync::mpsc::Sender};
 
 pub async fn process_scraped_meetup_group(group: MeetupGroup, conn: &SqliteConnection) {
     use entropy::db::schema::meetup_groups::dsl::*;
+    let blacklist: Vec<String> = EntropyConfig::load()
+        .unwrap()
+        .poacher
+        .meetup_com
+        .into_iter()
+        .flat_map(|mc| mc.blacklist.groups.slugs)
+        .collect();
+
+    if blacklist.contains(&group.slug) {
+        warn!("Ignoring blacklisted group: {}", group.slug);
+        return;
+    }
 
     let query = replace_into(meetup_groups).values(&group);
 
@@ -24,6 +36,19 @@ pub async fn process_scraped_meetup_group(group: MeetupGroup, conn: &SqliteConne
 
 pub async fn process_scraped_meetup_event(event: MeetupEvent, conn: &SqliteConnection) {
     use entropy::db::schema::meetup_events::dsl::*;
+
+    let blacklist: Vec<String> = EntropyConfig::load()
+        .unwrap()
+        .poacher
+        .meetup_com
+        .into_iter()
+        .flat_map(|mc| mc.blacklist.groups.slugs)
+        .collect();
+
+    if blacklist.contains(&event.group_slug) {
+        warn!("Ignoring event for blacklisted group: {}", event.group_slug);
+        return;
+    }
 
     let query = replace_into(meetup_events).values(&event);
 
