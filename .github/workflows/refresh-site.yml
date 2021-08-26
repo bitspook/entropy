@@ -21,7 +21,7 @@ jobs:
 
       - run: |
           chmod +x ./entropy
-          ./entropy poach meetup events --city Chandigarh -v
+          ./entropy poach meetup events -v
           ./entropy web build -v
         env:
           ENTROPY_STATIC_SITE: '{base_url="/entropy/"}'

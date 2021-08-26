@@ -24,7 +24,7 @@ jobs:
           path: target/release/entropy
 
       - run: |
-          target/release/entropy poach meetup events --city Chandigarh -v
+          target/release/entropy poach meetup events -v
           target/release/entropy web build -v
         env:
           ENTROPY_STATIC_SITE: '{base_url="/entropy/"}'
