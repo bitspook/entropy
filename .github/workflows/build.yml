@@ -13,10 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - uses: actions-rs/cargo@v1
+      - uses: actions-rs/toolchain@v1
         with:
-          command: build
-          args: --release --all-features
+          profile: minimal
+          toolchain: stable
+
+      - uses: Swatinem/rust-cache@v1
+
+      - run: cargo build --release
 
       - uses: actions/upload-artifact@v2
         with:
