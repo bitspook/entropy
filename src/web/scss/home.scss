@@ -1,11 +1,15 @@
 @import "base";
 @import "footer";
 
+$lg: 1280px;
+$md: 900px;
+$sm: 550px;
+$xs: 300px;
+
 .hero {
   width: 100%;
   min-height: 50rem;
   display: flex;
-  align-items: center;
   justify-content: center;
   flex-direction: column;
 }
@@ -13,6 +17,7 @@
 .brand {
   font-size: 6rem;
   margin-bottom: 4rem;
+  margin-top: 2rem;
   font-weight: 300;
   display: flex;
   justify-content: center;
@@ -29,8 +34,34 @@
 
 .tagline {
   font-size: 2rem;
-  width: 50%;
   line-height: 1.7;
+  max-width: 128rem;
+  margin: 0 auto;
+
+  @media (min-width: $lg) {
+    & {
+      width: 60%;
+    }
+  }
+
+  @media (min-width: $md) and (max-width: $lg) {
+    & {
+      width: 80%;
+    }
+  }
+
+  @media (min-width: $sm) and (max-width: $md) {
+    & {
+      width: 90%;
+    }
+  }
+
+  @media (max-width: $sm) {
+    & {
+      width: calc(100% - 2rem);
+      padding: 0 1rem;
+    }
+  }
 }
 
 .peeky-binder {
@@ -43,15 +74,65 @@
 .peeky-menu {
   display: flex;
   width: 60%;
+  max-width: 128rem;
   justify-content: space-between;
   font-size: 1.4rem;
   margin-bottom: 8rem;
-}
 
-.peeky-menu .menu-item {
-  display: flex;
-  width: 33%;
-  cursor: pointer;
+  .menu-item {
+    display: flex;
+    width: 33%;
+    cursor: pointer;
+  }
+
+  .counter-chart {
+    font-size: 4rem;
+    width: 6rem;
+    height: 6rem;
+    border: 2px solid var(--main-text-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+  }
+
+  .content {
+    margin-left: 1.7rem;
+    width: calc(100% - 8rem);
+  }
+
+  @media (min-width: $lg) {
+    & {
+      width: 60%;
+    }
+  }
+
+  @media (min-width: $md) and (max-width: $lg) {
+    & {
+      width: 80%;
+    }
+  }
+
+  @media (max-width: $md) {
+    & {
+      width: calc(100% - 2rem);
+      padding: 0 1rem;
+      flex-direction: column;
+      margin-bottom: 6rem;
+    }
+
+    & .menu-item {
+      width: auto;
+      margin: 2rem 1rem;
+    }
+  }
+
+  @media (max-width: $sm) {
+    & {
+      margin-bottom: 4rem;
+    }
+  }
 }
 
 .peeky-menu .menu-item.active .title {
@@ -61,23 +142,6 @@
 
 .peeky-menu .menu-item.active .title:hover {
   padding-bottom: calc(0.2rem + 1px);
-}
-
-.peeky-menu .menu-item .counter-chart {
-  font-size: 4rem;
-  width: 6rem;
-  height: 6rem;
-  border: 2px solid var(--main-text-color);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  align-self: center;
-}
-
-.peeky-menu .menu-item .content {
-  margin-left: 1.7rem;
-  width: 70%;
 }
 
 .peeky-menu .menu-item .title {
@@ -100,10 +164,38 @@
   font-size: 1.6rem;
   font-weight: 400;
   line-height: 1.6;
+  overflow: hidden;
+  word-wrap: anywhere;
 }
 
 .peeky-content {
   width: 50%;
+  max-width: 128rem;
+
+  @media (min-width: $lg) {
+    & {
+      width: 60%;
+    }
+  }
+
+  @media (min-width: $md) and (max-width: $lg) {
+    & {
+      width: 80%;
+    }
+  }
+
+  @media (min-width: $sm) and (max-width: $md) {
+    & {
+      width: 90%;
+    }
+  }
+
+  @media (max-width: $sm) {
+    & {
+      width: calc(100% - 2rem);
+      padding: 0 1rem;
+    }
+  }
 }
 
 .peeky-content .header {
