@@ -26,7 +26,7 @@
             <div class="meta">
               <div class="meta-item">
                 <div class="icon"></div>
-                <div>{{ event.start_date }} from {{event.start_time}} to {{event.end_time}}</div>
+                <div class="meta-content">{{ event.start_date }} from {{event.start_time}} to {{event.end_time}}</div>
               </div>
               <div class="meta-item">
                 <div class="icon"></div>
