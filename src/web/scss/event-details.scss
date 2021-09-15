@@ -6,12 +6,29 @@
   display: flex;
   margin: 2rem auto;
   width: 70%;
+  max-width: $lg;
+
+  @media (max-width: $lg) {
+    width: 90%;
+  }
+
+  @media (max-width: $sm) {
+    flex-direction: column;
+  }
 }
 
 .main {
   flex-shrink: 1;
-  width: 80%;
+  width: calc(100% - 45rem);
   padding-right: 2rem;
+
+  @media (max-width: $md) {
+    width: calc(100% - 15rem);
+  }
+
+  @media (max-width: $sm) {
+    width: auto;
+  }
 }
 
 .header {
@@ -33,9 +50,26 @@
 
   .meta-item {
     margin-bottom: 2rem;
+
+    @media (max-width: $sm) {
+      margin-bottom: 0.6rem;
+    }
   }
 
   .meta-key {
     color: var(--dim-text-color);
+  }
+
+  @media (max-width: $md) {
+    width: 15rem;
+  }
+
+  @media (max-width: $sm) {
+    border-left: none;
+    border-top: 2px dashed var(--dim-border-color);
+    margin-left: 0;
+    margin-top: 4rem;
+    padding: 2rem 1rem;
+    width: auto;
   }
 }
