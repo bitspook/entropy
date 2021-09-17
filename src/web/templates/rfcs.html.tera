@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    {% if base_url %}<base href="{{ base_url | safe }}" />{% endif %}
+    <title>RFCs for Entropy Hackerspace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/rfcs.css" rel="stylesheet"/>
+    <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+  </head>
+  <body>
+    {% include "partials/top-nav" %}
+
+    <div class="content">
+      <div class="introduction">{{ intro | safe }}</div>
+
+      {% if not rfcs %}
+      {% include "partials/no-data" %}
+      {% else %}
+      <div class="list">
+        {% for rfc in rfcs %}
+        <div class="list-item">
+          <div class="icon"></div>
+          <div class="li-content">
+            <a href="rfcs/{{ rfc.slug }}" class="title">{{ rfc.name }}</a>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    {%include "partials/footer" %}
+  </body>
+</html>

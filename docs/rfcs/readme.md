@@ -1,10 +1,10 @@
-* Request For Comments
+# Request For Comments
 
 Problems/ideas proposed by members of Entropy, for which we are still figuring
 out a plan of action.
 
 Here's list of reasons for which the problem/idea is kept under this directory
-instead of [[../initiatives][initiatives]]:
+instead of initiatives:
 
 1. No one wants to work on it
 

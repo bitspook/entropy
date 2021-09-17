@@ -39,6 +39,7 @@ pub fn app() -> Rocket<Build> {
         .mount("/", routes::home::routes())
         .mount("/", routes::events::routes())
         .mount("/", routes::event_details::routes())
+        .mount("/", routes::rfcs::routes())
         .mount("/css", routes![css])
         .mount("/", FileServer::from(config.server.static_dir))
         .attach(Template::fairing())
