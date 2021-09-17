@@ -81,6 +81,7 @@ pub struct EntropyConfig {
     pub static_site: StaticSiteConfig,
     pub server: ServerConfig,
     pub poacher: PoacherConfig,
+    pub rfc_dir: String,
 }
 
 impl Default for EntropyConfig {
@@ -90,6 +91,7 @@ impl Default for EntropyConfig {
             static_site: StaticSiteConfig::default(),
             server: ServerConfig::default(),
             poacher: PoacherConfig::default(),
+            rfc_dir: "./docs/rfcs".to_string()
         }
     }
 }
