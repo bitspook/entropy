@@ -4,3 +4,4 @@
 /result-doc
 *.sqlite3*
 /dist/
+/postgres

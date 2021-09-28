@@ -40,10 +40,10 @@
         buildInputs = with pkgs; [ openssl.dev ];
 
         nativeBuildInputs = with pkgs; [
-          nixpkgs-fmt
+          nixfmt
+          postgresql_13
           pkgconfig
           rust-analyzer
-          sqlite
           diesel-cli
           cargo-edit
           cargo-audit
@@ -75,6 +75,24 @@
           ({
             inherit buildInputs nativeBuildInputs;
             RUST_BACKTRACE = 1;
+            shellHook = ''
+              export PGDATA=$PWD/postgres/data
+              export PGHOST=$PWD/postgres/run
+              export LOG_PATH=$PWD/postgres/LOG
+              export PGDATABASE=entropy
+              export DATABASE_URL="postgresql:///$PGDATABASE?host=$PGHOST"
+              export ENTROPY_DATABASE_URL=$DATABASE_URL
+              if [ ! -d $PGHOST ]; then
+                mkdir -p $PGHOST
+              fi
+              if [ ! -d $PGDATA ]; then
+                echo 'Initializing postgresql database...'
+                initdb $PGDATA --auth=trust >/dev/null
+              fi
+
+              # pg_ctl start -l $LOG_PATH -o "-c listen_addresses= -c unix_socket_directories=$PGHOST" -W
+              # createdb $PGDATABASE
+            '';
           } // buildEnvVars);
       });
 }

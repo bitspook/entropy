@@ -8,7 +8,7 @@ version = "0.1.0"
 tokio = { version = "*", features = ["full"] }
 reqwest = { version =  "*", features = ["cookies", "gzip", "multipart", "json"] }
 url = { version = "^2.2.2", features = ["serde"] }
-diesel = { version = "*", features = ["sqlite", "serde_json", "chrono", "numeric"] }
+diesel = { version = "*", features = ["postgres", "serde_json", "chrono", "numeric"] }
 chrono = { version = "*", features = ["serde"] }
 diesel_migrations = "*"
 serde = "*"
@@ -32,4 +32,4 @@ features = [ "json" ]
 [dependencies.rocket_sync_db_pools]
 version = "0.1.0-dev"
 default-features = false
-features = ["diesel_sqlite_pool"]
+features = ["diesel_postgres_pool"]

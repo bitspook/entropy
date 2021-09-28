@@ -1,4 +1,4 @@
-use std::path::{self, Path, PathBuf};
+use std::path::{Path, PathBuf};
 
 use anyhow::{Error, Result};
 use futures::TryFutureExt;

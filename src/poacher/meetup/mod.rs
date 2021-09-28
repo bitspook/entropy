@@ -1,4 +1,3 @@
-use crate::{Coordinates, PoachedResult, PoacherError, PoacherMessage, ScraperWarning, meetup::util::{fix_meetup_datetime, make_group_events_request, make_meetup_image_url}};
 use chrono::DateTime;
 use log::debug;
 use reqwest::{self, Client};
@@ -11,6 +10,13 @@ mod util;
 
 pub use models::*;
 use util::get_gql_headers;
+
+use crate::Coordinates;
+
+use self::util::make_meetup_image_url;
+use super::{PoacherError, PoacherMessage, PoacherResult, PoacherWarning};
+
+pub mod cli;
 
 #[derive(Debug)]
 pub enum MeetupResult {
@@ -78,7 +84,7 @@ impl Meetup {
 
         let has_more_groups: bool = json::from_value(results["pageInfo"]["hasNextPage"].clone())?;
         if has_more_groups == true {
-            let warning = ScraperWarning::FailedPresumption(
+            let warning = PoacherWarning::FailedPresumption(
                 "Groups search has next page to fetch".to_string(),
             );
             &self.tx.send(PoacherMessage::Warning(warning));
@@ -131,7 +137,7 @@ impl Meetup {
                 Ok(group) => {
                     debug!("Found Group: {}", group.name);
                     let item = MeetupResult::Group(group);
-                    let item = PoachedResult::Meetup(item);
+                    let item = PoacherResult::Meetup(item);
                     &self
                         .tx
                         .send(PoacherMessage::ResultItem(item))
@@ -194,7 +200,7 @@ impl Meetup {
 
         let has_more_events: bool = json::from_value(results["pageInfo"]["hasNextPage"].clone())?;
         if has_more_events == true {
-            let warning = ScraperWarning::FailedPresumption(
+            let warning = PoacherWarning::FailedPresumption(
                 "Events search has next page to fetch".to_string(),
             );
             &self.tx.send(PoacherMessage::Warning(warning));
@@ -252,7 +258,6 @@ impl Meetup {
                 .naive_utc();
 
             let event = json::json!({
-                "id": node["id"],
                 "group_slug": node["group"]["slug"],
                 "slug": node["slug"],
                 "title": node["title"],
@@ -265,7 +270,6 @@ impl Meetup {
                 "link": node["eventUrl"]
             });
             let group = json::json!({
-                "id": node["group"]["id"],
                 "slug": node["group"]["slug"],
                 "name": node["group"]["name"],
                 "link": node["group"]["link"],
@@ -286,7 +290,7 @@ impl Meetup {
 
             match group {
                 Ok(group) => {
-                    let item = PoachedResult::Meetup(MeetupResult::Group(group));
+                    let item = PoacherResult::Meetup(MeetupResult::Group(group));
                     &self
                         .tx
                         .send(PoacherMessage::ResultItem(item))
@@ -299,7 +303,7 @@ impl Meetup {
             }
             match event {
                 Ok(event) => {
-                    let item = PoachedResult::Meetup(MeetupResult::Event(event));
+                    let item = PoacherResult::Meetup(MeetupResult::Event(event));
                     &self
                         .tx
                         .send(PoacherMessage::ResultItem(item))
@@ -313,17 +317,5 @@ impl Meetup {
         }
 
         Ok(())
-    }
-}
-
-impl From<reqwest::Error> for PoacherError {
-    fn from(e: reqwest::Error) -> Self {
-        PoacherError::HttpError(e)
-    }
-}
-
-impl From<json::Error> for PoacherError {
-    fn from(e: json::Error) -> Self {
-        PoacherError::JsonParseError(e, None)
     }
 }

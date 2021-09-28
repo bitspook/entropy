@@ -7,6 +7,6 @@ pub use build::*;
 pub use server::*;
 
 #[database("entropy_db")]
-struct Db(diesel::SqliteConnection);
+struct Db(diesel::PgConnection);
 
 type WebResult<T> = Result<T, rocket::response::Debug<anyhow::Error>>;

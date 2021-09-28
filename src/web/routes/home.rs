@@ -7,7 +7,7 @@ use rocket_sync_db_pools::diesel;
 use serde::Serialize;
 use serde_json::json;
 
-use crate::{EntropyConfig, MeetupEvent};
+use crate::{poacher::meetup::MeetupEvent, EntropyConfig};
 
 use crate::web::{Db, WebResult};
 

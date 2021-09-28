@@ -2,16 +2,13 @@
 extern crate diesel;
 
 use serde::{Deserialize, Serialize};
-use serde_json as json;
 
 mod config;
 pub use config::EntropyConfig;
 
 pub mod db;
-mod meetup;
+pub mod poacher;
 pub mod web;
-
-pub use meetup::{Meetup, MeetupEvent, MeetupGroup, MeetupResult};
 
 #[macro_use]
 extern crate rocket;
@@ -29,28 +26,4 @@ impl Coordinates {
     pub fn new(lat: f32, lng: f32) -> Self {
         Coordinates { lat, lng }
     }
-}
-
-#[derive(Debug)]
-pub enum PoachedResult {
-    Meetup(MeetupResult),
-}
-
-#[derive(Debug)]
-pub enum PoacherMessage {
-    ResultItem(PoachedResult),
-    Error(PoacherError),
-    Warning(ScraperWarning),
-}
-
-#[derive(Debug)]
-pub enum PoacherError {
-    HttpError(reqwest::Error),
-    JsonParseError(json::Error, Option<String>),
-    UnknownResponseError(String),
-}
-
-#[derive(Debug)]
-pub enum ScraperWarning {
-    FailedPresumption(String),
 }
