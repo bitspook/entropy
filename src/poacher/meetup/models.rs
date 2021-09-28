@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Queryable, Insertable, Debug, Clone, Serialize, Deserialize)]
 #[table_name = "meetup_groups"]
 pub struct MeetupGroup {
-    pub id: String,
+    pub id: i32,
     pub slug: String,
     pub name: String,
     pub link: String,
@@ -20,7 +20,7 @@ pub struct MeetupGroup {
 #[derive(Queryable, Insertable, Debug, Clone, Serialize, Deserialize)]
 #[table_name = "meetup_events"]
 pub struct MeetupEvent {
-    pub id: String,
+    pub id: i32,
     pub slug: String,
     pub group_slug: String,
     pub title: String,

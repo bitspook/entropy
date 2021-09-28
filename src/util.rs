@@ -1,11 +1,17 @@
 /// Top level utility functions I don't know where to put yet
-use diesel::{replace_into, RunQueryDsl, SqliteConnection};
-use entropy::{EntropyConfig, Meetup, MeetupEvent, MeetupGroup, PoacherMessage};
+use diesel::{insert_into, PgConnection, RunQueryDsl};
+use entropy::{
+    poacher::{
+        meetup::{Meetup, MeetupEvent, MeetupGroup},
+        PoacherMessage,
+    },
+    EntropyConfig,
+};
 use log::{debug, error};
 use std::sync::Arc;
 use tokio::{self, sync::mpsc::Sender};
 
-pub async fn process_scraped_meetup_group(group: MeetupGroup, conn: &SqliteConnection) {
+pub async fn process_scraped_meetup_group(group: MeetupGroup, conn: &PgConnection) {
     use entropy::db::schema::meetup_groups::dsl::*;
     let blacklist: Vec<String> = EntropyConfig::load()
         .unwrap()
@@ -20,7 +26,7 @@ pub async fn process_scraped_meetup_group(group: MeetupGroup, conn: &SqliteConne
         return;
     }
 
-    let query = replace_into(meetup_groups).values(&group);
+    let query = insert_into(meetup_groups).values(&group);
 
     if let Err(err) = query.execute(conn) {
         error!(
@@ -34,7 +40,7 @@ pub async fn process_scraped_meetup_group(group: MeetupGroup, conn: &SqliteConne
     debug!("Saved group in database: {}", group.name);
 }
 
-pub async fn process_scraped_meetup_event(event: MeetupEvent, conn: &SqliteConnection) {
+pub async fn process_scraped_meetup_event(event: MeetupEvent, conn: &PgConnection) {
     use entropy::db::schema::meetup_events::dsl::*;
 
     let blacklist: Vec<String> = EntropyConfig::load()
@@ -50,7 +56,7 @@ pub async fn process_scraped_meetup_event(event: MeetupEvent, conn: &SqliteConne
         return;
     }
 
-    let query = replace_into(meetup_events).values(&event);
+    let query = insert_into(meetup_events).values(&event);
 
     if let Err(err) = query.execute(conn) {
         error!(

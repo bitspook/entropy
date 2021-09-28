@@ -6,24 +6,17 @@ use tokio::{
     sync::mpsc::{self, Receiver, Sender},
 };
 
+use entropy::poacher::{
+    cli::PoachCmd,
+    meetup::{cli::MeetupCmd, Meetup, MeetupResult},
+};
+use entropy::poacher::{PoacherMessage, PoacherResult};
 use entropy::web;
-use entropy::{Meetup, MeetupResult, PoachedResult, PoacherMessage};
 
 use crate::db;
 use crate::util::{
     process_scraped_meetup_event, process_scraped_meetup_group, search_events, search_groups,
 };
-
-#[derive(StructOpt, Debug)]
-pub enum MeetupCmd {
-    Groups,
-    Events,
-}
-
-#[derive(StructOpt, Debug)]
-pub enum PoachCmd {
-    Meetup(MeetupCmd),
-}
 
 #[derive(StructOpt, Debug)]
 pub enum WebCmd {
@@ -93,7 +86,7 @@ async fn poacher_meditation(mut rx: Receiver<PoacherMessage>) -> Result<()> {
                 error!("Encountered error when poaching: {:#?}", err)
             }
             PoacherMessage::ResultItem(item) => match item {
-                PoachedResult::Meetup(result) => match result {
+                PoacherResult::Meetup(result) => match result {
                     MeetupResult::Group(group) => {
                         process_scraped_meetup_group(group, &conn).await;
                     }

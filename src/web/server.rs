@@ -33,7 +33,7 @@ pub fn app() -> Rocket<Build> {
         .merge(("port", config.server.port))
         .merge(("address", config.server.host))
         .merge(("template_dir", config.server.template_dir))
-        .merge(("databases.entropy_db.url", config.database_path));
+        .merge(("databases.entropy_db.url", config.database_url));
 
     rocket::custom(figment)
         .mount("/", routes::home::routes())

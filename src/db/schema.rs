@@ -1,32 +1,32 @@
 table! {
     meetup_events (id) {
-        id -> Text,
-        slug -> Text,
-        group_slug -> Text,
-        title -> Text,
-        description -> Nullable<Text>,
+        id -> Int4,
+        slug -> Varchar,
+        group_slug -> Varchar,
+        title -> Varchar,
+        description -> Nullable<Varchar>,
         start_time -> Timestamp,
         end_time -> Timestamp,
         is_online -> Bool,
-        charges -> Nullable<Double>,
-        currency -> Nullable<Text>,
-        link -> Text,
-        venue -> Nullable<Text>,
+        charges -> Nullable<Float8>,
+        currency -> Nullable<Varchar>,
+        link -> Varchar,
+        venue -> Nullable<Varchar>,
     }
 }
 
 table! {
     meetup_groups (id) {
-        id -> Text,
-        slug -> Text,
-        name -> Text,
-        link -> Text,
-        description -> Text,
-        city -> Text,
-        state -> Text,
-        country -> Text,
+        id -> Int4,
+        slug -> Varchar,
+        name -> Varchar,
+        link -> Varchar,
+        description -> Varchar,
+        city -> Varchar,
+        state -> Varchar,
+        country -> Varchar,
         is_private -> Bool,
-        photo -> Nullable<Text>,
+        photo -> Nullable<Varchar>,
     }
 }
 

@@ -1,4 +1,4 @@
-use anyhow::{bail, Context};
+use anyhow::Context;
 use figment::{
     providers::{Env, Format, Serialized, Toml},
     Figment,
@@ -45,12 +45,12 @@ impl Default for ServerConfig {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct GroupsBlacklist {
-    pub slugs: Vec<String>
+    pub slugs: Vec<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct MeetupPoacherBlacklist {
-    pub groups: GroupsBlacklist
+    pub groups: GroupsBlacklist,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -61,7 +61,7 @@ pub struct MeetupPoacherConfig {
     pub search_terms: Vec<String>,
     pub coordinates: Coordinates,
     pub radius: u32,
-    pub blacklist: MeetupPoacherBlacklist
+    pub blacklist: MeetupPoacherBlacklist,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -77,7 +77,7 @@ impl Default for PoacherConfig {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct EntropyConfig {
-    pub database_path: String,
+    pub database_url: String,
     pub static_site: StaticSiteConfig,
     pub server: ServerConfig,
     pub poacher: PoacherConfig,
@@ -87,11 +87,11 @@ pub struct EntropyConfig {
 impl Default for EntropyConfig {
     fn default() -> Self {
         Self {
-            database_path: "entropy.sqlite3".to_string(),
+            database_url: "postgresql:///entropy?host=./postgres/run".to_string(),
             static_site: StaticSiteConfig::default(),
             server: ServerConfig::default(),
             poacher: PoacherConfig::default(),
-            rfc_dir: "./docs/rfcs".to_string()
+            rfc_dir: "./docs/rfcs".to_string(),
         }
     }
 }
@@ -104,10 +104,6 @@ impl EntropyConfig {
             .merge(Env::prefixed("ENTROPY_").global())
             .extract()
             .with_context(|| "Invalid Entropy Configuration.")?;
-
-        if !config.database_path.ends_with(".sqlite3") {
-            bail!("database_path must have .sqlite3 extension");
-        }
 
         Ok(config)
     }
