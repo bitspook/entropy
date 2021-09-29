@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use anyhow::Result;
 use structopt::StructOpt;
 use tokio::{
@@ -21,7 +19,6 @@ pub enum PoachCmd {
 }
 
 pub async fn run(cmd: PoachCmd) -> Result<()> {
-    let (tx, rx): (Sender<PoacherMessage>, Receiver<PoacherMessage>) = mpsc::channel(1024);
     let user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0";
     let client = reqwest::Client::builder()
         .user_agent(user_agent)
@@ -29,11 +26,8 @@ pub async fn run(cmd: PoachCmd) -> Result<()> {
         .unwrap();
     let config = EntropyConfig::load().unwrap();
 
-    let meetup = Arc::new(Meetup::new(
-        client,
-        config.poacher.meetup_com.to_vec(),
-        tx.clone(),
-    ));
+    let (tx, rx): (Sender<PoacherMessage>, Receiver<PoacherMessage>) = mpsc::channel(1024);
+    let meetup = Meetup::new(client, config.poacher.meetup_com.to_vec(), tx);
 
     match cmd {
         PoachCmd::Meetup(poach_meetup_opts) => match poach_meetup_opts {
@@ -53,5 +47,11 @@ pub async fn run(cmd: PoachCmd) -> Result<()> {
         .flat_map(|mc| mc.blacklist.groups.slugs)
         .collect();
 
-    consumer::run(rx, &groups_blacklist).await
+    // Explicitly drop meetup so that tx can be dropped, signaling rx it can
+    // stop. Otherwise consumer would run forever since rx would keep waiting
+    // for new messages from tx
+    drop(meetup);
+    consumer::run(rx, &groups_blacklist).await?;
+
+    Ok(())
 }
