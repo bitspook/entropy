@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use chrono::DateTime;
 use log::debug;
 use reqwest::{self, Client};
@@ -11,7 +13,7 @@ mod util;
 pub use models::*;
 use util::get_gql_headers;
 
-use crate::Coordinates;
+use crate::{config::MeetupPoacherConfig, Coordinates};
 
 use self::util::make_meetup_image_url;
 use super::{PoacherError, PoacherMessage, PoacherResult, PoacherWarning};
@@ -27,14 +29,19 @@ pub enum MeetupResult {
 pub struct Meetup {
     client: Client,
     tx: Sender<PoacherMessage>,
+    config: Vec<MeetupPoacherConfig>,
 }
 
 impl Meetup {
-    pub fn new(client: Client, tx: Sender<PoacherMessage>) -> Self {
-        Meetup { client, tx }
+    pub fn new(
+        client: Client,
+        config: Vec<MeetupPoacherConfig>,
+        tx: Sender<PoacherMessage>,
+    ) -> Self {
+        Meetup { client, tx, config }
     }
 
-    pub async fn search_groups(
+    pub async fn search_groups_(
         &self,
         coordinates: &Coordinates,
         query: &str,
@@ -154,7 +161,27 @@ impl Meetup {
         Ok(())
     }
 
-    pub async fn search_events(
+    pub async fn search_groups(&self, meetup: Arc<Meetup>, tx: Sender<PoacherMessage>) {
+        for config in self.config.to_vec().into_iter() {
+            let search_terms = config.search_terms;
+            let coords = Arc::new(config.coordinates);
+            let radius = config.radius;
+
+            for term in search_terms.iter().map(|s| s.to_owned()) {
+                let meetup = meetup.clone();
+                let coords = coords.clone();
+                let tx = tx.clone();
+
+                tokio::spawn(async move {
+                    if let Err(err) = meetup.search_groups_(&coords, &term, radius).await {
+                        tx.send(PoacherMessage::Error(err)).await.unwrap();
+                    };
+                });
+            }
+        }
+    }
+
+    async fn _search_events(
         &self,
         coordinates: &Coordinates,
         radius: u32,
@@ -317,5 +344,22 @@ impl Meetup {
         }
 
         Ok(())
+    }
+
+    pub async fn search_events(&self, meetup: Arc<Meetup>, tx: Sender<PoacherMessage>) {
+        for config in self.config.to_vec().into_iter() {
+            let coords = Arc::new(config.coordinates);
+            let radius = config.radius;
+
+            let coords = coords.clone();
+            let tx = tx.clone();
+            let meetup = meetup.clone();
+
+            tokio::spawn(async move {
+                if let Err(err) = meetup._search_events(&coords, radius).await {
+                    tx.send(PoacherMessage::Error(err)).await.unwrap();
+                };
+            });
+        }
     }
 }
