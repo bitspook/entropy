@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use chrono::DateTime;
 use log::debug;
 use reqwest::{self, Client};
@@ -161,25 +159,16 @@ impl Meetup {
         Ok(())
     }
 
-    pub async fn search_groups(self: Arc<Self>) {
-        let meetup = self.clone();
-        let tx = self.tx.clone();
-
+    pub async fn search_groups(&self) {
         for config in self.config.to_vec().into_iter() {
             let search_terms = config.search_terms;
-            let coords = Arc::new(config.coordinates);
+            let coords = config.coordinates;
             let radius = config.radius;
 
             for term in search_terms.iter().map(|s| s.to_owned()) {
-                let meetup = meetup.clone();
-                let coords = coords.clone();
-                let tx = tx.clone();
-
-                tokio::spawn(async move {
-                    if let Err(err) = meetup.search_groups_(&coords, &term, radius).await {
-                        tx.send(PoacherMessage::Error(err)).await.unwrap();
-                    };
-                });
+                if let Err(err) = self.search_groups_(&coords, &term, radius).await {
+                    self.tx.send(PoacherMessage::Error(err)).await.unwrap();
+                };
             }
         }
     }
@@ -349,23 +338,14 @@ impl Meetup {
         Ok(())
     }
 
-    pub async fn search_events(self: Arc<Self>) {
-        let meetup = self.clone();
-        let tx = self.tx.clone();
-
+    pub async fn search_events(&self) {
         for config in self.config.to_vec().into_iter() {
-            let coords = Arc::new(config.coordinates);
+            let coords = config.coordinates;
             let radius = config.radius;
 
-            let coords = coords.clone();
-            let tx = tx.clone();
-            let meetup = meetup.clone();
-
-            tokio::spawn(async move {
-                if let Err(err) = meetup._search_events(&coords, radius).await {
-                    tx.send(PoacherMessage::Error(err)).await.unwrap();
-                };
-            });
+            if let Err(err) = self._search_events(&coords, radius).await {
+                self.tx.send(PoacherMessage::Error(err)).await.unwrap();
+            };
         }
     }
 }
