@@ -161,7 +161,10 @@ impl Meetup {
         Ok(())
     }
 
-    pub async fn search_groups(&self, meetup: Arc<Meetup>, tx: Sender<PoacherMessage>) {
+    pub async fn search_groups(self: Arc<Self>) {
+        let meetup = self.clone();
+        let tx = self.tx.clone();
+
         for config in self.config.to_vec().into_iter() {
             let search_terms = config.search_terms;
             let coords = Arc::new(config.coordinates);
@@ -346,7 +349,10 @@ impl Meetup {
         Ok(())
     }
 
-    pub async fn search_events(&self, meetup: Arc<Meetup>, tx: Sender<PoacherMessage>) {
+    pub async fn search_events(self: Arc<Self>) {
+        let meetup = self.clone();
+        let tx = self.tx.clone();
+
         for config in self.config.to_vec().into_iter() {
             let coords = Arc::new(config.coordinates);
             let radius = config.radius;

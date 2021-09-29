@@ -2,21 +2,21 @@ use diesel::{insert_into, PgConnection, RunQueryDsl};
 use log::{debug, error};
 use tokio::sync::mpsc::Receiver;
 
-use crate::{EntropyConfig, db};
+use crate::db;
 
-use super::{PoacherMessage, PoacherResult, meetup::{MeetupEvent, MeetupGroup, MeetupResult}};
+use super::{
+    meetup::{MeetupEvent, MeetupGroup, MeetupResult},
+    PoacherMessage, PoacherResult,
+};
 
-pub async fn process_scraped_meetup_group(group: MeetupGroup, conn: &PgConnection) {
+pub async fn process_scraped_meetup_group(
+    group: MeetupGroup,
+    conn: &PgConnection,
+    groups_blacklist: &Vec<String>,
+) {
     use crate::db::schema::meetup_groups::dsl::*;
-    let blacklist: Vec<String> = EntropyConfig::load()
-        .unwrap()
-        .poacher
-        .meetup_com
-        .into_iter()
-        .flat_map(|mc| mc.blacklist.groups.slugs)
-        .collect();
 
-    if blacklist.contains(&group.slug) {
+    if groups_blacklist.contains(&group.slug) {
         warn!("Ignoring blacklisted group: {}", group.slug);
         return;
     }
@@ -35,18 +35,14 @@ pub async fn process_scraped_meetup_group(group: MeetupGroup, conn: &PgConnectio
     debug!("Saved group in database: {}", group.name);
 }
 
-pub async fn process_scraped_meetup_event(event: MeetupEvent, conn: &PgConnection) {
+pub async fn process_scraped_meetup_event(
+    event: MeetupEvent,
+    conn: &PgConnection,
+    groups_blacklist: &Vec<String>,
+) {
     use crate::db::schema::meetup_events::dsl::*;
 
-    let blacklist: Vec<String> = EntropyConfig::load()
-        .unwrap()
-        .poacher
-        .meetup_com
-        .into_iter()
-        .flat_map(|mc| mc.blacklist.groups.slugs)
-        .collect();
-
-    if blacklist.contains(&event.group_slug) {
+    if groups_blacklist.contains(&event.group_slug) {
         warn!("Ignoring event for blacklisted group: {}", event.group_slug);
         return;
     }
@@ -66,7 +62,10 @@ pub async fn process_scraped_meetup_event(event: MeetupEvent, conn: &PgConnectio
 }
 
 /// Absorb all the poacher messages from `rx` and spawn tasks to process them.
-pub async fn run(mut rx: Receiver<PoacherMessage>) -> anyhow::Result<()> {
+pub async fn run(
+    mut rx: Receiver<PoacherMessage>,
+    groups_blacklist: &Vec<String>,
+) -> anyhow::Result<()> {
     let conn = db::establish_connection()?;
     while let Some(msg) = rx.recv().await {
         match msg {
@@ -76,10 +75,10 @@ pub async fn run(mut rx: Receiver<PoacherMessage>) -> anyhow::Result<()> {
             PoacherMessage::ResultItem(item) => match item {
                 PoacherResult::Meetup(result) => match result {
                     MeetupResult::Group(group) => {
-                        process_scraped_meetup_group(group, &conn).await;
+                        process_scraped_meetup_group(group, &conn, groups_blacklist).await;
                     }
                     MeetupResult::Event(event) => {
-                        process_scraped_meetup_event(event, &conn).await;
+                        process_scraped_meetup_event(event, &conn, groups_blacklist).await;
                     }
                 },
             },

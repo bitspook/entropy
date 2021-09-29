@@ -29,19 +29,29 @@ pub async fn run(cmd: PoachCmd) -> Result<()> {
         .unwrap();
     let config = EntropyConfig::load().unwrap();
 
-    let meetup = Arc::new(Meetup::new(client, config.poacher.meetup_com, tx.clone()));
-    let meetup2 = meetup.clone();
+    let meetup = Arc::new(Meetup::new(
+        client,
+        config.poacher.meetup_com.to_vec(),
+        tx.clone(),
+    ));
 
     match cmd {
         PoachCmd::Meetup(poach_meetup_opts) => match poach_meetup_opts {
             MeetupCmd::Groups => {
-                meetup.search_groups(meetup2, tx).await;
+                meetup.search_groups().await;
             }
             MeetupCmd::Events => {
-                meetup.search_events(meetup2, tx).await;
+                meetup.search_events().await;
             }
         },
     };
 
-    consumer::run(rx).await
+    let groups_blacklist: Vec<String> = config
+        .poacher
+        .meetup_com
+        .into_iter()
+        .flat_map(|mc| mc.blacklist.groups.slugs)
+        .collect();
+
+    consumer::run(rx, &groups_blacklist).await
 }
