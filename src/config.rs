@@ -43,17 +43,17 @@ impl Default for ServerConfig {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct GroupsBlacklist {
     pub slugs: Vec<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct MeetupPoacherBlacklist {
     pub groups: GroupsBlacklist,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct MeetupPoacherConfig {
     /// Meetup's search is trash. A lot of meetup groups get left out when searching by location because
     /// Searching for following queries give better results for meetup groups of city

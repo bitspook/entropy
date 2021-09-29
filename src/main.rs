@@ -8,11 +8,7 @@ use entropy::db;
 #[macro_use]
 extern crate diesel_migrations;
 
-#[macro_use]
-extern crate rocket;
-
 mod cli;
-mod util;
 
 fn mk_logger(verbosity: i32) {
     let level = match verbosity {

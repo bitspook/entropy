@@ -5,6 +5,7 @@ use serde_json as json;
 
 pub mod cli;
 pub mod meetup;
+mod consumer;
 
 #[derive(Debug)]
 pub enum PoacherResult {
