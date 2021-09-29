@@ -4,8 +4,8 @@ use self::meetup::MeetupResult;
 use serde_json as json;
 
 pub mod cli;
-pub mod meetup;
 mod consumer;
+pub mod meetup;
 
 #[derive(Debug)]
 pub enum PoacherResult {

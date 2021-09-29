@@ -1,6 +1,5 @@
 use reqwest::{header, Url};
 
-
 pub fn get_gql_headers() -> header::HeaderMap {
     let mut gql_headers = header::HeaderMap::new();
     gql_headers.insert(
