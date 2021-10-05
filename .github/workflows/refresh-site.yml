@@ -24,7 +24,7 @@ jobs:
           ./entropy poach meetup events -v
           ./entropy web build -v
         env:
-          ENTROPY_STATIC_SITE: '{base_url="/entropy/"}'
+          ENTROPY_STATIC_SITE: '{base_url="/"}'
 
       - uses: peaceiris/actions-gh-pages@v3
         with:
