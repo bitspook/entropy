@@ -15,8 +15,8 @@ instead of initiatives:
 2. Problem or problem statement does not meet prerequisites for being an
    initiative
 
-3. There is no clear course of action for a solution
+   To convert an RFC to an initiative, following are required:
 
-   A course of action also needs an attainable goal. It is considered best to
-   have something that can be represented with concrete numbers. We can however
-   settle for a clear indicator of change for good.
+    1. An achievable goal
+    2. An actionable plan
+    3. An effective way to measure progress

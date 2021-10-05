@@ -5,45 +5,36 @@ use chrono::Utc;
 use diesel::prelude::*;
 use rocket::{local::asynchronous::Client, Route};
 use rocket_dyn_templates::Template;
-use rocket_sync_db_pools::diesel;
 use serde::Serialize;
 use serde_json::json;
 
-use crate::poacher::meetup::MeetupEvent;
 use crate::EntropyConfig;
 
+use crate::db::models::Event;
 use crate::web::{Db, WebResult};
 
 #[derive(Serialize)]
-struct Event {
+struct CtxEvent {
     title: String,
     description: Option<String>,
     start_date: String,
     start_time: String,
     end_time: String,
-    charges: String,
-    is_online: bool,
     slug: String,
 }
 
-impl From<MeetupEvent> for Event {
-    fn from(event: MeetupEvent) -> Event {
+impl From<Event> for CtxEvent {
+    fn from(event: Event) -> CtxEvent {
         let start_date = event.start_time.format("%A, %B %e").to_string();
         let start_time = event.start_time.format("%l:%M%P").to_string();
         let end_time = event.end_time.format("%l:%M%P").to_string();
 
-        Event {
+        CtxEvent {
             title: event.title,
             description: event.description,
             start_date,
             start_time,
             end_time,
-            charges: event
-                .charges
-                .map(|c| c.to_string())
-                .or(Some("Free".to_string()))
-                .unwrap(),
-            is_online: event.is_online,
             slug: event.slug,
         }
     }
@@ -51,26 +42,26 @@ impl From<MeetupEvent> for Event {
 
 #[get("/events")]
 async fn events(db: Db) -> WebResult<Template> {
-    use crate::db::schema::meetup_events::dsl::*;
+    use crate::db::schema::events::dsl::*;
     let config = EntropyConfig::load()?;
     let base_url = config.static_site.base_url;
 
-    let events: Vec<MeetupEvent> = db
+    let events_data: Vec<Event> = db
         .run(|conn| {
             let today = Utc::now().naive_utc();
 
-            meetup_events
+            events
                 .filter(start_time.gt(today))
                 .order(start_time.asc())
                 .limit(50)
-                .load::<MeetupEvent>(conn)
+                .load::<Event>(conn)
         })
         .await
         .map_err(anyhow::Error::from)?;
 
-    let events: Vec<Event> = events.into_iter().map(|e| e.into()).collect();
+    let events_data: Vec<CtxEvent> = events_data.into_iter().map(|e| e.into()).collect();
 
-    let context = json!({ "events": events, "base_url": base_url });
+    let context = json!({ "events": events_data, "base_url": base_url });
 
     Ok(Template::render("events", context))
 }
