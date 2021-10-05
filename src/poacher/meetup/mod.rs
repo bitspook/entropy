@@ -277,6 +277,7 @@ impl Meetup {
                 .naive_utc();
 
             let event = json::json!({
+                "id": node["id"],
                 "group_slug": node["group"]["slug"],
                 "slug": node["slug"],
                 "title": node["title"],
@@ -289,6 +290,7 @@ impl Meetup {
                 "link": node["eventUrl"]
             });
             let group = json::json!({
+                "id": node["group"]["id"],
                 "slug": node["group"]["slug"],
                 "name": node["group"]["name"],
                 "link": node["group"]["link"],

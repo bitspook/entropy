@@ -1,11 +1,11 @@
-use crate::db::schema::*;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
-#[derive(Queryable, Insertable, Debug, Clone, Serialize, Deserialize)]
-#[table_name = "meetup_groups"]
+use crate::db::models::{NewEvent, NewGroup};
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct MeetupGroup {
-    pub id: i32,
+    pub id: String,
     pub slug: String,
     pub name: String,
     pub link: String,
@@ -17,10 +17,22 @@ pub struct MeetupGroup {
     pub photo: Option<String>,
 }
 
-#[derive(Queryable, Insertable, Debug, Clone, Serialize, Deserialize)]
-#[table_name = "meetup_events"]
+impl From<MeetupGroup> for NewGroup {
+    fn from(group: MeetupGroup) -> Self {
+        Self {
+            name: group.name,
+            slug: group.slug,
+            description: Some(group.description),
+            desc_format: "text".to_string(),
+            source: Some("meetup.com".to_string()),
+            source_link: Some(group.link),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct MeetupEvent {
-    pub id: i32,
+    pub id: String,
     pub slug: String,
     pub group_slug: String,
     pub title: String,
@@ -32,4 +44,21 @@ pub struct MeetupEvent {
     pub currency: Option<String>,
     pub link: String,
     pub venue: Option<String>,
+}
+
+impl From<MeetupEvent> for NewEvent {
+    fn from(event: MeetupEvent) -> Self {
+        NewEvent {
+            title: event.title,
+            slug: event.slug,
+            group_id: None,
+            description: event.description,
+            desc_format: "text".to_string(),
+            photos: vec![],
+            source: Some("meetup.com".to_string()),
+            source_link: Some(event.link),
+            start_time: event.start_time,
+            end_time: event.end_time,
+        }
+    }
 }
