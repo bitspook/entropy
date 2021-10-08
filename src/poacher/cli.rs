@@ -7,11 +7,7 @@ use tokio::{
 
 use crate::EntropyConfig;
 
-use super::{
-    consumer,
-    meetup::{cli::MeetupCmd, Meetup},
-    PoacherMessage,
-};
+use super::{PoacherMessage, consumer, meetup::{self, Meetup, cli::MeetupCmd}};
 
 #[derive(StructOpt, Debug)]
 pub enum PoachCmd {
@@ -30,14 +26,7 @@ pub async fn run(cmd: PoachCmd) -> Result<()> {
     let meetup = Meetup::new(client, config.poacher.meetup_com.to_vec(), tx);
 
     match cmd {
-        PoachCmd::Meetup(poach_meetup_opts) => match poach_meetup_opts {
-            MeetupCmd::Groups => {
-                meetup.search_groups().await;
-            }
-            MeetupCmd::Events => {
-                meetup.search_events().await;
-            }
-        },
+        PoachCmd::Meetup(poach_meetup_opts) => meetup::cli::run(poach_meetup_opts, meetup).await?
     };
 
     let groups_blacklist: Vec<String> = config
@@ -47,10 +36,6 @@ pub async fn run(cmd: PoachCmd) -> Result<()> {
         .flat_map(|mc| mc.blacklist.groups.slugs)
         .collect();
 
-    // Explicitly drop meetup so that tx can be dropped, signaling rx it can
-    // stop. Otherwise consumer would run forever since rx would keep waiting
-    // for new messages from tx
-    drop(meetup);
     consumer::run(rx, &groups_blacklist).await?;
 
     Ok(())

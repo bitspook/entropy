@@ -351,3 +351,20 @@ impl Meetup {
         }
     }
 }
+
+pub async fn clear_poached_data(conn: &diesel::PgConnection) {
+    use diesel::{ prelude::*, delete };
+    use crate::db::schema::*;
+
+    if let Err(err) = delete(events::dsl::events.filter(events::dsl::source.eq("meetup.com"))).execute(conn) {
+        error!("Error while clearing events poached from meetup.com [err={}]", err);
+    } else {
+        debug!("Cleared events poached from meetup.com");
+    }
+
+    if let Err(err) = delete(groups::dsl::groups.filter(groups::dsl::source.eq("meetup.com"))).execute(conn) {
+        error!("Error while clearing groups poached from meetup.com [err={}]", err);
+    } else {
+        debug!("Cleared groups poached from meetup.com");
+    }
+}
