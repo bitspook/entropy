@@ -24,7 +24,7 @@ impl From<MeetupGroup> for NewGroup {
             slug: group.slug,
             description: Some(group.description),
             desc_format: "text".to_string(),
-            source: Some("meetup.com".to_string()),
+            source: Some(super::SOURCE.to_string()),
             source_link: Some(group.link),
         }
     }
@@ -55,7 +55,7 @@ impl From<MeetupEvent> for NewEvent {
             description: event.description,
             desc_format: "text".to_string(),
             photos: vec![],
-            source: Some("meetup.com".to_string()),
+            source: Some(super::SOURCE.to_string()),
             source_link: Some(event.link),
             start_time: event.start_time,
             end_time: event.end_time,

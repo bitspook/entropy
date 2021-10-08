@@ -30,6 +30,8 @@ pub struct Meetup {
     config: Vec<MeetupPoacherConfig>,
 }
 
+pub const SOURCE: &str = "meetup.com";
+
 impl Meetup {
     pub fn new(
         client: Client,
@@ -356,15 +358,15 @@ pub async fn clear_poached_data(conn: &diesel::PgConnection) {
     use diesel::{ prelude::*, delete };
     use crate::db::schema::*;
 
-    if let Err(err) = delete(events::dsl::events.filter(events::dsl::source.eq("meetup.com"))).execute(conn) {
-        error!("Error while clearing events poached from meetup.com [err={}]", err);
+    if let Err(err) = delete(events::dsl::events.filter(events::dsl::source.eq(SOURCE))).execute(conn) {
+        error!("Error while clearing events poached from {} [err={}]", SOURCE, err);
     } else {
-        debug!("Cleared events poached from meetup.com");
+        debug!("Cleared events poached from {}", SOURCE);
     }
 
-    if let Err(err) = delete(groups::dsl::groups.filter(groups::dsl::source.eq("meetup.com"))).execute(conn) {
-        error!("Error while clearing groups poached from meetup.com [err={}]", err);
+    if let Err(err) = delete(groups::dsl::groups.filter(groups::dsl::source.eq(SOURCE))).execute(conn) {
+        error!("Error while clearing groups poached from {} [err={}]", SOURCE, err);
     } else {
-        debug!("Cleared groups poached from meetup.com");
+        debug!("Cleared groups poached from {}", SOURCE);
     }
 }
