@@ -82,16 +82,6 @@
                   <div class="icon"></div>
                   <div class="content">{{ event.start_date }} from {{event.start_time}} to {{event.end_time}}</div>
                 </div>
-                <div class="meta-item">
-                  <div class="icon"></div>
-                  <div class="content">{{ event.charges }}</div>
-                </div>
-                {% if event.is_online %}
-                <div class="meta-item">
-                  <div class="icon"></div>
-                  <div class="content">Online</div>
-                </div>
-                {% endif %}
               </div>
             </div>
           </div>

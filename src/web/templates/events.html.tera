@@ -28,16 +28,6 @@
                 <div class="icon"></div>
                 <div class="meta-content">{{ event.start_date }} from {{event.start_time}} to {{event.end_time}}</div>
               </div>
-              <div class="meta-item">
-                <div class="icon"></div>
-                <div>{{ event.charges }}</div>
-              </div>
-              {% if event.is_online %}
-              <div class="meta-item">
-                <div class="icon"></div>
-                <div>Online</div>
-              </div>
-              {% endif %}
             </div>
             <div class="description">{{ event.description | safe | truncate(length=240) }}</div>
           </div>
