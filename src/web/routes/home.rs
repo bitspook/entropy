@@ -1,6 +1,6 @@
 use anyhow::{Error, Result};
 use chrono::Utc;
-use diesel::prelude::*;
+use diesel::{debug_query, prelude::*};
 use rocket::{local::asynchronous::Client, Route};
 use rocket_dyn_templates::Template;
 use rocket_sync_db_pools::diesel;
@@ -50,9 +50,11 @@ async fn home(db: Db) -> WebResult<Template> {
         .run(|conn| {
             let today = Utc::now().naive_utc();
 
-            let query = events.filter(start_time.gt(today)).order(start_time.asc());
+            let query = events.filter(start_time.gt(today));
 
-            let events_data: Vec<Event> = query.limit(5).load(conn).map_err(Error::from)?;
+            debug!("QUERY: [query={}]", debug_query::<diesel::pg::Pg, _>(&query.count()));
+
+            let events_data: Vec<Event> = query.order(start_time.asc()).limit(5).load(conn).map_err(Error::from)?;
             let count: i64 = query.count().get_result(conn).map_err(Error::from)?;
 
             let res: Result<(Vec<Event>, i64)> = Ok((events_data, count));

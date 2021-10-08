@@ -35,9 +35,11 @@
   .meta {
     display: flex;
     font-size: 1.2rem;
+    align-items: center;
 
     .key {
       margin-right: 1rem;
+      align-self: end;
     }
   }
 }
