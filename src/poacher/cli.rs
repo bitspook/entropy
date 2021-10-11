@@ -7,11 +7,18 @@ use tokio::{
 
 use crate::EntropyConfig;
 
-use super::{PoacherMessage, consumer, meetup::{self, Meetup, cli::MeetupCmd}};
+use super::{
+    consumer,
+    local::cli::Cmd as LocalPoacherCmd,
+    local::{self, Local as LocalPoacher},
+    meetup::{self, cli::MeetupCmd, Meetup},
+    PoacherMessage,
+};
 
 #[derive(StructOpt, Debug)]
 pub enum PoachCmd {
     Meetup(MeetupCmd),
+    Local(LocalPoacherCmd),
 }
 
 pub async fn run(cmd: PoachCmd) -> Result<()> {
@@ -23,10 +30,13 @@ pub async fn run(cmd: PoachCmd) -> Result<()> {
     let config = EntropyConfig::load().unwrap();
 
     let (tx, rx): (Sender<PoacherMessage>, Receiver<PoacherMessage>) = mpsc::channel(1024);
-    let meetup = Meetup::new(client, config.poacher.meetup_com.to_vec(), tx);
+
+    let meetup = Meetup::new(client, config.poacher.meetup_com.to_vec(), tx.clone());
+    let local_poacher = LocalPoacher::new(config.poacher.local, tx.clone());
 
     match cmd {
-        PoachCmd::Meetup(poach_meetup_opts) => meetup::cli::run(poach_meetup_opts, meetup).await?
+        PoachCmd::Meetup(opts) => meetup::cli::run(opts, meetup).await?,
+        PoachCmd::Local(opts) => local::cli::run(opts, local_poacher).await?,
     };
 
     let groups_blacklist: Vec<String> = config
