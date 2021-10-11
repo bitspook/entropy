@@ -25,10 +25,5 @@ pub async fn run(cmd: MeetupCmd, meetup: Meetup) -> anyhow::Result<()> {
         }
     }
 
-    // Explicitly drop meetup so that tx can be dropped, signaling rx it can
-    // stop. Otherwise consumer would run forever since rx would keep waiting
-    // for new messages from tx
-    drop(meetup);
-
     Ok(())
 }

@@ -5,11 +5,17 @@ use serde_json as json;
 
 pub mod cli;
 mod consumer;
+pub mod local;
 pub mod meetup;
+
+mod config;
+
+pub use config::*;
 
 #[derive(Debug)]
 pub enum PoacherResult {
     Meetup(MeetupResult),
+    Local(local::LocalResult)
 }
 
 #[derive(Debug)]
@@ -17,6 +23,7 @@ pub enum PoacherMessage {
     ResultItem(PoacherResult),
     Error(PoacherError),
     Warning(PoacherWarning),
+    End
 }
 
 #[derive(Debug)]
