@@ -1,4 +1,3 @@
-use anyhow::bail;
 use structopt::StructOpt;
 
 use super::Local;
@@ -14,8 +13,8 @@ pub async fn run(cmd: Cmd, local: Local) -> anyhow::Result<()> {
         Cmd::Groups => {
             local.poach_groups().await?;
         }
-        _ => {
-            bail!("Not implemented");
+        Cmd::Events => {
+            local.poach_events().await?;
         }
     }
 

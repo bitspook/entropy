@@ -8,8 +8,6 @@ mod group;
 pub use event::*;
 pub use group::*;
 
-
-
 #[derive(Queryable, Identifiable, Debug)]
 #[table_name = "venues"]
 pub struct Venue {

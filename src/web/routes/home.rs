@@ -52,9 +52,16 @@ async fn home(db: Db) -> WebResult<Template> {
 
             let query = events.filter(start_time.gt(today));
 
-            debug!("QUERY: [query={}]", debug_query::<diesel::pg::Pg, _>(&query.count()));
+            debug!(
+                "QUERY: [query={}]",
+                debug_query::<diesel::pg::Pg, _>(&query.count())
+            );
 
-            let events_data: Vec<Event> = query.order(start_time.asc()).limit(5).load(conn).map_err(Error::from)?;
+            let events_data: Vec<Event> = query
+                .order(start_time.asc())
+                .limit(5)
+                .load(conn)
+                .map_err(Error::from)?;
             let count: i64 = query.count().get_result(conn).map_err(Error::from)?;
 
             let res: Result<(Vec<Event>, i64)> = Ok((events_data, count));

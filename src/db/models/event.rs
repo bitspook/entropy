@@ -18,7 +18,7 @@ pub struct Event {
     pub start_time: NaiveDateTime,
     pub end_time: NaiveDateTime,
     pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime
+    pub updated_at: NaiveDateTime,
 }
 
 #[derive(Insertable, Debug)]

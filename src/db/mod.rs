@@ -2,8 +2,8 @@ use anyhow::Error;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 
-pub mod schema;
 pub mod models;
+pub mod schema;
 
 pub fn establish_connection() -> anyhow::Result<PgConnection> {
     let config = crate::EntropyConfig::load()?;

@@ -21,7 +21,7 @@ struct EventData {
     description: Option<String>,
     start_time: chrono::NaiveDateTime,
     end_time: chrono::NaiveDateTime,
-    group_name: Option<String>
+    group_name: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -50,7 +50,7 @@ impl From<EventData> for CtxEvent {
             link: event.link.unwrap_or("".to_string()),
             start_time,
             end_time,
-            group_name: event.group_name.unwrap_or("".to_string())
+            group_name: event.group_name.unwrap_or("".to_string()),
         }
     }
 }
