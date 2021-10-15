@@ -3,6 +3,7 @@
 //! pages.
 use anyhow::Context;
 use futures::pin_mut;
+use regex::Regex;
 use std::path::Path;
 use tokio::sync::mpsc::Sender;
 use tokio_stream::StreamExt;
@@ -26,20 +27,22 @@ pub enum LocalResult {
 }
 
 pub struct Local {
-    config: Config,
+    config: LocalPoacherConfig,
     tx: Sender<PoacherMessage>,
 }
 
 impl Local {
-    pub fn new(config: Config, tx: Sender<PoacherMessage>) -> Self {
+    pub fn new(config: LocalPoacherConfig, tx: Sender<PoacherMessage>) -> Self {
         Self { config, tx }
     }
 
     pub async fn poach_events(&self) -> Result<(), anyhow::Error> {
         let base_dir = Path::new(&self.config.events.base_dir);
-        let events =
-            read_all_files_with_exts(vec!["md".to_string(), "markdown".to_string()], base_dir)
-                .await?;
+        // FIXME Shouldn't need to clone here
+        let include = self.config.events.include.clone().map(|s| Regex::new(&s).ok()).flatten();
+        let exclude = self.config.events.exclude.clone().map(|s| Regex::new(&s).ok()).flatten();
+
+        let events = read_all_files(base_dir, include, exclude).await?;
 
         pin_mut!(events);
 
@@ -72,9 +75,11 @@ impl Local {
 
     pub async fn poach_groups(&self) -> Result<(), anyhow::Error> {
         let base_dir = Path::new(&self.config.groups.base_dir);
-        let groups =
-            read_all_files_with_exts(vec!["md".to_string(), "markdown".to_string()], base_dir)
-                .await?;
+        // FIXME Shouldn't need to clone here
+        let include = self.config.groups.include.clone().map(|s| Regex::new(&s).ok()).flatten();
+        let exclude = self.config.groups.exclude.clone().map(|s| Regex::new(&s).ok()).flatten();
+
+        let groups = read_all_files(base_dir, include, exclude).await?;
 
         pin_mut!(groups);
 
