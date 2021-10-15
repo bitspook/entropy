@@ -25,6 +25,9 @@ futures = "0.3.15"
 figment = "0.10.6"
 pulldown-cmark = "0.8.0"
 uuid = { version = "0.8.2", features = ["serde", "v4"] }
+toml = "0.5.8"
+tokio-stream = "0.1.7"
+async-stream = "0.3.2"
 
 [dependencies.rocket]
 version = "0.5.0-dev"

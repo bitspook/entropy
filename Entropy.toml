@@ -20,3 +20,7 @@ blacklist.groups.slugs = [
   "bharatsthali-sarees",
   "thehtc"
 ]
+
+[poacher.local]
+groups.base_dir = "./groups"
+events.base_dir = "./events"

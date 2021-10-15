@@ -15,7 +15,7 @@ pub use config::*;
 #[derive(Debug)]
 pub enum PoacherResult {
     Meetup(MeetupResult),
-    Local(local::LocalResult)
+    Local(local::LocalResult),
 }
 
 #[derive(Debug)]
@@ -23,13 +23,14 @@ pub enum PoacherMessage {
     ResultItem(PoacherResult),
     Error(PoacherError),
     Warning(PoacherWarning),
-    End
+    End,
 }
 
 #[derive(Debug)]
 pub enum PoacherError {
     HttpError(reqwest::Error),
     JsonParseError(json::Error, Option<String>),
+    UnknownError(anyhow::Error),
     UnknownResponseError(String),
 }
 

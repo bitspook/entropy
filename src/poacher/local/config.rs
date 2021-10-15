@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
-struct CommonConfig {
-    base_dir: String,
-    include_files: String,
-    exclude_files: String,
+pub struct CommonConfig {
+    pub base_dir: String,
+    pub include_files: String,
+    pub exclude_files: String,
 }
 
 impl Default for CommonConfig {
@@ -19,8 +19,8 @@ impl Default for CommonConfig {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Config {
-    events: CommonConfig,
-    groups: CommonConfig,
+    pub events: CommonConfig,
+    pub groups: CommonConfig,
 }
 
 impl Default for Config {

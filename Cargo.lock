@@ -461,6 +461,7 @@ name = "entropy"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "async-stream",
  "chrono",
  "diesel",
  "diesel_migrations",
@@ -479,6 +480,8 @@ dependencies = [
  "serde_json",
  "structopt",
  "tokio",
+ "tokio-stream",
+ "toml",
  "url",
  "urlencoding",
  "uuid",

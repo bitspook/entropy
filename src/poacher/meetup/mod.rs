@@ -5,9 +5,9 @@ use serde_json as json;
 use tokio::sync::mpsc::Sender;
 use url::Url;
 
+pub mod consumer;
 mod models;
 mod util;
-pub mod consumer;
 
 pub use models::*;
 use util::get_gql_headers;
