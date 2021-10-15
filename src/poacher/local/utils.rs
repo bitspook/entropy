@@ -1,12 +1,11 @@
-use async_stream::stream;
-use futures::stream::StreamExt;
+use futures::stream::{self, StreamExt};
 use futures::Stream;
 use serde::de::DeserializeOwned;
 use std::{
+    fs::{self, DirEntry},
     io,
-    path::{Path, PathBuf},
+    path::Path,
 };
-use tokio::fs::read_dir;
 
 pub trait HasTomlFMatter<T> {}
 
@@ -42,27 +41,31 @@ pub fn from_toml_fmatter<T: DeserializeOwned>(
     toml::from_str(&t)
 }
 
-// TODO: Make it work recursively
-pub async fn walk_dir_recursively(dir: &Path) -> io::Result<impl Stream<Item = PathBuf>> {
-    let mut listing = read_dir(dir).await?;
-
-    let file_stream = stream! {
-        while let Some(entry) = listing.next_entry().await.unwrap() {
-            let file_type = entry.file_type().await.unwrap();
-
-            if file_type.is_dir() {
-                info!(
-                    "Encountered a sub-directory. Gotta dig deeper into [dir={:?}]",
-                    entry.path()
-                );
-                continue;
+// one possible implementation of walking a directory only visiting files
+fn visit_dirs(dir: &Path, collector: &mut Vec<DirEntry>) -> io::Result<()> {
+    if dir.is_dir() {
+        for entry in fs::read_dir(dir)? {
+            let entry = entry?;
+            let path = entry.path();
+            if path.is_dir() {
+                visit_dirs(&path, collector)?;
+            } else {
+                collector.push(entry);
             }
-
-            yield(entry.path());
         }
-    };
+    }
 
-    Ok(file_stream)
+    Ok(())
+}
+
+/// Synchronously obtain directory listing recursively, and provide a stream of
+/// `DirEntry`s
+pub fn read_dir_recursively(dir: &Path) -> io::Result<impl Stream<Item = DirEntry>> {
+    let mut paths: Vec<DirEntry> = vec![];
+
+    visit_dirs(dir, &mut paths)?;
+
+    Ok(stream::iter(paths))
 }
 
 // TODO: Return stream of futures and use buffering for parallelized reading
@@ -71,8 +74,8 @@ pub async fn read_all_files_with_exts(
     exts: Vec<String>,
     base_dir: &Path,
 ) -> io::Result<impl Stream<Item = io::Result<String>>> {
-    let listing = walk_dir_recursively(base_dir)
-        .await?
+    let listing = read_dir_recursively(base_dir)?
+        .map(|de| de.path())
         .filter(move |fname| {
             futures::future::ready(
                 fname
