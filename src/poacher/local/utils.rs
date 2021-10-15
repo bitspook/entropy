@@ -1,5 +1,6 @@
 use futures::stream::{self, StreamExt};
 use futures::Stream;
+use regex::Regex;
 use serde::de::DeserializeOwned;
 use std::{
     fs::{self, DirEntry},
@@ -41,14 +42,14 @@ pub fn from_toml_fmatter<T: DeserializeOwned>(
     toml::from_str(&t)
 }
 
-// one possible implementation of walking a directory only visiting files
-fn visit_dirs(dir: &Path, collector: &mut Vec<DirEntry>) -> io::Result<()> {
+/// Walk `dir` and collect files into `collector`
+fn list_all_files(dir: &Path, collector: &mut Vec<DirEntry>) -> io::Result<()> {
     if dir.is_dir() {
         for entry in fs::read_dir(dir)? {
             let entry = entry?;
             let path = entry.path();
             if path.is_dir() {
-                visit_dirs(&path, collector)?;
+                list_all_files(&path, collector)?;
             } else {
                 collector.push(entry);
             }
@@ -60,35 +61,43 @@ fn visit_dirs(dir: &Path, collector: &mut Vec<DirEntry>) -> io::Result<()> {
 
 /// Synchronously obtain directory listing recursively, and provide a stream of
 /// `DirEntry`s
-pub fn read_dir_recursively(dir: &Path) -> io::Result<impl Stream<Item = DirEntry>> {
+fn stream_all_files(dir: &Path) -> io::Result<impl Stream<Item = DirEntry>> {
     let mut paths: Vec<DirEntry> = vec![];
 
-    visit_dirs(dir, &mut paths)?;
+    list_all_files(dir, &mut paths)?;
 
     Ok(stream::iter(paths))
 }
 
 // TODO: Return stream of futures and use buffering for parallelized reading
 // files
-pub async fn read_all_files_with_exts(
-    exts: Vec<String>,
+pub async fn read_all_files(
     base_dir: &Path,
+    include_re: Option<Regex>,
+    exclude_re: Option<Regex>,
 ) -> io::Result<impl Stream<Item = io::Result<String>>> {
-    let listing = read_dir_recursively(base_dir)?
+    let content = stream_all_files(base_dir)?
         .map(|de| de.path())
         .filter(move |fname| {
-            futures::future::ready(
-                fname
-                    .extension()
-                    .and_then(|e| e.to_str())
-                    .map_or(false, |e| exts.contains(&e.to_string())),
-            )
-        })
-        .map(|f| {
-            debug!("Will read file [path={:?}]", f);
-            f
-        })
-        .then(tokio::fs::read_to_string);
+            let mut should_read = false;
 
-    Ok(listing)
+            if let Some(fname) = fname.to_str() {
+                // FIXME Shouldn't need to clone here
+                should_read = include_re
+                    .clone()
+                    .map_or(should_read, |re| re.is_match(fname));
+                should_read = exclude_re
+                    .clone()
+                    .map_or(should_read, |re| re.is_match(fname));
+            }
+
+            futures::future::ready(should_read)
+        })
+        .then(|f| async {
+            debug!("Will read file [path={:?}]", f);
+
+            tokio::fs::read_to_string(f).await
+        });
+
+    Ok(content)
 }

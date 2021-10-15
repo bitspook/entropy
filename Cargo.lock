@@ -471,6 +471,7 @@ dependencies = [
  "futures",
  "log",
  "pulldown-cmark",
+ "regex",
  "reqwest",
  "rocket",
  "rocket_dyn_templates",
