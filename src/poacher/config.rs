@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::local::LocalPoacherConfig as LocalPoacherConfig;
+use super::local::LocalPoacherConfig;
 use crate::Coordinates;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]

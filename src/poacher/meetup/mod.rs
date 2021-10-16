@@ -358,30 +358,3 @@ impl Meetup {
         self.tx.send(PoacherMessage::End).await.unwrap();
     }
 }
-
-pub async fn clear_poached_data(conn: &diesel::PgConnection) {
-    use crate::db::schema::*;
-    use diesel::{delete, prelude::*};
-
-    if let Err(err) =
-        delete(events::dsl::events.filter(events::dsl::source.eq(SOURCE))).execute(conn)
-    {
-        error!(
-            "Error while clearing events poached from {} [err={}]",
-            SOURCE, err
-        );
-    } else {
-        debug!("Cleared events poached from {}", SOURCE);
-    }
-
-    if let Err(err) =
-        delete(groups::dsl::groups.filter(groups::dsl::source.eq(SOURCE))).execute(conn)
-    {
-        error!(
-            "Error while clearing groups poached from {} [err={}]",
-            SOURCE, err
-        );
-    } else {
-        debug!("Cleared groups poached from {}", SOURCE);
-    }
-}

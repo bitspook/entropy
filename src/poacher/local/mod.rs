@@ -17,6 +17,7 @@ mod utils;
 pub use config::*;
 use models::*;
 use utils::*;
+pub mod consumer;
 
 pub const SOURCE: &str = "local";
 
@@ -39,8 +40,20 @@ impl Local {
     pub async fn poach_events(&self) -> Result<(), anyhow::Error> {
         let base_dir = Path::new(&self.config.events.base_dir);
         // FIXME Shouldn't need to clone here
-        let include = self.config.events.include.clone().map(|s| Regex::new(&s).ok()).flatten();
-        let exclude = self.config.events.exclude.clone().map(|s| Regex::new(&s).ok()).flatten();
+        let include = self
+            .config
+            .events
+            .include
+            .clone()
+            .map(|s| Regex::new(&s).ok())
+            .flatten();
+        let exclude = self
+            .config
+            .events
+            .exclude
+            .clone()
+            .map(|s| Regex::new(&s).ok())
+            .flatten();
 
         let events = read_all_files(base_dir, include, exclude).await?;
 
@@ -76,8 +89,20 @@ impl Local {
     pub async fn poach_groups(&self) -> Result<(), anyhow::Error> {
         let base_dir = Path::new(&self.config.groups.base_dir);
         // FIXME Shouldn't need to clone here
-        let include = self.config.groups.include.clone().map(|s| Regex::new(&s).ok()).flatten();
-        let exclude = self.config.groups.exclude.clone().map(|s| Regex::new(&s).ok()).flatten();
+        let include = self
+            .config
+            .groups
+            .include
+            .clone()
+            .map(|s| Regex::new(&s).ok())
+            .flatten();
+        let exclude = self
+            .config
+            .groups
+            .exclude
+            .clone()
+            .map(|s| Regex::new(&s).ok())
+            .flatten();
 
         let groups = read_all_files(base_dir, include, exclude).await?;
 

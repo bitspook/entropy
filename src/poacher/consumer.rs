@@ -1,10 +1,9 @@
-use anyhow::bail;
 use log::{debug, error};
 use tokio::sync::mpsc::Receiver;
 
 use crate::{db, poacher::meetup};
 
-use super::{PoacherMessage, PoacherResult};
+use super::{PoacherMessage, PoacherResult, local};
 
 /// Absorb all the poacher messages from `rx` and spawn tasks to process them.
 pub async fn run(
@@ -31,8 +30,8 @@ pub async fn run(
                 PoacherResult::Meetup(result) => {
                     meetup::consumer::consume(result, &conn, groups_blacklist).await;
                 }
-                _ => {
-                    bail!("Not Implemented");
+                PoacherResult::Local(result) => {
+                    local::consumer::consume(result, &conn).await;
                 }
             },
         }
