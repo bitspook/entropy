@@ -62,14 +62,31 @@ impl Local {
         while let Some(event) = events.next().await {
             match event {
                 Ok(event) => {
-                    let event: LocalEvent = from_toml_fmatter(&event, "description")
-                        .with_context(|| "Error while parsing LocalEvent")?;
+                    let mut sections = into_toml_fmatter_sections(&event)
+                        .with_context(|| "Error while parsing LocalEvent")?
+                        .into_iter();
 
-                    self.tx
-                        .send(PoacherMessage::ResultItem(PoacherResult::Local(
-                            LocalResult::Event(event),
-                        )))
-                        .await?;
+                    if let Some(mut top_section) = sections.next() {
+                        let fmatter = top_section
+                            .meta
+                            .as_table_mut()
+                            .with_context(|| "Failed to parse LocalEvent meta")?;
+
+                        fmatter.insert(
+                            "description".to_string(),
+                            toml::Value::String(top_section.content),
+                        );
+
+                        let event: LocalEvent = toml::Value::Table(fmatter.clone())
+                            .try_into()
+                            .with_context(|| "Failed to parse LocalEvent")?;
+
+                        self.tx
+                            .send(PoacherMessage::ResultItem(PoacherResult::Local(
+                                LocalResult::Event(event),
+                            )))
+                            .await?;
+                    }
                 }
                 Err(err) => {
                     self.tx
@@ -111,14 +128,20 @@ impl Local {
         while let Some(group) = groups.next().await {
             match group {
                 Ok(group) => {
-                    let group: LocalGroup = from_toml_fmatter(&group, "description")
-                        .with_context(|| "Error while parsing LocalGroup")?;
+                    let mut sections = into_toml_fmatter_sections(&group)
+                        .with_context(|| "Error while extracting group sections")?
+                        .into_iter();
 
-                    self.tx
-                        .send(PoacherMessage::ResultItem(PoacherResult::Local(
-                            LocalResult::Group(group),
-                        )))
-                        .await?;
+                    if let Some(top_section) = sections.next() {
+                        let mut group: LocalGroup = top_section.meta.try_into()?;
+                        group.description = top_section.content;
+
+                        self.tx
+                            .send(PoacherMessage::ResultItem(PoacherResult::Local(
+                                LocalResult::Group(group),
+                            )))
+                            .await?;
+                    }
                 }
                 Err(err) => {
                     self.tx

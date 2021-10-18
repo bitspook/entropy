@@ -1,4 +1,17 @@
 table! {
+    event_sections (name, event_id) {
+        name -> Varchar,
+        description -> Nullable<Varchar>,
+        desc_format -> Varchar,
+        start_time -> Timestamp,
+        end_time -> Timestamp,
+        event_id -> Uuid,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
+table! {
     event_tags (event_id, tag_name) {
         event_id -> Uuid,
         tag_name -> Varchar,
@@ -83,6 +96,7 @@ table! {
     }
 }
 
+joinable!(event_sections -> events (event_id));
 joinable!(event_tags -> events (event_id));
 joinable!(event_tags -> tags (tag_name));
 joinable!(events -> groups (group_id));
@@ -92,6 +106,7 @@ joinable!(group_tags -> tags (tag_name));
 joinable!(venues -> organizations (organization_id));
 
 allow_tables_to_appear_in_same_query!(
+    event_sections,
     event_tags,
     events,
     group_tags,

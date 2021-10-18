@@ -1,45 +1,36 @@
 use futures::stream::{self, StreamExt};
 use futures::Stream;
 use regex::Regex;
-use serde::de::DeserializeOwned;
 use std::{
     fs::{self, DirEntry},
     io,
     path::Path,
 };
+use toml::Value;
 
-pub trait HasTomlFMatter<T> {}
+#[derive(Debug)]
+pub struct FMatterSection {
+    pub meta: Value,
+    pub content: String,
+}
 
 /// content_field is the name of the field in `T` in which content i.e
 /// everything after toml frontmatter is put. Toml frontmatter is separated
 /// from content with an empty line containing only "---"
-pub fn from_toml_fmatter<T: DeserializeOwned>(
-    input: &str,
-    content_field: &str,
-) -> Result<T, toml::de::Error> {
-    let mut meta: Vec<&str> = vec![];
-    let mut content: Vec<&str> = vec![];
-    let lines = input.lines();
-    let mut done_collecting_meta = false;
+pub fn into_toml_fmatter_sections<'a>(
+    input: &'a str,
+) -> Result<Vec<FMatterSection>, toml::de::Error> {
+    let mut sections = input.split("---\n");
+    let mut result: Vec<FMatterSection> = vec![];
 
-    for line in lines {
-        if line.trim() == "---" {
-            done_collecting_meta = true;
-            continue;
-        }
+    while let Some(meta) = sections.next() {
+        let content = sections.next().map_or("".to_string(), |s| s.to_string());
+        let meta = toml::from_str(meta)?;
 
-        if done_collecting_meta {
-            content.push(line);
-        } else {
-            meta.push(line);
-        }
+        result.push(FMatterSection { meta, content });
     }
 
-    let description = content.join("\n");
-    let meta = meta.join("\n");
-    let t = meta + &format!("\n{} = \"\"\"{}\"\"\"", content_field, description);
-
-    toml::from_str(&t)
+    Ok(result)
 }
 
 /// Walk `dir` and collect files into `collector`
@@ -100,4 +91,20 @@ pub async fn read_all_files(
         });
 
     Ok(content)
+}
+
+pub fn extract_sections_from_md(input: &str) {
+    use pulldown_cmark::{Event, Parser};
+
+    let parser = Parser::new(input);
+
+    let parser = parser.map(|event| match event {
+        Event::Text(_) => {
+            debug!("HTML: {:#?}", event);
+            event
+        }
+        _ => event,
+    });
+
+    let _throw_me: Vec<Event> = parser.collect();
 }
