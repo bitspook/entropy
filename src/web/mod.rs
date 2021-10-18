@@ -1,6 +1,7 @@
 mod build;
 mod routes;
 mod server;
+mod utils;
 use rocket_sync_db_pools::database;
 
 pub use build::*;

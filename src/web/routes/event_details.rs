@@ -9,7 +9,7 @@ use serde::Serialize;
 use serde_json::json;
 
 use crate::{
-    web::{Db, WebResult},
+    web::{utils::render_md, Db, WebResult},
     EntropyConfig,
 };
 
@@ -19,6 +19,7 @@ struct EventData {
     slug: String,
     link: Option<String>,
     description: Option<String>,
+    desc_format: String,
     start_time: chrono::NaiveDateTime,
     end_time: chrono::NaiveDateTime,
     group_name: Option<String>,
@@ -41,10 +42,17 @@ impl From<EventData> for CtxEvent {
         let start_date = event.start_time.format("%A, %B %e").to_string();
         let start_time = event.start_time.format("%l:%M%P").to_string();
         let end_time = event.end_time.format("%l:%M%P").to_string();
+        let description: Option<String>;
+
+        if event.desc_format == "md" {
+            description = event.description.map(|s| render_md(&s));
+        } else {
+            description = event.description;
+        }
 
         CtxEvent {
             title: event.title,
-            description: event.description,
+            description,
             start_date,
             slug: event.slug,
             link: event.link.unwrap_or("".to_string()),
@@ -73,6 +81,7 @@ async fn event_details(event_slug: String, db: Db) -> WebResult<Template> {
                     slug,
                     source_link,
                     description,
+                    desc_format,
                     start_time,
                     end_time,
                     groups::dsl::name.nullable(),
