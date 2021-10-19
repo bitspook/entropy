@@ -14,11 +14,11 @@ pub struct EventSection {
 
 #[derive(Insertable, Debug)]
 #[table_name = "event_sections"]
-pub struct NewVenue {
-    name: String,
-    description: Option<String>,
-    desc_format: String,
-    start_time: NaiveDateTime,
-    end_time: NaiveDateTime,
-    event_id: Uuid,
+pub struct NewEventSection {
+    pub name: String,
+    pub description: Option<String>,
+    pub desc_format: String,
+    pub start_time: NaiveDateTime,
+    pub end_time: NaiveDateTime,
+    pub event_id: Option<Uuid>,
 }

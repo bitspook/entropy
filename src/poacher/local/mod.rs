@@ -24,7 +24,7 @@ pub const SOURCE: &str = "local";
 #[derive(Debug)]
 pub enum LocalResult {
     Group(LocalGroup),
-    Event(LocalEvent),
+    Event(LocalEvent, Vec<LocalEventSection>),
 }
 
 pub struct Local {
@@ -67,20 +67,16 @@ impl Local {
                         .into_iter();
 
                     if let Some(top_section) = sections.next() {
-                        let mut event: LocalEvent = LocalEvent::try_from(top_section)?;
+                        let event: LocalEvent = LocalEvent::try_from(top_section)?;
 
                         // All the remaining sections are put into the event as its sections
                         let sections: Vec<LocalEventSection> = sections
                             .filter_map(|fms| LocalEventSection::try_from(fms).ok())
                             .collect();
 
-                        event.sections = sections;
-
-                        debug!("EVENT: {:#?}", event);
-
                         self.tx
                             .send(PoacherMessage::ResultItem(PoacherResult::Local(
-                                LocalResult::Event(event),
+                                LocalResult::Event(event, sections),
                             )))
                             .await?;
                     }

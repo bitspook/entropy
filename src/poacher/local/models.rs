@@ -4,7 +4,7 @@ use anyhow::Context;
 use chrono::NaiveDateTime;
 use serde::Deserialize;
 
-use crate::db::models::{NewEvent, NewGroup};
+use crate::db::models::{NewEvent, NewEventSection, NewGroup};
 
 use super::utils::FMatterSection;
 
@@ -32,7 +32,6 @@ pub struct LocalEvent {
     pub group_slug: String,
     pub start_time: NaiveDateTime,
     pub end_time: NaiveDateTime,
-    pub sections: Vec<LocalEventSection>,
 }
 
 impl Into<NewGroup> for LocalGroup {
@@ -48,19 +47,32 @@ impl Into<NewGroup> for LocalGroup {
     }
 }
 
-impl Into<NewEvent> for LocalEvent {
-    fn into(self) -> NewEvent {
+impl From<LocalEvent> for NewEvent {
+    fn from(event: LocalEvent) -> NewEvent {
         NewEvent {
-            title: self.title,
-            slug: self.slug,
-            description: Some(self.description),
+            title: event.title,
+            slug: event.slug,
+            description: Some(event.description),
             group_id: None,
             desc_format: "md".to_string(),
             photos: vec![],
             source: Some(super::SOURCE.to_string()),
             source_link: None,
-            start_time: self.start_time,
-            end_time: self.end_time,
+            start_time: event.start_time,
+            end_time: event.end_time,
+        }
+    }
+}
+
+impl From<LocalEventSection> for NewEventSection {
+    fn from(sec: LocalEventSection) -> Self {
+        Self {
+            name: sec.name,
+            description: Some(sec.description),
+            desc_format: "md".to_string(),
+            start_time: sec.start_time,
+            end_time: sec.end_time,
+            event_id: None
         }
     }
 }
