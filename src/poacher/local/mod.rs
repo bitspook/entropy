@@ -4,7 +4,7 @@
 use anyhow::Context;
 use futures::pin_mut;
 use regex::Regex;
-use std::path::Path;
+use std::{convert::TryFrom, path::Path};
 use tokio::sync::mpsc::Sender;
 use tokio_stream::StreamExt;
 
@@ -66,20 +66,17 @@ impl Local {
                         .with_context(|| "Error while parsing LocalEvent")?
                         .into_iter();
 
-                    if let Some(mut top_section) = sections.next() {
-                        let fmatter = top_section
-                            .meta
-                            .as_table_mut()
-                            .with_context(|| "Failed to parse LocalEvent meta")?;
+                    if let Some(top_section) = sections.next() {
+                        let mut event: LocalEvent = LocalEvent::try_from(top_section)?;
 
-                        fmatter.insert(
-                            "description".to_string(),
-                            toml::Value::String(top_section.content),
-                        );
+                        // All the remaining sections are put into the event as its sections
+                        let sections: Vec<LocalEventSection> = sections
+                            .filter_map(|fms| LocalEventSection::try_from(fms).ok())
+                            .collect();
 
-                        let event: LocalEvent = toml::Value::Table(fmatter.clone())
-                            .try_into()
-                            .with_context(|| "Failed to parse LocalEvent")?;
+                        event.sections = sections;
+
+                        debug!("EVENT: {:#?}", event);
 
                         self.tx
                             .send(PoacherMessage::ResultItem(PoacherResult::Local(
@@ -133,8 +130,7 @@ impl Local {
                         .into_iter();
 
                     if let Some(top_section) = sections.next() {
-                        let mut group: LocalGroup = top_section.meta.try_into()?;
-                        group.description = top_section.content;
+                        let group = LocalGroup::try_from(top_section)?;
 
                         self.tx
                             .send(PoacherMessage::ResultItem(PoacherResult::Local(

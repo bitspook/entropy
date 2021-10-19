@@ -92,19 +92,3 @@ pub async fn read_all_files(
 
     Ok(content)
 }
-
-pub fn extract_sections_from_md(input: &str) {
-    use pulldown_cmark::{Event, Parser};
-
-    let parser = Parser::new(input);
-
-    let parser = parser.map(|event| match event {
-        Event::Text(_) => {
-            debug!("HTML: {:#?}", event);
-            event
-        }
-        _ => event,
-    });
-
-    let _throw_me: Vec<Event> = parser.collect();
-}
