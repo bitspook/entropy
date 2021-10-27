@@ -71,7 +71,8 @@ impl Local {
 
                         // All the remaining sections are put into the event as its sections
                         let sections: Vec<LocalEventSection> = sections
-                            .filter_map(|fms| LocalEventSection::try_from(fms).ok())
+                            // blow up if conversion to LocalEventSection fails
+                            .map(|fms| LocalEventSection::try_from(fms).unwrap())
                             .collect();
 
                         self.tx

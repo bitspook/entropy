@@ -3,7 +3,7 @@ use tokio::sync::mpsc::Receiver;
 
 use crate::{db, poacher::meetup};
 
-use super::{PoacherMessage, PoacherResult, local};
+use super::{local, PoacherMessage, PoacherResult};
 
 /// Absorb all the poacher messages from `rx` and spawn tasks to process them.
 pub async fn run(

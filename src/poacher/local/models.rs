@@ -19,6 +19,7 @@ pub struct LocalGroup {
 pub struct LocalEventSection {
     #[serde(alias = "section")]
     pub name: String,
+    pub title: String,
     pub description: String,
     pub start_time: NaiveDateTime,
     pub end_time: NaiveDateTime,
@@ -68,11 +69,12 @@ impl From<LocalEventSection> for NewEventSection {
     fn from(sec: LocalEventSection) -> Self {
         Self {
             name: sec.name,
+            title: sec.title,
             description: Some(sec.description),
             desc_format: "md".to_string(),
             start_time: sec.start_time,
             end_time: sec.end_time,
-            event_id: None
+            event_id: None,
         }
     }
 }

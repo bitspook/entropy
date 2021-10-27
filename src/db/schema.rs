@@ -1,6 +1,7 @@
 table! {
     event_sections (name, event_id) {
         name -> Varchar,
+        title -> Varchar,
         description -> Nullable<Varchar>,
         desc_format -> Varchar,
         start_time -> Timestamp,

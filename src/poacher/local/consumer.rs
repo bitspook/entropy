@@ -3,9 +3,16 @@ use uuid::Uuid;
 
 use crate::db::models::{Group, NewEvent, NewEventSection, NewGroup};
 
-use super::{LocalResult, models::{LocalEvent, LocalEventSection, LocalGroup}};
+use super::{
+    models::{LocalEvent, LocalEventSection, LocalGroup},
+    LocalResult,
+};
 
-pub async fn process_poached_event(conn: &PgConnection, event: LocalEvent, sections: Vec<LocalEventSection>) {
+pub async fn process_poached_event(
+    conn: &PgConnection,
+    event: LocalEvent,
+    sections: Vec<LocalEventSection>,
+) {
     use crate::db::schema::events::dsl::*;
 
     let event_group = Group::with_slug(&event.group_slug, &conn);
@@ -33,12 +40,15 @@ pub async fn process_poached_event(conn: &PgConnection, event: LocalEvent, secti
             info!("Saved event in database: {}", new_event.title);
             use crate::db::schema::event_sections::dsl::*;
 
-            let new_event_sections: Vec<NewEventSection> = sections.into_iter().map(|e| {
-                let mut section = NewEventSection::from(e);
-                section.event_id = Some(inserted_event_id);
+            let new_event_sections: Vec<NewEventSection> = sections
+                .into_iter()
+                .map(|e| {
+                    let mut section = NewEventSection::from(e);
+                    section.event_id = Some(inserted_event_id);
 
-                section
-            }).collect();
+                    section
+                })
+                .collect();
 
             let query = insert_into(event_sections).values(&new_event_sections);
             if let Err(err) = query.execute(conn) {

@@ -1,5 +1,6 @@
 CREATE TABLE event_sections (
   name VARCHAR(200) NOT NULL,
+  title VARCHAR(400) NOT NULL,
   description VARCHAR,
   desc_format VARCHAR(20) NOT NULL DEFAULT 'md',
   start_time TIMESTAMP NOT NULL,

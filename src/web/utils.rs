@@ -1,7 +1,7 @@
-use std::collections::HashMap;
 use pulldown_cmark::{html, Options, Parser};
+use rocket_dyn_templates::tera::{try_get_value, Result};
 use serde_json::Value;
-use rocket_dyn_templates::tera::{Result, try_get_value};
+use std::collections::HashMap;
 
 pub fn render_md(input: &str) -> String {
     let options = Options::all();

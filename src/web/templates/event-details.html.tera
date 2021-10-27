@@ -38,7 +38,7 @@
 
             <div class="content">
               <header>
-                <div class="title">{{ section.name }}</div>
+                <div class="title">{{ section.title }}</div>
                 <div class="meta">for {{ section.duration }}</div>
               </header>
 
