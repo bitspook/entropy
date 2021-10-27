@@ -44,10 +44,46 @@
   }
 }
 
+.event-sections {
+  margin-top: 4rem;
+}
+
+.event-section {
+  display: flex;
+  margin-bottom: 4rem;
+
+  .icon {
+    height: 5rem;
+    width: 5rem;
+    margin-top: 0.5rem;
+    margin-right: 1.4rem;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  .lightening-icon {}
+
+  header {
+    margin-bottom: 1rem;
+
+    .title {
+      margin-bottom: 0.3rem;
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+
+    .meta {
+      font-size: 1.2rem;
+      color: var(--dim-text-color);
+    }
+  }
+}
+
 .meta-sidebar {
   width: 45rem;
   margin-left: 2rem;
   padding: 2rem 0 0 2rem;
+  height: min-content;
   border-left: 2px dashed var(--dim-border-color);
 
   .meta-item {

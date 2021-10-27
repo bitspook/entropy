@@ -15,28 +15,61 @@
       <div class="main">
         <div class="header">
           {{ event.title }}
+
           <div class="meta">
             <div class="key">via</div>
             <a href="{{ event.link }}" class="value">{{ event.group_name }} </a>
           </div>
         </div>
-        <div class="description"> {{ event.description | linebreaksbr | safe }}</div>
+
+        <div class="description">
+          {% if event.desc_format == "md" %}
+          {{ event.description | render_md | safe }}
+          {% else %}
+          {{ event.description | linebreaksbr | safe }}
+          {% endif %}
+        </div>
+
+        {% if sections|length %}
+        <div class="event-sections">
+          {% for section in sections %}
+          <section class="event-section">
+            <img class="icon icon-lightening" title="{{ section.name }}" src="/icons/lightening.webp">
+
+            <div class="content">
+              <header>
+                <div class="title">{{ section.name }}</div>
+                <div class="meta">for {{ section.duration }}</div>
+              </header>
+
+              <article>
+                {% if section.desc_format == "md" %}
+                {{ section.description | render_md | safe }}
+                {% else %}
+                {{ section.description | linebreaksbr | safe }}
+                {% endif %}
+              </article>
+            </div>
+          </section>
+          {% endfor %}
+        </div>
+        {% endif %}
       </div>
 
       <div class="meta-sidebar">
         <div class="meta-item">
           <div class="meta-key">Date</div>
-          <div class="meta-value">{{ event.start_date }}</div>
+          <div class="meta-value">{{ event.start_time | date(format="%A, %B %e") }}</div>
         </div>
 
         <div class="meta-item">
           <div class="meta-key">Start Time</div>
-          <div class="meta-value">{{ event.start_time }}</div>
+          <div class="meta-value">{{ event.start_time | date(format="%l:%M%P") }}</div>
         </div>
 
         <div class="meta-item">
-          <div class="meta-key">End Time</div>
-          <div class="meta-value">{{ event.end_time }}</div>
+          <div class="meta-key">Duration</div>
+          <div class="meta-value">{{ event.duration }}</div>
         </div>
       </div>
 

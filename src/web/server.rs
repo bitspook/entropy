@@ -6,6 +6,7 @@ use rocket::{figment::Figment, fs::FileServer, Build, Rocket};
 use rocket_dyn_templates::Template;
 use rsass::{compile_scss_path, output};
 
+use crate::web::utils::{render_md, render_md_tera_filter};
 use crate::web::{routes, Db, WebResult};
 use crate::EntropyConfig;
 
@@ -41,7 +42,9 @@ pub fn app() -> Rocket<Build> {
         .mount("/", routes::event_details::routes())
         .mount("/css", routes![css])
         .mount("/", FileServer::from(config.server.static_dir))
-        .attach(Template::fairing())
+        .attach(Template::custom(|engines| {
+            engines.tera.register_filter("render_md", render_md_tera_filter)
+        }))
         .attach(Db::fairing())
 }
 

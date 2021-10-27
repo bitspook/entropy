@@ -9,11 +9,11 @@ use serde::Serialize;
 use serde_json::json;
 
 use crate::{
-    web::{utils::render_md, Db, WebResult},
+    web::{Db, WebResult},
     EntropyConfig,
 };
 
-#[derive(Queryable)]
+#[derive(Queryable, Serialize)]
 struct EventData {
     title: String,
     slug: String,
@@ -21,61 +21,33 @@ struct EventData {
     description: Option<String>,
     desc_format: String,
     start_time: chrono::NaiveDateTime,
-    end_time: chrono::NaiveDateTime,
     group_name: Option<String>,
+    duration: String,
 }
 
-#[derive(Serialize)]
-struct CtxEvent {
-    title: String,
-    slug: String,
-    link: String,
+#[derive(Queryable, Debug, Serialize)]
+struct EventSectionData {
+    name: String,
     description: Option<String>,
-    start_date: String,
-    start_time: String,
-    end_time: String,
-    group_name: String,
-}
-
-impl From<EventData> for CtxEvent {
-    fn from(event: EventData) -> CtxEvent {
-        let start_date = event.start_time.format("%A, %B %e").to_string();
-        let start_time = event.start_time.format("%l:%M%P").to_string();
-        let end_time = event.end_time.format("%l:%M%P").to_string();
-        let description: Option<String>;
-
-        if event.desc_format == "md" {
-            description = event.description.map(|s| render_md(&s));
-        } else {
-            description = event.description;
-        }
-
-        CtxEvent {
-            title: event.title,
-            description,
-            start_date,
-            slug: event.slug,
-            link: event.link.unwrap_or("".to_string()),
-            start_time,
-            end_time,
-            group_name: event.group_name.unwrap_or("".to_string()),
-        }
-    }
+    desc_format: String,
+    duration: String,
 }
 
 #[get("/events/<event_slug>")]
 async fn event_details(event_slug: String, db: Db) -> WebResult<Template> {
+    use crate::db::schema::event_sections;
     use crate::db::schema::events::dsl::*;
     use crate::db::schema::groups;
 
     let config = EntropyConfig::load()?;
     let base_url = config.static_site.base_url;
 
+    let e_slug = event_slug.clone();
     let event_data = db
         .run(|conn| -> Result<EventData, diesel::result::Error> {
             events
-                .filter(slug.eq(event_slug))
-                .left_join(groups::table.on(group_id.eq(groups::columns::id)))
+                .filter(slug.eq(e_slug))
+                .left_join(groups::table.on(group_id.eq(groups::id)))
                 .select((
                     title,
                     slug,
@@ -83,17 +55,39 @@ async fn event_details(event_slug: String, db: Db) -> WebResult<Template> {
                     description,
                     desc_format,
                     start_time,
-                    end_time,
-                    groups::dsl::name.nullable(),
+                    groups::name.nullable(),
+                    diesel::dsl::sql(
+                        r"format('%s mins', extract(epoch from (events.end_time - events.start_time))/60)",
+                    ),
                 ))
                 .first(conn)
         })
         .await
         .map_err(Error::from)?;
 
-    let ctx_event: CtxEvent = event_data.into();
-    let ctx_event: CtxEvent = CtxEvent { ..ctx_event };
-    let context = json!({ "event": ctx_event, "base_url": base_url });
+    let event_sections_data = db
+        .run(
+            |conn| -> Result<Vec<EventSectionData>, diesel::result::Error> {
+                let query = event_sections::table
+                    .inner_join(events.on(id.eq(event_sections::event_id)))
+                    .select((
+                        event_sections::name,
+                        event_sections::description,
+                        event_sections::desc_format,
+                        diesel::dsl::sql(
+                            r"format('%s mins', extract(epoch from (event_sections.end_time - event_sections.start_time))/60)",
+                        ),
+                    ))
+                    .filter(slug.eq(event_slug));
+
+                query.get_results(conn)
+            },
+        )
+        .await
+        .map_err(Error::from)?;
+
+    let context =
+        json!({ "event": event_data, "base_url": base_url, "sections": event_sections_data });
 
     Ok(Template::render("event-details", context))
 }
