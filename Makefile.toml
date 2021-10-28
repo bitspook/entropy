@@ -1,0 +1,40 @@
+[tasks.format]
+command = "cargo"
+args = ["fmt", "--", "--emit=files"]
+
+[tasks.infra-up]
+script_runner = "@duckscript"
+script = '''
+echo Starting Postgres Database
+start_db_out = exec --fail-on-error pg_ctl start -l $LOG_PATH -o "-c listen_addresses= -c unix_socket_directories=$PGHOST" -W
+
+if equals ${start_db_out.code} 0
+  echo Postgres started successfully! Use $DATABASE_URL to connect
+else
+  echo Failed to start Postgres.\n${start_db_out.stderr}
+end
+
+db_name = get_env PGDATABASE
+db_exist_check = exec psql -tAc "SELECT 1 FROM pg_database WHERE datname='${db_name}'"
+
+if equals ${db_exist_check.code} 0 and equals ${db_exist_check.stdout} 1
+  echo Database already exists. Not recreating.
+else
+  echo Creating database: ${db_name}
+  exec --fail-on-error createdb ${db_name}
+end
+
+'''
+
+[tasks.infra-down]
+script_runner = "@duckscript"
+script = '''
+echo Stopping Postgres Database
+stop_db_out = exec pg_ctl stop -l $LOG_PATH -o "-c listen_addresses= -c unix_socket_directories=$PGHOST" -W
+
+if equals ${stop_db_out.code} 0
+  echo Postgres stopped successfully!
+else
+  echo Failed to stop Postgres.\n${stop_db_out.stderr}
+end
+'''

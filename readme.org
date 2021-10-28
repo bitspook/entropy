@@ -1,33 +1,93 @@
 #+title: Entropy
 
-Entropy is a [[https://hackerspaces.org/][hackerspace]] for technologists living in vicinity of Chandigarh,
-physically or spiritually.
+Entropy helps a tech community run and manage itself. It provides a platform
+where people can come together to discuss things, set goals for themselves, and
+approach methodically to achieve them.
 
-Entropy intends to shake things up in the tech scene of the city by providing an
-open space for hackers of Chandigarh to identify and solve the problems they
-deem fit.
+** Goals
 
-* Initiatives
+*** Individual Freedom
 
-Here is a list of initiatives identifying problems, laying out plan for fixing
-them, and status of what actions are being taken towards the solutions.
+Being a part of the community should not mean compromising an individual's
+freedom. To ensure this, Entropy allows contribution at any level of anonymity a
+member wants.
 
-- [[./docs/rfcs/meager-tech-culture.org][Meager tech culture]]
+This expands to other aspects of how Entropy guides a community. Law of a
+passive majority should not force individuals against their wishes. Contributors
+should be valued more than passive members.
 
-  The first problem perhaps is lack of a tech culture in the city. Entropy will
-  die down if there are no hackers to participate in it. This document documents
-  one perspective on components of the problem, and propose certain solutions
-  for them.
+*** Free ownership
 
-* RFCs
+Those who contribute to the group should have ownership over it. Any member can
+achieve decision making power by contributing more.
 
-Not all ideas/problems are equal, some are too personal or poorly put together
-to build an action plan for. Such thoughts should go through an RFC process,
-where these problems are discussed, refined (ideally an action plan is drafted),
-and if we can reach a consensus that we as a group want to associate with the
-idea/problem-and-its-solution, then it is moved to [[./docs/initiatives][initiatives]].
+*** Methodical
 
-* Chat
+Entropy should help its members take more methodical approach to achieve their
+goals. It should actively guide towards approaches which are:
+
+1. Measurable
+2. Achievable
+3. Encourage collaboration
+
+*** Cost efficient
+
+Running the Entropy should not put a stress on the community. Entropy actively
+tries to make it possible to run itself for as little money as possible.
+
+#+begin_quote
+Current implementation of Entropy can be built to a static site, and hosted 100%
+for free.
+#+end_quote
+
+** Development
+
+*** Setup
+
+Entropy uses nix for setting up its development environment. That means you
+don't need to install *anything* except nix itself on your machine to work with
+Entropy.
+
+Prerequisites:
+
+1. [[https://nix.dev/tutorials/install-nix][Install nix]]
+2. [[https://nixos.wiki/wiki/Flakes][Enable nix flakes]]
+
+Run following command to ensure that nix downloads and sets up all the required
+dependencies (including rust, rust-analyzer, postgresql etc).
+
+#+begin_src sh
+  nix develop
+#+end_src
+
+It is recommended to use [[https://direnv.net/][direnv]], which will allow you to work with development
+environment provided by nix, while keeping staying in your own terminal (=nix
+develop= drops you in a blank bash prompt).
+
+*** Usage
+
+Entropy app itself can be built with standard cargo commands.
+
+#+begin_src sh
+  cargo build                     # Build a debug binary
+  cargo build --release           # Build release binary
+  cargo run -- --help             # Build and run the app, and view CLI help
+#+end_src
+
+**** Start development database
+
+To start the development database and other infrastructure, run:
+
+#+begin_src sh
+  cargo make infra-up
+#+end_src
+
+* Entropy Hackerspace
+
+Entropy is being used by Entropy Hackerspace (https://entropyhacker.space). You
+can join the community on following platforms:
+
+** Chat
 
 - Matrix Space: https://matrix.to/#/!EJjSPytjXwjJyODGWC:matrix.org?via=matrix.org
 - Telegram Group: https://t.me/joinchat/QiQGasCqA205OWM9

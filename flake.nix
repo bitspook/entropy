@@ -48,6 +48,7 @@
           cargo-edit
           cargo-audit
           cargo-outdated
+          cargo-make
           (rust-bin.stable.latest.default.override {
             extensions = [
               "rust-src"
@@ -59,6 +60,8 @@
             ];
             targets = [ "x86_64-unknown-linux-musl" ];
           })
+          minio
+          minio-client
         ];
 
         entropy = project.rootCrate.build;
@@ -89,9 +92,6 @@
                 echo 'Initializing postgresql database...'
                 initdb $PGDATA --auth=trust >/dev/null
               fi
-
-              # pg_ctl start -l $LOG_PATH -o "-c listen_addresses= -c unix_socket_directories=$PGHOST" -W
-              # createdb $PGDATABASE
             '';
           } // buildEnvVars);
       });
