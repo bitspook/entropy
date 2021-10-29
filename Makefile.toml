@@ -2,7 +2,16 @@
 command = "cargo"
 args = ["fmt", "--", "--emit=files"]
 
-[tasks.infra-up]
+# Convenient tasks to provide "cargo make start X" sub-commands
+[tasks.start]
+script_runner = "@duckscript"
+script = "cm_run_task start-${1}"
+
+[tasks.stop]
+script_runner = "@duckscript"
+script = "cm_run_task stop-${1}"
+
+[tasks.start-db]
 script_runner = "@duckscript"
 script = '''
 echo Starting Postgres Database
@@ -14,6 +23,9 @@ else
   echo Failed to start Postgres.\n${start_db_out.stderr}
 end
 
+# Give postgres some time to get up; otherwise db existence check fails sometimes
+sleep 500
+
 db_name = get_env PGDATABASE
 db_exist_check = exec psql -tAc "SELECT 1 FROM pg_database WHERE datname='${db_name}'"
 
@@ -23,10 +35,9 @@ else
   echo Creating database: ${db_name}
   exec --fail-on-error createdb ${db_name}
 end
-
 '''
 
-[tasks.infra-down]
+[tasks.stop-db]
 script_runner = "@duckscript"
 script = '''
 echo Stopping Postgres Database
@@ -38,3 +49,33 @@ else
   echo Failed to stop Postgres.\n${stop_db_out.stderr}
 end
 '''
+
+[tasks.start-minio]
+script_runner = "bash"
+script = '''
+echo Starting minio
+mkdir -p ${MINIO_STORAGE_DIR}
+
+minio server ${MINIO_STORAGE_DIR} --quiet --address ${MINIO_SERVER_URL} &> ${MINIO_STORAGE_DIR}/../LOG &
+
+# mc alias is needed to stop the minio server we pushed to background
+until mc alias set local http://${MINIO_SERVER_URL} $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD &> /dev/null
+do
+  sleep 1
+done
+
+echo Successfully started minio on ${MINIO_SERVER_URL} !
+echo Created mc alias 'local'
+'''
+
+[tasks.stop-minio]
+script_runner = "@duckscript"
+script = '''
+exec mc admin service stop local
+'''
+
+[tasks.start-infra]
+dependencies = ["start-db", "start-minio"]
+
+[tasks.stop-infra]
+dependencies = ["stop-db", "stop-minio"]

@@ -79,8 +79,10 @@ Entropy app itself can be built with standard cargo commands.
 To start the development database and other infrastructure, run:
 
 #+begin_src sh
-  cargo make infra-up
+  cargo make start infra
 #+end_src
+
+Explore [[file:Makefile.toml][Makefile.toml]] for more tasks (e.g to start only database)
 
 * Entropy Hackerspace
 

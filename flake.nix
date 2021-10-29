@@ -79,12 +79,19 @@
             inherit buildInputs nativeBuildInputs;
             RUST_BACKTRACE = 1;
             shellHook = ''
-              export PGDATA=$PWD/postgres/data
-              export PGHOST=$PWD/postgres/run
-              export LOG_PATH=$PWD/postgres/LOG
+              PGDIR=$PWD/storage/postgres
+              export PGDATA=$PGDIR/data
+              export PGHOST=$PGDIR/run
+              export LOG_PATH=$PGDIR/LOG
               export PGDATABASE=entropy
               export DATABASE_URL="postgresql:///$PGDATABASE?host=$PGHOST"
               export ENTROPY_DATABASE_URL=$DATABASE_URL
+
+              export MINIO_ROOT_USER=minio
+              export MINIO_ROOT_PASSWORD=miniominio
+              export MINIO_SERVER_URL="127.0.0.1:9191"
+              export MINIO_STORAGE_DIR=$PWD/storage/minio/data
+
               if [ ! -d $PGHOST ]; then
                 mkdir -p $PGHOST
               fi
