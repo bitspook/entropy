@@ -1,7 +1,4 @@
 /target
-/result
-/result-lib
-/result-doc
-*.sqlite3*
+/result*
 /dist/
-/postgres
+/storage

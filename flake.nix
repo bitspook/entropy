@@ -89,7 +89,8 @@
 
               export MINIO_ROOT_USER=minio
               export MINIO_ROOT_PASSWORD=miniominio
-              export MINIO_SERVER_URL="127.0.0.1:9191"
+              # Current version of minio goes haywire if non-default server URL is given
+              # export MINIO_SERVER_URL=http://localhost:9191
               export MINIO_STORAGE_DIR=$PWD/storage/minio/data
 
               if [ ! -d $PGHOST ]; then

@@ -56,10 +56,10 @@ script = '''
 echo Starting minio
 mkdir -p ${MINIO_STORAGE_DIR}
 
-minio server ${MINIO_STORAGE_DIR} --quiet --address ${MINIO_SERVER_URL} &> ${MINIO_STORAGE_DIR}/../LOG &
+minio server ${MINIO_STORAGE_DIR} --quiet &> ${MINIO_STORAGE_DIR}/../LOG &
 
 # mc alias is needed to stop the minio server we pushed to background
-until mc alias set local http://${MINIO_SERVER_URL} $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD &> /dev/null
+until mc alias set local http://localhost:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD &> /dev/null
 do
   sleep 1
 done

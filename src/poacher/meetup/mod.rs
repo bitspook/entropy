@@ -95,7 +95,11 @@ impl Meetup {
             let warning = PoacherWarning::FailedPresumption(
                 "Groups search has next page to fetch".to_string(),
             );
-            &self.tx.send(PoacherMessage::Warning(warning));
+
+            self.tx
+                .send(PoacherMessage::Warning(warning))
+                .await
+                .unwrap();
         }
 
         let groups = results["edges"]
@@ -146,15 +150,14 @@ impl Meetup {
                     debug!("Found Group: {}", group.name);
                     let item = MeetupResult::Group(group);
                     let item = PoacherResult::Meetup(item);
-                    &self
-                        .tx
+                    self.tx
                         .send(PoacherMessage::ResultItem(item))
                         .await
                         // if receiver is closed, let's panic
                         .unwrap();
                 }
                 Err(err) => {
-                    &self.tx.send(PoacherMessage::Error(err)).await.unwrap();
+                    self.tx.send(PoacherMessage::Error(err)).await.unwrap();
                 }
             }
         }
@@ -227,7 +230,10 @@ impl Meetup {
             let warning = PoacherWarning::FailedPresumption(
                 "Events search has next page to fetch".to_string(),
             );
-            &self.tx.send(PoacherMessage::Warning(warning));
+            self.tx
+                .send(PoacherMessage::Warning(warning))
+                .await
+                .unwrap();
         }
 
         let events = results["edges"]
@@ -317,27 +323,25 @@ impl Meetup {
             match group {
                 Ok(group) => {
                     let item = PoacherResult::Meetup(MeetupResult::Group(group));
-                    &self
-                        .tx
+                    self.tx
                         .send(PoacherMessage::ResultItem(item))
                         .await
                         .unwrap();
                 }
                 Err(err) => {
-                    &self.tx.send(PoacherMessage::Error(err)).await.unwrap();
+                    self.tx.send(PoacherMessage::Error(err)).await.unwrap();
                 }
             }
             match event {
                 Ok(event) => {
                     let item = PoacherResult::Meetup(MeetupResult::Event(event));
-                    &self
-                        .tx
+                    self.tx
                         .send(PoacherMessage::ResultItem(item))
                         .await
                         .unwrap();
                 }
                 Err(err) => {
-                    &self.tx.send(PoacherMessage::Error(err)).await.unwrap();
+                    self.tx.send(PoacherMessage::Error(err)).await.unwrap();
                 }
             }
         }
