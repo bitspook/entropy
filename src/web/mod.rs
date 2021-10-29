@@ -8,8 +8,8 @@ mod utils;
 mod config;
 
 pub use build::*;
-pub use server::*;
 pub use config::*;
+pub use server::*;
 
 #[database("entropy_db")]
 struct Db(diesel::PgConnection);

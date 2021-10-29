@@ -8,6 +8,7 @@ pub use config::EntropyConfig;
 
 pub mod db;
 pub mod poacher;
+pub mod storage;
 pub mod web;
 
 #[macro_use]

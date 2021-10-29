@@ -6,6 +6,7 @@ use rocket::{figment::Figment, fs::FileServer, Build, Rocket};
 use rocket_dyn_templates::Template;
 use rsass::{compile_scss_path, output};
 
+use crate::storage::create_assets_bucket;
 use crate::web::utils::render_md_tera_filter;
 use crate::web::{routes, Db, WebResult};
 use crate::EntropyConfig;
@@ -51,5 +52,7 @@ pub fn app() -> Rocket<Build> {
 }
 
 pub async fn run() -> () {
+    create_assets_bucket().await.expect("Failed to create assets bucket :-(");
+
     app().launch().await.unwrap();
 }

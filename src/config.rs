@@ -5,7 +5,7 @@ use figment::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::{poacher::PoacherConfig, web::WebConfig};
+use crate::{poacher::PoacherConfig, storage::StorageConfig, web::WebConfig};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct EntropyConfig {
@@ -13,6 +13,7 @@ pub struct EntropyConfig {
     pub poacher: PoacherConfig,
     pub rfc_dir: String,
     pub web: WebConfig,
+    pub storage: StorageConfig,
 }
 
 impl Default for EntropyConfig {
@@ -22,6 +23,7 @@ impl Default for EntropyConfig {
             web: WebConfig::default(),
             poacher: PoacherConfig::default(),
             rfc_dir: "./docs/rfcs".to_string(),
+            storage: StorageConfig::default(),
         }
     }
 }
