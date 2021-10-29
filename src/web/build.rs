@@ -16,9 +16,11 @@ pub async fn build() -> anyhow::Result<()> {
     info!("Building public static website");
 
     let config = EntropyConfig::load()?;
+    let config = config.web;
+
     let dist_dir = config.static_site.dist_path;
-    let static_dir = config.server.static_dir;
-    let scss_dir = config.server.scss_dir;
+    let static_dir = config.dev_server.static_dir;
+    let scss_dir = config.dev_server.scss_dir;
     let css_dir = Path::new(&dist_dir).join("css");
     let css_dir = css_dir.as_path().to_str().unwrap();
 

@@ -40,8 +40,8 @@ async fn event_details(event_slug: String, db: Db) -> WebResult<Template> {
     use crate::db::schema::events::dsl::*;
     use crate::db::schema::groups;
 
-    let config = EntropyConfig::load()?;
-    let base_url = config.static_site.base_url;
+    let config = EntropyConfig::load()?.web.static_site;
+    let base_url = config.base_url;
 
     let e_slug = event_slug.clone();
     let event_data = db

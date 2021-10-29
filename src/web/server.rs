@@ -31,9 +31,9 @@ pub fn app() -> Rocket<Build> {
     let config = EntropyConfig::load().expect("Invlaid Configuration");
 
     let figment = Figment::from(rocket::Config::default())
-        .merge(("port", config.server.port))
-        .merge(("address", config.server.host))
-        .merge(("template_dir", config.server.template_dir))
+        .merge(("port", config.web.dev_server.port))
+        .merge(("address", config.web.dev_server.host))
+        .merge(("template_dir", config.web.dev_server.template_dir))
         .merge(("databases.entropy_db.url", config.database_url));
 
     rocket::custom(figment)
@@ -41,7 +41,7 @@ pub fn app() -> Rocket<Build> {
         .mount("/", routes::events::routes())
         .mount("/", routes::event_details::routes())
         .mount("/css", routes![css])
-        .mount("/", FileServer::from(config.server.static_dir))
+        .mount("/", FileServer::from(config.web.dev_server.static_dir))
         .attach(Template::custom(|engines| {
             engines
                 .tera

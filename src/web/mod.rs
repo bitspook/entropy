@@ -1,11 +1,15 @@
+use rocket_sync_db_pools::database;
+
 mod build;
 mod routes;
 mod server;
 mod utils;
-use rocket_sync_db_pools::database;
+
+mod config;
 
 pub use build::*;
 pub use server::*;
+pub use config::*;
 
 #[database("entropy_db")]
 struct Db(diesel::PgConnection);

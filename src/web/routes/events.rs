@@ -43,7 +43,7 @@ impl From<Event> for CtxEvent {
 #[get("/events")]
 async fn events(db: Db) -> WebResult<Template> {
     use crate::db::schema::events::dsl::*;
-    let config = EntropyConfig::load()?;
+    let config = EntropyConfig::load()?.web;
     let base_url = config.static_site.base_url;
 
     let events_data: Vec<Event> = db
