@@ -7,7 +7,7 @@ use rocket_dyn_templates::Template;
 use rsass::{compile_scss_path, output};
 
 use crate::storage::create_assets_bucket;
-use crate::web::utils::render_md_tera_filter;
+use crate::web::utils::{render_md_tera_filter, storage_url_for};
 use crate::web::{routes, Db, WebResult};
 use crate::EntropyConfig;
 
@@ -46,13 +46,19 @@ pub fn app() -> Rocket<Build> {
         .attach(Template::custom(|engines| {
             engines
                 .tera
-                .register_filter("render_md", render_md_tera_filter)
+                .register_filter("render_md", render_md_tera_filter);
+
+            engines
+                .tera
+                .register_function("storage_url_for", storage_url_for)
         }))
         .attach(Db::fairing())
 }
 
 pub async fn run() -> () {
-    create_assets_bucket().await.expect("Failed to create assets bucket :-(");
+    create_assets_bucket()
+        .await
+        .expect("Failed to create assets bucket :-(");
 
     app().launch().await.unwrap();
 }

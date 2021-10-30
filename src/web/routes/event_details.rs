@@ -8,10 +8,7 @@ use rocket_sync_db_pools::diesel;
 use serde::Serialize;
 use serde_json::json;
 
-use crate::{
-    web::{Db, WebResult},
-    EntropyConfig,
-};
+use crate::{EntropyConfig, web::{Db, WebResult}};
 
 #[derive(Queryable, Serialize)]
 struct EventData {

@@ -34,7 +34,11 @@
         <div class="event-sections">
           {% for section in sections %}
           <section class="event-section">
-            <img class="icon icon-lightening" title="{{ section.name }}" src="/icons/lightening.webp">
+            <img
+              class="icon icon-lightening"
+              title="{{ section.name }}"
+              src="{{ storage_url_for(path='event-sections/logos/lightening.webp', bucket='assets') }}"
+            />
 
             <div class="content">
               <header>
