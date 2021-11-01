@@ -7,6 +7,7 @@ pub struct EventSection {
     name: String,
     title: String,
     description: Option<String>,
+    logo: Option<String>,
     desc_format: String,
     start_time: NaiveDateTime,
     end_time: NaiveDateTime,
@@ -18,6 +19,7 @@ pub struct EventSection {
 pub struct NewEventSection {
     pub name: String,
     pub title: String,
+    pub logo: Option<String>,
     pub description: Option<String>,
     pub desc_format: String,
     pub start_time: NaiveDateTime,

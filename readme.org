@@ -16,7 +16,7 @@ This expands to other aspects of how Entropy guides a community. Law of a
 passive majority should not force individuals against their wishes. Contributors
 should be valued more than passive members.
 
-*** Free ownership
+*** Freedom of ownership
 
 Those who contribute to the group should have ownership over it. Any member can
 achieve decision making power by contributing more.
@@ -29,6 +29,15 @@ goals. It should actively guide towards approaches which are:
 1. Measurable
 2. Achievable
 3. Encourage collaboration
+
+*** Ownership of content
+
+Content created by members of the group should belong to the individual members.
+A group shutting down, which means the Entropy app, and all user generated
+content on it disappearing from the web, should not cost a member their content.
+Because the member owns their content.
+
+Entropy app should shield users in above mentioned scenario.
 
 *** Cost efficient
 

@@ -3,6 +3,7 @@ table! {
         name -> Varchar,
         title -> Varchar,
         description -> Nullable<Varchar>,
+        logo -> Nullable<Varchar>,
         desc_format -> Varchar,
         start_time -> Timestamp,
         end_time -> Timestamp,

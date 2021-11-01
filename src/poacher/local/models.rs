@@ -20,6 +20,7 @@ pub struct LocalEventSection {
     #[serde(alias = "section")]
     pub name: String,
     pub title: String,
+    pub logo: Option<String>,
     pub description: String,
     pub start_time: NaiveDateTime,
     pub end_time: NaiveDateTime,
@@ -70,6 +71,7 @@ impl From<LocalEventSection> for NewEventSection {
         Self {
             name: sec.name,
             title: sec.title,
+            logo: sec.logo,
             description: Some(sec.description),
             desc_format: "md".to_string(),
             start_time: sec.start_time,

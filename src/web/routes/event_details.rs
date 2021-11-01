@@ -25,6 +25,7 @@ struct EventData {
 #[derive(Queryable, Debug, Serialize)]
 struct EventSectionData {
     name: String,
+    logo: Option<String>,
     title: String,
     description: Option<String>,
     desc_format: String,
@@ -70,6 +71,7 @@ async fn event_details(event_slug: String, db: Db) -> WebResult<Template> {
                     .inner_join(events.on(id.eq(event_sections::event_id)))
                     .select((
                         event_sections::name,
+                        event_sections::logo,
                         event_sections::title,
                         event_sections::description,
                         event_sections::desc_format,
