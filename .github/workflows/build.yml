@@ -31,7 +31,17 @@ jobs:
           target/release/entropy poach meetup events -v
           target/release/entropy web build -v
         env:
-          ENTROPY_STATIC_SITE: '{base_url="/"}'
+          ENTROPY_WEB: '{static_site.base_url="/"}'
+          ENTROPY_DATABASE_URL: 'postgresql://${{ secrets.PG_USER }}:${{ secrets.PG_PASSWORD }}@${{ secrets.PG_HOST }}/${{ secrets.PG_DB }}'
+          ENTROPY_STORAGE: |
+            {
+              credentials = {
+                endpoint = "${{ MINIO_HOST }}"
+                access_key = "${{ MINIO_ACCESS_KEY }}"
+                secret_key = "${{ MINIO_SECRET_KEY }}"
+              }
+            }
+
 
       - uses: peaceiris/actions-gh-pages@v3
         with:
