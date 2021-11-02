@@ -6,6 +6,8 @@ on:
 
 jobs:
   refresh:
+    environment: github-pages
+
     name: Re-poach events and rebuild entropy site
     runs-on: ubuntu-latest
 
@@ -24,7 +26,16 @@ jobs:
           ./entropy poach meetup events -v
           ./entropy web build -v
         env:
-          ENTROPY_STATIC_SITE: '{base_url="/"}'
+          ENTROPY_WEB: '{static_site={base_url="/"}}'
+          ENTROPY_DATABASE_URL: "${{ secrets.DB_URL }}"
+          ENTROPY_STORAGE: >-
+            {
+              credentials = {
+                endpoint = "${{ secrets.MINIO_HOST }}",
+                access_key = "${{ secrets.MINIO_ACCESS_KEY }}",
+                secret_key = "${{ secrets.MINIO_SECRET_KEY }}"
+              }
+            }
 
       - uses: peaceiris/actions-gh-pages@v3
         with:
