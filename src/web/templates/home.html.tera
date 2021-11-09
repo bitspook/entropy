@@ -92,6 +92,33 @@
       </div>
     </div>
 
+    <article class="join-us">
+      <header class="title">Join Us</header>
+
+      <section class="links">
+        <div class="link">
+          <a href="https://matrix.to/#/!EJjSPytjXwjJyODGWC:matrix.org?via=matrix.org">
+            <img class="matrix" alt="Matrix" title="Join our Matrix Space" src="images/matrix-icon.svg"/>
+          </a>
+        </div>
+
+        <div class="link">
+          <a href="https://t.me/joinchat/QiQGasCqA205OWM9">
+            <img alt="Telegram" title="Join our Telegram group" src="images/telegram-icon.svg"/>
+          </a>
+        </div>
+
+        <div class="link">
+          <a href="https://discord.gg/y74NHawxTA">
+            <img title="Join our Discord server" alt="Discord" src="images/discord-icon.svg"/>
+          </a>
+        </div>
+      </section>
+
+      <footer>All the chat platforms are <a href="https://matrix.org/bridges/">bridged</a>, so you can interact with the same set of people regardless of which platform you use.</footer>
+    </article>
+
+
     {%include "partials/footer" %}
   </body>
 </html>
