@@ -1,10 +1,10 @@
 use diesel::{insert_into, PgConnection, RunQueryDsl};
 use uuid::Uuid;
 
-use crate::db::models::{Group, NewEvent, NewEventSection, NewGroup};
+use crate::db::models::{Group, Initiative, NewEvent, NewEventSection, NewGoal, NewGroup};
 
 use super::{
-    models::{LocalEvent, LocalEventSection, LocalGroup},
+    models::{LocalEvent, LocalEventSection, LocalGoal, LocalGroup, LocalInitiative},
     LocalResult,
 };
 
@@ -78,9 +78,55 @@ pub async fn process_poached_group(conn: &PgConnection, group: LocalGroup) {
     debug!("Saved group in database: {}", new_group.name);
 }
 
+async fn process_poached_initiative(
+    conn: &PgConnection,
+    initiative: LocalInitiative,
+    goals_vec: Vec<LocalGoal>,
+) {
+    use crate::db::schema::initiatives::dsl::*;
+
+    let new_initiative = Initiative::from(initiative);
+    let query = insert_into(initiatives).values(&new_initiative);
+
+    // TODO: We don't need to wait for initiative to get inserted. We already
+    // have the slug here. Dum dum!
+    match query.returning(slug).get_result::<String>(conn) {
+        Err(err) => {
+            error!(
+                "Failed to insert initiative \"{}({})\" in db: {:#?}",
+                new_initiative.title, new_initiative.slug, err
+            );
+        }
+        Ok(inserted_initiative_slug) => {
+            info!("Saved initiative in database: {}", new_initiative.title);
+            use crate::db::schema::goals::dsl::*;
+
+            let new_goals: Vec<NewGoal> = goals_vec
+                .into_iter()
+                .map(|g| {
+                    let mut goal = NewGoal::from(g);
+                    goal.initiative_slug = Some(inserted_initiative_slug.clone());
+
+                    goal
+                })
+                .collect();
+
+            let query = insert_into(goals).values(&new_goals);
+            if let Err(err) = query.execute(conn) {
+                error!("Failed to insert goals: {:?}", err);
+            } else {
+                debug!("Saved goals in database");
+            }
+        }
+    }
+}
+
 pub async fn consume(result: LocalResult, conn: &PgConnection) {
     match result {
         LocalResult::Event(event, sections) => process_poached_event(conn, event, sections).await,
         LocalResult::Group(group) => process_poached_group(conn, group).await,
+        LocalResult::Initiative(initiative, goals) => {
+            process_poached_initiative(conn, initiative, goals).await
+        }
     }
 }

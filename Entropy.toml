@@ -28,3 +28,4 @@ blacklist.groups.slugs = [
 [poacher.local]
 groups.base_dir = "./groups"
 events.base_dir = "./events"
+initiatives.base_dir = "./initiatives"

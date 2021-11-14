@@ -33,6 +33,7 @@ pub fn into_toml_fmatter_sections<'a>(
     Ok(result)
 }
 
+// FIXME: If the `dir` is empty, it throws the error "Too many open files"
 /// Walk `dir` and collect files into `collector`
 fn list_all_files(dir: &Path, collector: &mut Vec<DirEntry>) -> io::Result<()> {
     if dir.is_dir() {

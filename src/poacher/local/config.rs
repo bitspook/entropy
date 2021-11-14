@@ -25,6 +25,7 @@ impl Default for CommonConfig {
 pub struct LocalPoacherConfig {
     pub events: CommonConfig,
     pub groups: CommonConfig,
+    pub initiatives: CommonConfig,
 }
 
 impl Default for LocalPoacherConfig {
@@ -32,6 +33,7 @@ impl Default for LocalPoacherConfig {
         Self {
             events: CommonConfig::default(),
             groups: CommonConfig::default(),
+            initiatives: CommonConfig::default(),
         }
     }
 }

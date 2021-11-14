@@ -1,7 +1,7 @@
 //! Poach content from wherever entropy is ran. I intend to use this to provide
 //! classic SSG behavior of reading markdown files and rendering them as web
 //! pages.
-use anyhow::Context;
+use anyhow::{ Context, Result };
 use futures::pin_mut;
 use regex::Regex;
 use std::{convert::TryFrom, path::Path};
@@ -25,6 +25,7 @@ pub const SOURCE: &str = "local";
 pub enum LocalResult {
     Group(LocalGroup),
     Event(LocalEvent, Vec<LocalEventSection>),
+    Initiative(LocalInitiative, Vec<LocalGoal>),
 }
 
 pub struct Local {
@@ -37,7 +38,13 @@ impl Local {
         Self { config, tx }
     }
 
-    pub async fn poach_events(&self) -> Result<(), anyhow::Error> {
+    pub async fn end(&self) -> Result<()> {
+        self.tx.send(PoacherMessage::End).await?;
+
+        Ok(())
+    }
+
+    pub async fn poach_events(&self) -> Result<()> {
         let base_dir = Path::new(&self.config.events.base_dir);
         // FIXME Shouldn't need to clone here
         let include = self
@@ -92,12 +99,10 @@ impl Local {
             }
         }
 
-        self.tx.send(PoacherMessage::End).await?;
-
         Ok(())
     }
 
-    pub async fn poach_groups(&self) -> Result<(), anyhow::Error> {
+    pub async fn poach_groups(&self) -> Result<()> {
         let base_dir = Path::new(&self.config.groups.base_dir);
         // FIXME Shouldn't need to clone here
         let include = self
@@ -146,7 +151,63 @@ impl Local {
             }
         }
 
-        self.tx.send(PoacherMessage::End).await?;
+        Ok(())
+    }
+
+    pub async fn poach_initiatives(&self) -> Result<()> {
+        let base_dir = Path::new(&self.config.initiatives.base_dir);
+        // FIXME Shouldn't need to clone here
+        let include = self
+            .config
+            .initiatives
+            .include
+            .clone()
+            .map(|s| Regex::new(&s).ok())
+            .flatten();
+        let exclude = self
+            .config
+            .initiatives
+            .exclude
+            .clone()
+            .map(|s| Regex::new(&s).ok())
+            .flatten();
+
+        let initiatives = read_all_files(base_dir, include, exclude).await?;
+
+        pin_mut!(initiatives);
+
+        while let Some(initiative) = initiatives.next().await {
+            match initiative {
+                Ok(initiative) => {
+                    let mut sections = into_toml_fmatter_sections(&initiative)
+                        .with_context(|| "Error while extracting initiative sections")?
+                        .into_iter();
+
+                    if let Some(top_section) = sections.next() {
+                        let initiative = LocalInitiative::try_from(top_section)?;
+
+                        // All the remaining sections are put into the event as its sections
+                        let goals: Vec<LocalGoal> = sections
+                        // blow up if conversion to LocalGoal fails
+                            .map(|fms| LocalGoal::try_from(fms).unwrap())
+                            .collect();
+
+                        self.tx
+                            .send(PoacherMessage::ResultItem(PoacherResult::Local(
+                                LocalResult::Initiative(initiative, goals),
+                            )))
+                            .await?;
+                    }
+                }
+                Err(err) => {
+                    self.tx
+                        .send(PoacherMessage::Error(PoacherError::UnknownError(
+                            err.into(),
+                        )))
+                        .await?;
+                }
+            }
+        }
 
         Ok(())
     }
