@@ -7,7 +7,7 @@ use rocket_sync_db_pools::diesel;
 use serde::Serialize;
 use serde_json::json;
 
-use crate::db::models::Event;
+use crate::db::models::{Event, Initiative};
 use crate::EntropyConfig;
 
 use crate::web::{Db, WebResult};
@@ -72,8 +72,16 @@ async fn home(db: Db) -> WebResult<Template> {
 
     let events_data: Vec<CtxEvent> = events_data.into_iter().map(|e| e.into()).collect();
 
-    let context =
-        json!({ "events": events_data, "upcoming_events_count": count, "base_url": base_url });
+    let initiative_count = db.run(|conn| Initiative::count_initiatives(conn)).await?;
+    let rfc_count = db.run(|conn| Initiative::count_rfcs(conn)).await?;
+
+    let context = json!({
+        "events": events_data,
+        "upcoming_events_count": count,
+        "base_url": base_url,
+        "initiative_count": initiative_count,
+        "rfc_count": rfc_count
+    });
 
     Ok(Template::render("home", context))
 }
