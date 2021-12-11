@@ -165,6 +165,7 @@
 
 .peeky-content {
   width: 50%;
+  display: none;
   max-width: 128rem;
 
   @media (min-width: $lg) {
@@ -191,6 +192,10 @@
       padding: 0 1rem;
     }
   }
+}
+
+.peeky-active {
+  display: block;
 }
 
 .peeky-content .header {

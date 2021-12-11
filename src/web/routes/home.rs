@@ -75,11 +75,39 @@ async fn home(db: Db) -> WebResult<Template> {
     let initiative_count = db.run(|conn| Initiative::count_initiatives(conn)).await?;
     let rfc_count = db.run(|conn| Initiative::count_rfcs(conn)).await?;
 
+    let (initiatives, rfcs): (Vec<Initiative>, Vec<Initiative>) = db
+        .run(|conn| {
+            use crate::db::schema::goals;
+            use crate::db::schema::initiatives::dsl::*;
+            let query = initiatives
+                .select((slug, title, description, source, desc_format))
+                .order(updated_at.desc())
+                .limit(5);
+
+            let non_rfcs = query
+                .inner_join(goals::table)
+                .get_results(conn)
+                .map_err(Error::from)?;
+
+            let rfcs = query
+                .left_join(goals::table)
+                .filter(goals::columns::slug.is_null())
+                .get_results(conn)
+                .map_err(Error::from)?;
+
+            let res: Result<(Vec<Initiative>, Vec<Initiative>)> = Ok((non_rfcs, rfcs));
+
+            res
+        })
+        .await?;
+
     let context = json!({
         "events": events_data,
         "upcoming_events_count": count,
         "base_url": base_url,
         "initiative_count": initiative_count,
+        "initiatives": initiatives,
+        "rfcs": rfcs,
         "rfc_count": rfc_count
     });
 

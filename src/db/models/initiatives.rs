@@ -1,14 +1,15 @@
 use diesel::{data_types::PgInterval, ExpressionMethods, PgConnection, QueryDsl, RunQueryDsl};
+use serde::Serialize;
 
 use crate::db::schema::*;
 
-#[derive(Insertable, Queryable, Debug)]
+#[derive(Insertable, Queryable, Debug, Serialize)]
 #[table_name = "initiatives"]
 pub struct Initiative {
     pub slug: String,
     pub title: String,
-    pub source: Option<String>,
     pub description: Option<String>,
+    pub source: Option<String>,
     pub desc_format: String,
 }
 
