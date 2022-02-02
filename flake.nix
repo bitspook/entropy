@@ -19,6 +19,18 @@
         inherit (import "${crate2nix}/tools.nix" { inherit pkgs; })
           generatedCargoNix;
 
+        sqls = pkgs.buildGoModule {
+          name = "sqls";
+          vendorSha256 = "sha256-sowzyhvNr7Ek3ex4BP415HhHSKnqPHy5EbnECDVZOGw=";
+
+          src = pkgs.fetchFromGitHub {
+            owner = "lighttiger2505";
+            repo = "sqls";
+            rev = "v0.2.22";
+            sha256 = "sha256-xtvm/NVL98dRzQL1id/WwT/NdsnB7qTRVR7jfrRsabY=";
+          };
+        };
+
         project = import
           (generatedCargoNix {
             name = crateName;
@@ -49,7 +61,7 @@
           cargo-audit
           cargo-outdated
           cargo-make
-          (rust-bin.stable.latest.default.override {
+          (rust-bin.nightly.latest.default.override {
             extensions = [
               "rust-src"
               "cargo"
@@ -62,6 +74,7 @@
           })
           minio
           minio-client
+          sqls
         ];
 
         entropy = project.rootCrate.build;

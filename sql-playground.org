@@ -1,0 +1,71 @@
+#+PROPERTY: header-args:sql  :tangle test.sql
+#+PROPERTY: header-args:sql  :engine postgres
+
+#+begin_src elisp
+#+end_src
+
+#+name: groups
+#+begin_src sql
+  SELECT groups.name, groups.slug, source, source_link FROM groups;
+#+end_src
+
+#+RESULTS: groups
+| name        | slug    | source | source_link |
+|-------------+---------+--------+-------------|
+| Lol bro wtf | entropy | local  |             |
+
+#+name: events
+#+begin_src sql
+  SELECT events.title,
+         events.slug,
+         start_time,
+         events.id,
+         events.source,
+         format('%s mins', extract(epoch from (events.end_time - events.start_time))/60)
+  FROM events;
+#+end_src
+
+#+RESULTS: events
+| title              | slug                 | start_time          | end_time            | source | format  |
+|--------------------+----------------------+---------------------+---------------------+--------+---------|
+| Lol bro what       | lol-rofl-lmao        | 2021-11-29 12:30:00 | 2021-11-29 13:30:00 | local  | 60 mins |
+| Nested event title | nested-lol-rofl-lmao | 2021-10-29 12:30:00 | 2021-10-29 13:30:00 | local  | 60 mins |
+
+#+name: event_sections
+#+begin_src sql
+    SELECT
+      events.slug,
+      logo,
+      format('%s mins', extract(epoch from (event_sections.end_time - event_sections.start_time))/60) as duration
+      FROM
+        ("event_sections" INNER JOIN "events" ON "events"."id" = "event_sections"."event_id");
+#+end_src
+
+#+RESULTS: event_sections
+| slug          | logo                      | duration |
+|---------------+---------------------------+----------|
+| lol-rofl-lmao | logos/dark/lightening.svg | 30 mins  |
+
+
+#+name: initiatives
+#+begin_src sql :engine postgres
+  SELECT initiatives.slug from initiatives left join goals on initiatives.slug = goals.initiative_slug where goals.slug is null;
+#+end_src
+
+#+RESULTS: initiatives
+| slug         |
+|--------------|
+| fear-of-cops |
+
+#+name: goals
+#+begin_src sql :engine postgres
+  SELECT
+    title, slug, initiative_slug, target,
+    justify_interval(iteration_interval) AS iteration_interval
+  FROM goals;
+#+end_src
+
+#+RESULTS: goals
+| title                   | slug                     | initiative_slug     | target | iteration_interval |
+|-------------------------+--------------------------+---------------------+--------+--------------------|
+| 10 monthly active users | ten-monthly-active-users | meager-tech-culture |     10 | 7 days             |
