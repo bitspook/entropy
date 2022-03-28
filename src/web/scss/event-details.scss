@@ -2,6 +2,23 @@
 @import "top-nav";
 @import "footer";
 
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 1.5rem;
+  margin-top: 3rem;
+}
+
+ul, ol {
+  margin: 2rem 0;
+}
+
+li {
+  margin: 1rem 0;
+}
+
+p {
+  margin: 1.6rem 0;
+}
+
 .container {
   display: flex;
   margin: 2rem auto;
@@ -36,6 +53,7 @@
     display: flex;
     font-size: 1.2rem;
     align-items: center;
+    margin-bottom: 2rem;
 
     .key {
       margin-right: 1rem;
@@ -44,13 +62,18 @@
   }
 }
 
+.description p {
+  padding: 0;
+  margin: 0.9rem 0;
+}
+
 .event-sections {
-  margin-top: 4rem;
+  margin-top: 2rem;
 }
 
 .event-section {
   display: flex;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
 
   .icon {
     height: 5rem;

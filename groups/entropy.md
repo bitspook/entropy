@@ -1,0 +1,3 @@
+name = "Entropy"
+slug = "entropy"
+---

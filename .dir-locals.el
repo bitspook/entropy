@@ -6,7 +6,7 @@
                         (setq-local buffer-file-name (->> babel-info caddr (alist-get :tangle)))
                         (setq-local lsp-buffer-uri (->> babel-info caddr (alist-get :tangle) lsp--path-to-uri))
                         (setq-local lsp-headerline-breadcrumb-enable nil)
-                        (lsp-deferred))))))
+                        (lsp))))))
  (nil . ((eval (lambda ()
                  (setq lsp-sqls-connections `(((driver . "postgresql")
                                                (dataSourceName . ,(getenv "DATABASE_URL"))))))))))

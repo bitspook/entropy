@@ -108,7 +108,7 @@ async fn home(db: Db) -> WebResult<Template> {
         "initiative_count": initiative_count,
         "initiatives": initiatives,
         "rfcs": rfcs,
-        "rfc_count": rfc_count
+        "rfc_count": rfc_count,
     });
 
     Ok(Template::render("home", context))

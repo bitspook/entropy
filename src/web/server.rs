@@ -55,7 +55,7 @@ pub fn app() -> Rocket<Build> {
         .attach(Db::fairing())
 }
 
-pub async fn run() -> () {
+pub async fn run() {
     create_assets_bucket()
         .await
         .expect("Failed to create assets bucket :-(");
