@@ -30,9 +30,25 @@
     </div>
 
     <div class='peeky-binder'>
+      <script type='text/javascript'>
+       const switchPeekyContent = (type) => {
+         const activeContent = document.querySelector('.peeky-active');
+         const nextActiveContent = document.querySelector(`.peeky-${type}`);
+
+         activeContent.classList.remove('peeky-active');
+         nextActiveContent.classList.add('peeky-active');
+
+         const activeMenu = document.querySelector('.menu-item.active');
+         const nextActiveMenu = document.querySelector(`.menu-item-${type}`);
+
+         activeMenu.classList.remove('active');
+         nextActiveMenu.classList.add('active');
+       }
+      </script>
+
       <div class="peeky-menu">
-        <div class="menu-item active">
-          <div class="counter-chart">5</div>
+        <div class="menu-item menu-item-events active" onclick="switchPeekyContent('events')">
+          <div class="counter-chart">1</div>
           <div class="content">
             <div class="title">Events</div>
             <div class="description">
@@ -42,10 +58,10 @@
           </div>
         </div>
 
-        <div class="menu-item">
-          <div class="counter-chart">1</div>
+        <div class="menu-item menu-item-initiatives" onclick="switchPeekyContent('initiatives')">
+          <div class="counter-chart">0</div>
           <div class="content">
-            <a href="https://github.com/channikhabra/entropy/tree/master/docs/initiatives" class="title">Initiatives</a>
+            <div class="title">Initiatives</div>
             <div class="description">
               Problems we, as a group, have picked and are working towards
               solving.
@@ -53,10 +69,10 @@
           </div>
         </div>
 
-        <div class="menu-item">
-          <div class="counter-chart">1</div>
+        <div class="menu-item menu-item-rfcs" onclick="switchPeekyContent('rfcs')">
+          <div class="counter-chart">0</div>
           <div class="content">
-            <a href="https://github.com/channikhabra/entropy/tree/master/docs/rfcs" class="title">RFCs</a>
+            <div class="title">RFCs</div>
             <div class="description">
               Problems members have proposed, which are under
               planning/consideration to be picked by the group as intiatives.
@@ -65,7 +81,7 @@
         </div>
       </div>
 
-      <div class="peeky-content">
+      <div class="peeky-content peeky-events peeky-active">
         <div class="header">Upcoming Tech Events in Chandigarh</div>
 
         
@@ -74,71 +90,42 @@
           <div class="list-item">
             <div class="icon"></div>
             <div class="content">
-              <a href="events/free-live-certified-webinar:-art-therapy-importance-of-art-in-life" class="title sneaky-link">Free LIVE Certified Webinar: Art Therapy - Importance of Art in Life</a>
+              <a href="events/first-entropy-catchup-meet" class="title sneaky-link">First Entropy catchup meet</a>
               <div class="meta">
                 <div class="meta-item">
                   <div class="icon"></div>
-                  <div class="content">Friday, January  7 from 12:00pm to  1:30pm</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="list-item">
-            <div class="icon"></div>
-            <div class="content">
-              <a href="events/auli-and-rishikesh-on-long-weekend" class="title sneaky-link">Auli &amp; Rishikesh  on Long Weekend</a>
-              <div class="meta">
-                <div class="meta-item">
-                  <div class="icon"></div>
-                  <div class="content">Friday, January 21 from  1:30am to  3:30am</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="list-item">
-            <div class="icon"></div>
-            <div class="content">
-              <a href="events/auli-and-rishikesh-in-snow" class="title sneaky-link">Auli &amp; Rishikesh in SNOW</a>
-              <div class="meta">
-                <div class="meta-item">
-                  <div class="icon"></div>
-                  <div class="content">Friday, January 21 from  1:30am to  3:30pm</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="list-item">
-            <div class="icon"></div>
-            <div class="content">
-              <a href="events/tirthan-valley-winter-special" class="title sneaky-link">Tirthan Valley- Winter Special</a>
-              <div class="meta">
-                <div class="meta-item">
-                  <div class="icon"></div>
-                  <div class="content">Friday, January 21 from  3:30pm to 11:30pm</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="list-item">
-            <div class="icon"></div>
-            <div class="content">
-              <a href="events/startups-and-entrepreneurs-open-house-networking" class="title sneaky-link">Startups &amp; Entrepreneurs - Open house networking</a>
-              <div class="meta">
-                <div class="meta-item">
-                  <div class="icon"></div>
-                  <div class="content">Saturday, January 29 from 10:30am to 12:30pm</div>
+                  <div class="content">Friday, April  1 from  3:00pm to  4:00pm</div>
                 </div>
               </div>
             </div>
           </div>
           
         </div>
-        
+
         <a class="more" href='events'>View All</a>
+        
+      </div>
+
+      <div class="peeky-content peeky-initiatives">
+        <div class="header">Ongoing Initiatives</div>
+
+        
+        <div class="alert">
+  <h2>No Data available :-(</h2>
+</div>
+
+        
+      </div>
+
+      <div class="peeky-content peeky-rfcs">
+        <div class="header">Initiatives under consideration</div>
+
+        
+        <div class="alert">
+  <h2>No Data available :-(</h2>
+</div>
+
+        
       </div>
     </div>
 
