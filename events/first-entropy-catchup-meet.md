@@ -1,9 +1,11 @@
 title = "First Entropy catchup meet"
 slug = "first-entropy-catchup-meet"
 group_slug = "entropy"
-start_time = "2022-04-01T15:00:00"
-end_time = "2022-04-01T16:00:00"
+start_time = "2022-04-04T15:00:00"
+end_time = "2022-04-04T16:00:00"
 ---
+
+> Join online on [jit.si](https://meet.jit.si/moderated/8abf0eb6baf7bc36196e0ef0ae6768869f3a2ef79c23590c9eb1c15184582627 "Online Meet")
 
 General meet-n-greet (online) event to get to know each other a little better.
 In this event you can share your interests (technological or otherwise), get to
@@ -18,16 +20,16 @@ in the agenda section below.
 ---
 section = "Introductions"
 title = "Introductions"
-start_time = "2022-04-01T15:00:00"
-end_time = "2022-04-01T15:10:00"
+start_time = "2022-04-04T15:00:00"
+end_time = "2022-04-04T15:10:00"
 ---
 A round of introductions from all participants.
 
 ---
 section = "Agenda of the meeting"
 title = "Agenda"
-start_time = "2022-04-01T15:10:00"
-end_time = "2022-04-01T15:50:00"
+start_time = "2022-04-04T15:10:00"
+end_time = "2022-04-04T15:50:00"
 logo = "logos/dark/agenda.svg"
 ---
 
@@ -56,8 +58,8 @@ community who can play the role of a mentor for you.
 ---
 section = "Pitchers"
 title = "Pitchers"
-start_time = "2022-04-01T15:10:00"
-end_time = "2022-04-01T15:50:00"
+start_time = "2022-04-04T15:10:00"
+end_time = "2022-04-04T15:50:00"
 logo = "logos/dark/pitcher.svg"
 ---
 
