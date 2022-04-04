@@ -1,8 +1,8 @@
 title = "First Entropy catchup meet"
 slug = "first-entropy-catchup-meet"
 group_slug = "entropy"
-start_time = "2022-04-04T15:00:00"
-end_time = "2022-04-04T16:00:00"
+start_time = "2022-04-05T15:00:00"
+end_time = "2022-04-05T16:00:00"
 ---
 
 > Join online on [jit.si](https://meet.jit.si/moderated/8abf0eb6baf7bc36196e0ef0ae6768869f3a2ef79c23590c9eb1c15184582627 "Online Meet")
@@ -20,16 +20,16 @@ in the agenda section below.
 ---
 section = "Introductions"
 title = "Introductions"
-start_time = "2022-04-04T15:00:00"
-end_time = "2022-04-04T15:10:00"
+start_time = "2022-04-05T15:00:00"
+end_time = "2022-04-05T15:10:00"
 ---
 A round of introductions from all participants.
 
 ---
 section = "Agenda of the meeting"
 title = "Agenda"
-start_time = "2022-04-04T15:10:00"
-end_time = "2022-04-04T15:50:00"
+start_time = "2022-04-05T15:10:00"
+end_time = "2022-04-05T15:50:00"
 logo = "logos/dark/agenda.svg"
 ---
 
@@ -58,16 +58,15 @@ community who can play the role of a mentor for you.
 ---
 section = "Pitchers"
 title = "Pitchers"
-start_time = "2022-04-04T15:10:00"
-end_time = "2022-04-04T15:50:00"
+start_time = "2022-04-05T15:10:00"
+end_time = "2022-04-05T15:50:00"
 logo = "logos/dark/pitcher.svg"
 ---
 
 Following people have offered to pitch their ideas during this meet. There might
 be more pitchers during the meet:
 
-1. [Navdeep Virdi](https://github.com/sivunq)
-2. [Charanjit Singh](https://github.com/bitspook)
+1. [Charanjit Singh](https://github.com/bitspook)
 
 If you want to be added to this list, please drop an email to
 `entropy[at]bitspook.in`.

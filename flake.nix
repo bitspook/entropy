@@ -86,6 +86,7 @@
               export PGDATABASE=entropy
               export DATABASE_URL="postgresql:///$PGDATABASE?host=$PGHOST"
               export ENTROPY_DATABASE_URL=$DATABASE_URL
+              export ENTROPY_LOG_LEVEL=entropy=debug
 
               export MINIO_ROOT_USER=minio
               export MINIO_ROOT_PASSWORD=miniominio

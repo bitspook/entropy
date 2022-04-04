@@ -123,7 +123,7 @@ async fn build_one(client: std::sync::Arc<Client>, url: String, dist_dir: PathBu
         .await
         .into_string()
         .await
-        .ok_or(Error::msg(format!("Failed to get HTML for {}", url)))?;
+        .ok_or_else(|| Error::msg(format!("Failed to get HTML for {}", url)))?;
 
     let dist_filepath = dist_dir.join("index.html");
     let dist_filepath = dist_filepath.as_path();

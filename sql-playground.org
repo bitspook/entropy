@@ -6,10 +6,9 @@
 #+end_src
 
 #+RESULTS: front-page-events
-| id                                   | title              |
-|--------------------------------------+--------------------|
-| b0ded263-080b-4301-a563-54c493adacac | Lol bro what       |
-| b68c2160-1fd4-4cca-88b5-3963d397b6a2 | Nested event title |
+| id                                   | title                      |
+|--------------------------------------+----------------------------|
+| 5f16c000-17ec-44fc-8f7e-0c045f5e8381 | First Entropy catchup meet |
 
 #+name: past-events
 #+begin_src sql
@@ -17,19 +16,17 @@
 #+end_src
 
 #+RESULTS: past-events
-| id                                   | title              | interval |
-|--------------------------------------+--------------------+----------|
-| b0ded263-080b-4301-a563-54c493adacac | Lol bro what       | 01:00:00 |
-| b68c2160-1fd4-4cca-88b5-3963d397b6a2 | Nested event title | 01:00:00 |
+| id | title | interval |
+|----+-------+----------|
 
 #+name: groups
 #+begin_src sql
   SELECT groups.name, groups.slug, source, source_link FROM groups;
 #+end_src
 #+RESULTS: groups
-| name        | slug    | source | source_link |
-|-------------+---------+--------+-------------|
-| Lol bro wtf | entropy | local  |             |
+| name    | slug    | source | source_link |
+|---------+---------+--------+-------------|
+| Entropy | entropy | local  |             |
 
 #+name: event_sections
 #+begin_src sql
@@ -41,18 +38,19 @@
         ("event_sections" INNER JOIN "events" ON "events"."id" = "event_sections"."event_id");
 #+end_src
 #+RESULTS: event_sections
-| slug          | logo                      | duration |
-|---------------+---------------------------+----------|
-| lol-rofl-lmao | logos/dark/lightening.svg | 30 mins  |
+| slug                       | logo                   | duration |
+|----------------------------+------------------------+----------|
+| first-entropy-catchup-meet |                        | 10 mins  |
+| first-entropy-catchup-meet | logos/dark/agenda.svg  | 40 mins  |
+| first-entropy-catchup-meet | logos/dark/pitcher.svg | 40 mins  |
 
 #+name: initiatives
 #+begin_src sql :engine postgres
   SELECT initiatives.slug from initiatives left join goals on initiatives.slug = goals.initiative_slug where goals.slug is null;
 #+end_src
 #+RESULTS: initiatives
-| slug         |
-|--------------|
-| fear-of-cops |
+| slug |
+|------|
 
 #+name: goals
 #+begin_src sql :engine postgres

@@ -16,7 +16,6 @@ fn mk_logger(verbosity: i32) {
         1 => "debug",
         _ => "trace",
     };
-
     let env = Env::default()
         .filter_or("ENTROPY_LOG_LEVEL", level)
         .write_style_or("ENTROPY_LOG_STYLE", "always");

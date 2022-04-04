@@ -30,6 +30,8 @@ tokio-stream = "0.1.7"
 async-stream = "0.3.2"
 regex = "1.5.4"
 rust-s3 = "0.27.0"
+walkdir = "2.3.2"
+kuchiki = "0.8.1"
 
 [dependencies.rocket]
 version = "0.5.0-dev"
