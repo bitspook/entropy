@@ -1,8 +1,8 @@
 title = "First Entropy catchup meet"
 slug = "first-entropy-catchup-meet"
 group_slug = "entropy"
-start_time = "2022-04-05T15:00:00"
-end_time = "2022-04-05T16:00:00"
+start_time = "2022-04-07T15:00:00"
+end_time = "2022-04-07T16:00:00"
 ---
 
 > Join online on [jit.si](https://meet.jit.si/moderated/8abf0eb6baf7bc36196e0ef0ae6768869f3a2ef79c23590c9eb1c15184582627 "Online Meet")
@@ -20,16 +20,16 @@ in the agenda section below.
 ---
 section = "Introductions"
 title = "Introductions"
-start_time = "2022-04-05T15:00:00"
-end_time = "2022-04-05T15:10:00"
+start_time = "2022-04-07T15:00:00"
+end_time = "2022-04-07T15:10:00"
 ---
 A round of introductions from all participants.
 
 ---
 section = "Agenda of the meeting"
 title = "Agenda"
-start_time = "2022-04-05T15:10:00"
-end_time = "2022-04-05T15:50:00"
+start_time = "2022-04-07T15:10:00"
+end_time = "2022-04-07T15:50:00"
 logo = "logos/dark/agenda.svg"
 ---
 
@@ -55,22 +55,6 @@ particular technology etc), we'll try to arrange someone to mentor you. This can
 be the same person who is owning a particular project, or someone else from the
 community who can play the role of a mentor for you.
 
----
-section = "Pitchers"
-title = "Pitchers"
-start_time = "2022-04-05T15:10:00"
-end_time = "2022-04-05T15:50:00"
-logo = "logos/dark/pitcher.svg"
----
-
-Following people have offered to pitch their ideas during this meet. There might
-be more pitchers during the meet:
-
-1. [Charanjit Singh](https://github.com/bitspook)
-
-If you want to be added to this list, please drop an email to
-`entropy[at]bitspook.in`.
-
-Pitchers are requested to prepare a pitch for their idea. Any form of slides or
-something isn't required, but please structure your thoughts such that they can
-be conveyed in a 10-15 minutes.
+For pitching your idea, any form of slides or something isn't required. But
+please structure your thoughts such that they can be conveyed in a 10-15
+minutes.
