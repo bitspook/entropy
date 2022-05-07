@@ -46,11 +46,11 @@ async fn home(db: Db) -> WebResult<Template> {
     let config = EntropyConfig::load()?.web;
     let base_url = config.static_site.base_url;
 
-    let (events_data, count) = db
+    let (events_data, upcoming_count) = db
         .run(|conn| {
             let today = Utc::now().naive_utc();
 
-            let query = events.filter(start_time.gt(today));
+            let query = events;
 
             debug!(
                 "QUERY: [query={}]",
@@ -58,13 +58,18 @@ async fn home(db: Db) -> WebResult<Template> {
             );
 
             let events_data: Vec<Event> = query
-                .order(start_time.asc())
+                .order(start_time.desc())
                 .limit(5)
                 .load(conn)
                 .map_err(Error::from)?;
-            let count: i64 = query.count().get_result(conn).map_err(Error::from)?;
 
-            let res: Result<(Vec<Event>, i64)> = Ok((events_data, count));
+            let upciming_count: i64 = query
+                .filter(start_time.gt(today))
+                .count()
+                .get_result(conn)
+                .map_err(Error::from)?;
+
+            let res: Result<(Vec<Event>, i64)> = Ok((events_data, upciming_count));
 
             res
         })
@@ -103,7 +108,7 @@ async fn home(db: Db) -> WebResult<Template> {
 
     let context = json!({
         "events": events_data,
-        "upcoming_events_count": count,
+        "upcoming_events_count": upcoming_count,
         "base_url": base_url,
         "initiative_count": initiative_count,
         "initiatives": initiatives,

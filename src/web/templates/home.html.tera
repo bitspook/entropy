@@ -50,7 +50,7 @@
         <div class="menu-item menu-item-events active" onclick="switchPeekyContent('events')">
           <div class="counter-chart">{{ upcoming_events_count }}</div>
           <div class="content">
-            <div class="title">Events</div>
+            <div class="title">Upcoming Events</div>
             <div class="description">
               Tech events happening across Chandigarh in different tech circles,
               aggregated in one place for easy discovery.
@@ -82,7 +82,7 @@
       </div>
 
       <div class="peeky-content peeky-events peeky-active">
-        <div class="header">Upcoming Tech Events in Chandigarh</div>
+        <div class="header">Tech Events in Chandigarh</div>
 
         {% if not events %}
         {% include "partials/no-data" %}

@@ -137,13 +137,11 @@ pub async fn build(client: std::sync::Arc<Client>, dist: &Path) -> Result<()> {
     let event_slugs: Vec<String> = {
         use crate::db::schema::events::dsl::*;
 
-        debug!("Retrieving upcoming event slugs");
+        debug!("Retrieving latest 50 event slugs");
         let conn = crate::db::establish_connection()?;
-        let today = chrono::Utc::now().naive_utc();
 
         events
-            .filter(start_time.gt(today))
-            .order(start_time.asc())
+            .order(start_time.desc())
             .limit(50)
             .select(slug)
             .load::<String>(&conn)
