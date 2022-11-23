@@ -1,0 +1,5 @@
+/target
+/result*
+/dist/
+/storage
+/test.sql

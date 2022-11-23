@@ -1,0 +1,43 @@
+name: Re-build the entropy site
+
+on:
+  schedule:
+    - cron: "0 */2 * * *"
+
+jobs:
+  refresh:
+    environment: github-pages
+
+    name: Re-poach events and rebuild entropy site
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: build.yml
+          name: entropy
+          path: ./
+
+      - run: |
+          chmod +x ./entropy
+          ./entropy poach meetup events -v
+          ./entropy web build -v
+        env:
+          ENTROPY_WEB: '{static_site={base_url="/"}}'
+          ENTROPY_DATABASE_URL: "${{ secrets.DB_URL }}"
+          ENTROPY_STORAGE: >-
+            {
+              credentials = {
+                endpoint = "${{ secrets.MINIO_HOST }}",
+                access_key = "${{ secrets.MINIO_ACCESS_KEY }}",
+                secret_key = "${{ secrets.MINIO_SECRET_KEY }}"
+              }
+            }
+
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist

@@ -1,0 +1,50 @@
+name: Build the entropy site
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build_n_run:
+    environment: github-pages
+
+    name: Build and run entropy app
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+
+      - uses: Swatinem/rust-cache@v1
+
+      - run: cargo build --release
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: entropy
+          path: target/release/entropy
+
+      - run: |
+          target/release/entropy poach meetup events -v
+          target/release/entropy web build -v
+        env:
+          ENTROPY_WEB: '{static_site={base_url="/"}}'
+          ENTROPY_DATABASE_URL: "${{ secrets.DB_URL }}"
+          ENTROPY_STORAGE: >-
+            {
+              credentials = {
+                endpoint = "${{ secrets.MINIO_HOST }}",
+                access_key = "${{ secrets.MINIO_ACCESS_KEY }}",
+                secret_key = "${{ secrets.MINIO_SECRET_KEY }}"
+              }
+            }
+
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
